@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="MaybeNot. The official website of MaybeNot. EST 2016. CHICAGO.">
+    <title>MaybeNot</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="196x196">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #f2f2f2;
+            color: #000;
+            text-align: center;
+            height: 100%;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .logo-container {
+            display: inline-block;
+            width: 80vw;
+            height: 40vh;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .time {
+            margin-top: -100px;
+            font-size: 0.7rem;
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            margin-top: 10px;
+            z-index: 10;
+            position: relative;
+        }
+
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            font-size: 0.8rem;
+            text-align: left;
+            width: 200px;
+        }
+
+        nav ul li {
+            margin: 6px 0;
+        }
+
+        nav ul li a {
+            color: #000;
+            text-decoration: none;
+            display: inline-block;
+            padding: 5px 0;
+        }
+
+        nav ul li a:hover {
+            border: 2px solid red;
+        }
+
+        footer {
+            margin-top: 20px;
+            width: 100%;
+            padding: 20px;
+            background-color: #f2f2f2;
+            color: #000;
+        }
+
+        /* Social icons styling */
+        footer .social-icons a {
+            text-decoration: none;
+        }
+
+        .icon-wrapper {
+            display: inline-block;
+            padding: 2px;
+            transition: 0.3s ease;
+        }
+
+        .icon-wrapper:hover {
+            border: 2px solid red;
+        }
+
+        footer .social-icons img {
+            width: 16px;
+            height: 16px;
+            filter: invert(0);
+            transition: 0.3s ease;
+        }
+
+        /* Special invert for xlogo.png */
+        footer .social-icons img[src="xlogo.png"] {
+            filter: invert(1);
+        }
+
+        footer .social-icons img[src="xlogo.png"]:hover {
+            filter: invert(1);
+        }
+
+        /* Cookie banner styling */
+        .cookie-banner {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(128, 128, 128, 0.8);
+            padding: 10px;
+            color: #000;
+            font-size: 0.8rem;
+            z-index: 5;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .cookie-banner a {
+            color: #000;
+            text-decoration: underline;
+        }
+
+        .cookie-banner .cookie-close {
+            margin-left: 10px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: inline;
+        }
+
+        .full-site-link {
+            font-size: 0.8rem;
+            display: none;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            padding: 10px;
+            background-color: #f2f2f2;
+            color: #000;
+            z-index: 10;
+        }
+
+        /* Mobile-Specific Nav and Footer */
+        @media (max-width: 768px) {
+            /* Mobile Nav Links */
+            nav ul {
+                text-align: left;
+                padding: 0;
+                margin: 0;
+                width: 100%;
+            }
+
+            nav ul li {
+                border-bottom: none;
+                margin: 0;
+                padding: 10px 20px;
+                text-align: left;
+            }
+
+            nav ul li a {
+                display: block;
+                text-decoration: none;
+                color: #000;
+                padding: 10px;
+            }
+
+            /* Correct Mobile Nav Links */
+            nav ul li a:link,
+            nav ul li a:visited {
+                content: none;
+            }
+
+            nav ul li a:hover {
+                background-color: red;
+                color: white;
+            }
+
+            /* Mobile Nav Items */
+            nav ul li:nth-child(1) a { content: "new"; }
+            nav ul li:nth-child(2) a { content: "jackets"; }
+            nav ul li:nth-child(3) a { content: "shirts"; }
+            nav ul li:nth-child(4) a { content: "tops/sweaters"; }
+            nav ul li:nth-child(5) a { content: "sweatshirts"; }
+            nav ul li:nth-child(6) a { content: "pants"; }
+            nav ul li:nth-child(7) a { content: "t-shirts"; }
+            nav ul li:nth-child(8) a { content: "hats"; }
+            nav ul li:nth-child(9) a { content: "bags"; }
+            nav ul li:nth-child(10) a { content: "accessories"; }
+            nav ul li:nth-child(11) a { content: "shoes"; }
+            nav ul li:nth-child(12) a { content: "gym"; }
+            nav ul li:nth-child(13) a { content: "skate"; }
+            nav ul li:nth-child(14) a { content: "all"; }
+
+            /* Mobile Footer Links */
+            footer {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                margin-top: 20px;
+                padding: 20px;
+                background-color: #f2f2f2;
+                color: #000;
+            }
+
+            /* Hide social icons on mobile */
+            footer .social-icons {
+                display: none;
+            }
+
+            /* Show footer links on mobile */
+            footer .footer-links {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                text-align: center;
+                max-width: 100%;
+                margin-top: 15px;
+            }
+
+            footer .footer-links a {
+                color: #000;
+                text-decoration: none;
+                font-size: 0.8rem;
+                margin: 10px;
+                padding: 5px;
+                transition: all 0.3s ease;
+            }
+
+            footer .footer-links a:hover {
+                border: 2px solid red;
+            }
+
+            .full-site-link {
+                display: block;
+            }
+        }
+
+        /* Desktop Specific: Hide footer links and show social icons */
+        @media (min-width: 769px) {
+            footer .footer-links {
+                display: none;
+            }
+
+            footer .social-icons {
+                display: flex;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="cookie-banner">
+    This site uses cookies to improve your experience. By continuing to browse, you agree to the use of cookies. Read the <a href="#">Privacy Policy</a> here.<span class="cookie-close" onclick="this.parentElement.style.display='none';">✖</span>
+</div>
+
+<div class="container">
+    <!-- Replacing logo with the provided iframe -->
+    <div class="logo-container">
+        <iframe id="8b9281ad-097b-4408-88e2-ef824efa63eb" src="https://www.vectary.com/viewer/v1/?model=8b9281ad-097b-4408-88e2-ef824efa63eb&env=studio3&turntable=1" frameborder="0"></iframe>
+    </div>
+
+    <div class="time" id="current-time"></div>
+
+    <nav>
+        <ul>
+            <!-- Desktop Nav Links -->
+            <li><a href="#">news</a></li>
+            <li><a href="#">fall/winter 2024 preview</a></li>
+            <li><a href="#">fall/winter 2024 lookbook</a></li>
+            <li><a href="#">shop</a></li>
+            <li><a href="#">random</a></li>
+            <li><a href="#">about</a></li>
+            <li><a href="#">stores</a></li>
+            <li><a href="#">contact</a></li>
+            <li><a href="#">mailing list</a></li>
+        </ul>
+    </nav>
+
+    <!-- Footer section -->
+    <footer>
+        <div class="social-icons">
+            <a href="https://www.instagram.com/maybenotreality/" target="_blank">
+                <div class="icon-wrapper">
+                    <img src="instagram.png" alt="Instagram">
+                </div>
+            </a>
+            <a href="https://x.com/MarcoRomanoJr" target="_blank">
+                <div class="icon-wrapper">
+                    <img src="xlogo.png" alt="X logo">
+                </div>
+            </a>
+            <a href="https://www.youtube.com/MaybeNotReality" target="_blank">
+                <div class="icon-wrapper">
+                    <img src="youtube.png" alt="YouTube">
+                </div>
+            </a>
+            <a href="https://www.facebook.com/MaybeNotReality" target="_blank">
+                <div class="icon-wrapper">
+                    <img src="facebook.png" alt="Facebook">
+                </div>
+            </a>
+            <a href="https://www.wechat.com" target="_blank">
+                <div class="icon-wrapper">
+                    <img src="wechat.png" alt="WeChat">
+                </div>
+            </a>
+        </div>
+
+        <div class="footer-links">
+            <a href="#">shop</a>
+            <a href="#">view all</a>
+            <a href="#">preview</a>
+            <a href="#">lookbook</a>
+            <a href="#">news</a>
+            <a href="#">random</a>
+            <a href="#">about</a>
+            <a href="#">stores</a>
+            <a href="#">sizing</a>
+            <a href="#">f.a.q.</a>
+            <a href="#">contact</a>
+            <a href="#">terms</a>
+            <a href="#">privacy</a>
+            <a href="#">accessibility</a>
+            <a href="#">mailing list</a>
+        </div>
+    </footer>
+</div>
+
+<!-- Full site link for mobile view -->
+<div class="full-site-link">
+    <a href="javascript:void(0)" onclick="toggleFullSite()">full site</a>
+</div>
+
+<script>
+    // Function to get Chicago time without the comma and without seconds
+    function updateChicagoTime() {
+        const options = {
+            timeZone: 'America/Chicago',
+            hour: '2-digit',
+            minute: '2-digit',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+        };
+        const currentTime = new Intl.DateTimeFormat('en-US', options).format(new Date()).replace(",", "");
+        document.getElementById('current-time').textContent = currentTime + " CHICAGO";
+    }
+
+    setInterval(updateChicagoTime, 1000);
+
+    // Full-site toggle to switch to desktop view on mobile
+    function toggleFullSite() {
+        document.body.style.zoom = '10%'; // Dramatically zoom out to simulate desktop view
+        document.querySelector(".full-site-link").style.display = "none"; // Hide the full site link
+    }
+</script>
+
+</body>
+</html>
