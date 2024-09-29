@@ -29,6 +29,7 @@
             display: inline-block;
             width: 80vw;
             height: 40vh;
+            min-height: 160px; /* Ensure minimum height for consistency across devices */
             margin: 0;
             padding: 0;
             text-align: center;
@@ -41,7 +42,7 @@
         }
 
         .time {
-            margin-top: -100px;
+            margin-top: -90px; /* Adjusted spacing closer to logo */
             font-size: 0.7rem;
             text-align: center;
         }
@@ -52,7 +53,7 @@
             padding: 0;
             font-size: 0.7rem;
             text-align: left;
-            margin-top: 70px; /* Increased space between time and first nav link */
+            margin-top: 70px; /* Space between time and first nav link */
         }
 
         .desktop-nav ul li {
@@ -145,7 +146,7 @@
         /* Mobile Adjustments */
         @media (max-width: 768px) {
             .logo-container {
-                margin-top: -100px; /* Remove most top padding */
+                margin-top: -80px; /* Reduced top margin for mobile */
                 width: 90vw;
             }
 
@@ -155,7 +156,11 @@
             }
 
             .time {
-                margin-top: -120px; /* Move time even closer to logo */
+                margin-top: -110px; /* Move time closer to logo on mobile */
+            }
+
+            .cookie-banner {
+                font-size: 0.6rem; /* Smaller text for the cookie banner on mobile */
             }
 
             footer .social-icons {
