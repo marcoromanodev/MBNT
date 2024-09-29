@@ -50,14 +50,18 @@
         .desktop-nav ul {
             list-style-type: none;
             padding: 0;
-            font-size: 0.8rem;
-            text-align: center;
-            position: relative;
-            z-index: 2; /* Ensures nav links are on top of other elements */
+            font-size: 0.7rem;
+            text-align: left;
+            margin-top: 70px; /* Increased space between time and first nav link */
         }
 
         .desktop-nav ul li {
-            margin: 6px 0;
+            margin: 4px 0;
+        }
+
+        .desktop-nav ul li:first-child a {
+            position: relative;
+            z-index: 1;
         }
 
         .desktop-nav ul li a {
@@ -65,20 +69,27 @@
             text-decoration: none;
             display: inline-block;
             padding: 5px 0;
+            box-sizing: border-box;
+            width: 100%;
         }
 
-        /* Ensure hover effect applies to all links */
+        /* Fix for first nav link hover effect */
+        .desktop-nav ul li:first-child a:hover,
         .desktop-nav ul li a:hover {
             border: 2px solid red;
             color: red;
             background-color: white;
         }
 
+        .desktop-nav ul li a {
+            transition: none;
+        }
+
         /* Social icons styling */
         footer .social-icons {
             display: flex;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         footer .social-icons a {
@@ -87,8 +98,6 @@
 
         .icon-wrapper {
             display: inline-block;
-            padding: 2px;
-            transition: 0.3s ease;
         }
 
         .icon-wrapper:hover {
@@ -96,16 +105,17 @@
         }
 
         footer .social-icons img {
-            width: 24px;
-            height: 24px;
+            width: 16px;
+            height: 16px;
         }
 
+        /* Fix for xlogo.png to always be black */
         footer .social-icons img[src="xlogo.png"] {
-            filter: invert(1);
+            filter: brightness(0) invert(0); /* Ensure xlogo is always black */
         }
 
         footer .social-icons img[src="xlogo.png"]:hover {
-            filter: invert(1);
+            filter: brightness(0); /* No change on hover, stays black */
         }
 
         /* Cookie banner styling */
@@ -117,9 +127,8 @@
             padding: 10px;
             color: #000;
             font-size: 0.8rem;
-            z-index: 5; /* Ensures the cookie banner stays on top */
+            z-index: 5;
             text-align: center;
-            box-sizing: border-box;
         }
 
         .cookie-banner a {
@@ -136,7 +145,7 @@
         /* Mobile Adjustments */
         @media (max-width: 768px) {
             .logo-container {
-                margin-top: 0px;
+                margin-top: -100px; /* Remove most top padding */
                 width: 90vw;
             }
 
@@ -146,23 +155,29 @@
             }
 
             .time {
-                margin-top: -100px;
+                margin-top: -120px; /* Move time even closer to logo */
             }
 
             footer .social-icons {
-                display: flex;
-                justify-content: center;
-                gap: 8px;
+                gap: 6px;
             }
 
             footer .social-icons img {
-                width: 20px;
-                height: 20px;
+                width: 14px;
+                height: 14px;
             }
         }
 
         /* Desktop-Specific Adjustments */
         @media (min-width: 769px) {
+            .logo-container {
+                margin-top: 120px; /* Lower logo on desktop */
+            }
+
+            .time {
+                margin-top: -120px; /* Closer to logo */
+            }
+
             footer .social-icons {
                 display: flex;
                 justify-content: center;
@@ -172,8 +187,8 @@
 </head>
 <body>
 
-<div class="cookie-banner">
-    This site uses cookies to improve your experience. By continuing to browse, you agree to the use of cookies. Read the <a href="#">Privacy Policy</a> here.<span class="cookie-close" onclick="this.parentElement.style.display='none';">✖</span>
+<div class="cookie-banner" id="cookie-banner">
+    This site uses cookies to improve your experience. By continuing to browse, you agree to the use of cookies. Read the <a href="#">Privacy Policy</a> here.<span class="cookie-close" onclick="closeCookieBanner()">✖</span>
 </div>
 
 <div class="container">
@@ -186,7 +201,7 @@
     <!-- Desktop Nav -->
     <nav class="desktop-nav">
         <ul>
-            <li><a href="#">news</a></li>
+            <li><a href="#">news</a></li> <!-- Fix for first link hover -->
             <li><a href="#">fall/winter 2024 preview</a></li>
             <li><a href="#">fall/winter 2024 lookbook</a></li>
             <li><a href="#">shop</a></li>
@@ -244,6 +259,19 @@
     }
 
     setInterval(updateChicagoTime, 1000);
+
+    // Cookie banner persistence logic
+    function closeCookieBanner() {
+        document.getElementById('cookie-banner').style.display = 'none';
+        localStorage.setItem('cookieBannerClosed', 'true');
+    }
+
+    // Check if the cookie banner was previously closed
+    window.onload = function () {
+        if (localStorage.getItem('cookieBannerClosed') === 'true') {
+            document.getElementById('cookie-banner').style.display = 'none';
+        }
+    };
 </script>
 
 </body>
