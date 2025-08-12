@@ -60,13 +60,19 @@
             font-weight: 600; /* Semi-bold for time */
         }
 
+        .header-line {
+            border-top: 1px solid #000;
+            width: 100%;
+            margin-top: 10px;
+        }
+
         /* Desktop Navigation */
         .desktop-nav ul {
             list-style-type: none;
             padding: 0;
             font-size: 0.7rem;
             text-align: left;
-            margin-top: 70px; /* Space between time and first nav link */
+            margin-top: 20px; /* Space between header line and first nav link */
         }
 
         .desktop-nav ul li {
@@ -225,6 +231,7 @@
     </div>
 
     <div class="time" id="current-time"></div>
+    <div class="header-line"></div>
 
     <!-- Desktop Nav -->
     <nav class="desktop-nav">
