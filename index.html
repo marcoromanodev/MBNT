@@ -280,6 +280,23 @@
             document.getElementById('cookie-banner').style.display = 'none';
         }
     };
+
+    // Redirect to the home page when the logo is held down
+    const logoFrame = document.getElementById('8b9281ad-097b-4408-88e2-ef824efa63eb');
+    if (logoFrame) {
+        let holdTimer;
+        const start = () => {
+            holdTimer = setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1000);
+        };
+        const cancel = () => clearTimeout(holdTimer);
+
+        logoFrame.addEventListener('pointerdown', start);
+        logoFrame.addEventListener('pointerup', cancel);
+        logoFrame.addEventListener('pointerleave', cancel);
+        logoFrame.addEventListener('pointermove', cancel);
+    }
 </script>
 
 </body>
