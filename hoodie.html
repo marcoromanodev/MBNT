@@ -12,7 +12,7 @@
         .logo-container { position:static; width:20vw; height:20vh; margin-top:0; }
         .logo-overlay { position:absolute; top:0; left:0; width:100%; height:100%; cursor:pointer; z-index:10; }
         iframe { width:100%; height:100%; border:none; }
-        .time { font-size:0.7rem; text-align:center; margin-top:10px; font-weight:600; }
+        .time { font-size:0.7rem; text-align:center; margin-top:-90px; font-weight:600; }
         .header-line { border-top:1px solid #000; margin-top:10px; width:100%; }
         .cart-counter { margin-top:5px; font-size:0.7rem; text-align:center; font-weight:600; }
         .product-item { margin-top:20px; display:flex; flex-direction:column; align-items:center; }
@@ -31,16 +31,25 @@
     <div class="time" id="current-time"></div>
     <div class="header-line"></div>
     <div class="cart-counter">
-        <span class="cart-icon">🛍️</span><span id="cart-count">0</span>
+        <span class="cart-icon">🛒</span><span id="cart-count">0</span>
     </div>
 </div>
 <div class="product-item" data-product="hoodie" data-price="100" data-selected-color="black">
-    <img src="blackhoodie.png" alt="Hoodie">
+    <div class="image-slider" data-images="blackhoodie.png,whitehoodie.png">
+        <button class="prev">&#10094;</button>
+        <img id="product-image" src="blackhoodie.png" alt="Hoodie">
+        <button class="next">&#10095;</button>
+    </div>
     <h1>Hoodie</h1>
     <p>$100</p>
     <div class="color-options">
         <span class="color-option" data-color="black" data-image="blackhoodie.png" style="background:#000;"></span>
         <span class="color-option" data-color="white" data-image="whitehoodie.png" style="background:#fff;border:1px solid #000;"></span>
+    </div>
+    <div class="product-details">
+        <p>100% heavyweight cotton.</p>
+        <p>All American made cut and sew in house: vertical integration process all American sourcing and printing locally.</p>
+        <p>Only national shipping for now.</p>
     </div>
     <button onclick="addToCart(this)">Add to Cart</button>
     <button onclick="checkout(this)">Checkout</button>
@@ -51,6 +60,7 @@
     </div>
 </footer>
 <script src="cart.js"></script>
+<script src="product.js"></script>
 <script>
     function updateChicagoTime(){const options={timeZone:'America/Chicago',hour:'2-digit',minute:'2-digit',year:'numeric',month:'2-digit',day:'2-digit'};const currentTime=new Intl.DateTimeFormat('en-US',options).format(new Date()).replace(","," ");document.getElementById('current-time').textContent=currentTime+" CHICAGO";}
     setInterval(updateChicagoTime,1000);

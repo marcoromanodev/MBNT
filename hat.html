@@ -48,7 +48,7 @@
         .time {
             font-size: 0.7rem;
             text-align: center;
-            margin-top: 10px;
+            margin-top: -90px;
             font-weight: 600;
         }
         .header-line {
@@ -100,16 +100,25 @@
     <div class="time" id="current-time"></div>
     <div class="header-line"></div>
     <div class="cart-counter">
-        <span class="cart-icon">🛍️</span><span id="cart-count">0</span>
+        <span class="cart-icon">🛒</span><span id="cart-count">0</span>
     </div>
 </div>
 <div class="product-item" data-product="hat" data-price="100" data-selected-color="black">
-    <img src="blackhat.png" alt="Hat">
+    <div class="image-slider" data-images="blackhat.png,whitehat.png">
+        <button class="prev">&#10094;</button>
+        <img id="product-image" src="blackhat.png" alt="Hat">
+        <button class="next">&#10095;</button>
+    </div>
     <h1>Hat</h1>
     <p>$100</p>
     <div class="color-options">
         <span class="color-option" data-color="black" data-image="blackhat.png" style="background:#000;"></span>
         <span class="color-option" data-color="white" data-image="whitehat.png" style="background:#fff;border:1px solid #000;"></span>
+    </div>
+    <div class="product-details">
+        <p>100% heavyweight cotton.</p>
+        <p>All American made cut and sew in house: vertical integration process all American sourcing and printing locally.</p>
+        <p>Only national shipping for now.</p>
     </div>
     <button onclick="addToCart(this)">Add to Cart</button>
     <button onclick="checkout(this)">Checkout</button>
@@ -120,6 +129,7 @@
     </div>
 </footer>
 <script src="cart.js"></script>
+<script src="product.js"></script>
 <script>
     function updateChicagoTime() {
         const options = {
