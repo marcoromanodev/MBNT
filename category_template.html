@@ -64,7 +64,7 @@
         .mobile-nav {
             display: block;
             width: 100%;
-            margin-top: 120px;
+            margin-top: 70px;
         }
 
         nav.mobile-nav ul {
@@ -269,11 +269,48 @@
         }
     });
 
-        const logoOverlay = document.querySelector(".logo-overlay");
+                const logoOverlay = document.querySelector(".logo-overlay");
     if (logoOverlay) {
-        const goHome = () => { window.location.href = "index.html"; };
-        logoOverlay.addEventListener("mousedown", goHome);
-        logoOverlay.addEventListener("touchstart", goHome);
+        let pressTimer;
+        let moved = false;
+
+        const restoreOverlay = () => {
+            logoOverlay.style.display = "block";
+        };
+
+        const cancel = () => {
+            clearTimeout(pressTimer);
+            document.removeEventListener("mousemove", moveHandler);
+            document.removeEventListener("touchmove", moveHandler);
+            document.removeEventListener("mouseup", cancel);
+            document.removeEventListener("touchend", cancel);
+            document.removeEventListener("touchcancel", cancel);
+            logoOverlay.style.display = "none";
+            setTimeout(restoreOverlay, 1000);
+        };
+
+        const moveHandler = () => {
+            moved = true;
+            cancel();
+        };
+
+        const startPress = () => {
+            moved = false;
+            document.addEventListener("mousemove", moveHandler);
+            document.addEventListener("touchmove", moveHandler);
+            document.addEventListener("mouseup", cancel);
+            document.addEventListener("touchend", cancel);
+            document.addEventListener("touchcancel", cancel);
+            pressTimer = setTimeout(() => {
+                if (!moved) {
+                    window.location.href = "index.html";
+                }
+                cancel();
+            }, 600);
+        };
+
+        logoOverlay.addEventListener("mousedown", startPress);
+        logoOverlay.addEventListener("touchstart", startPress);
     }
 </script>
 
