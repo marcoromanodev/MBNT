@@ -298,9 +298,42 @@
 
         const logoOverlay = document.querySelector(".logo-overlay");
     if (logoOverlay) {
-        const goHome = () => { window.location.href = "index.html"; };
-        logoOverlay.addEventListener("mousedown", goHome);
-        logoOverlay.addEventListener("touchstart", goHome);
+        let pressTimer;
+        let moved = false;
+
+        const cancel = () => {
+            clearTimeout(pressTimer);
+            document.removeEventListener("mousemove", moveHandler);
+            document.removeEventListener("touchmove", moveHandler);
+            document.removeEventListener("mouseup", cancel);
+            document.removeEventListener("touchend", cancel);
+            document.removeEventListener("touchcancel", cancel);
+            logoOverlay.style.pointerEvents = "auto";
+        };
+
+        const moveHandler = () => {
+            moved = true;
+            cancel();
+        };
+
+        const startPress = () => {
+            moved = false;
+            logoOverlay.style.pointerEvents = "none";
+            document.addEventListener("mousemove", moveHandler);
+            document.addEventListener("touchmove", moveHandler);
+            document.addEventListener("mouseup", cancel);
+            document.addEventListener("touchend", cancel);
+            document.addEventListener("touchcancel", cancel);
+            pressTimer = setTimeout(() => {
+                if (!moved) {
+                    window.location.href = "index.html";
+                }
+                cancel();
+            }, 600);
+        };
+
+        logoOverlay.addEventListener("mousedown", startPress);
+        logoOverlay.addEventListener("touchstart", startPress);
     }
 </script>
 
