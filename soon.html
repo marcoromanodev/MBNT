@@ -32,10 +32,11 @@
             background-color: #f7f7f7; /* Off-white background color for mobile header */
         }
 
-        .logo-container {
+                .logo-container {
             position: absolute;
             top: 0;
-            left: 0;
+            left: 50%;
+            transform: translateX(-50%);
             width: 20vw;
             height: 20vh;
             margin-top: -40px;
@@ -58,14 +59,14 @@
             border: none;
         }
 
-        .time {
+                .time {
             font-size: 0.7rem;
-            margin-left: 25px;
-            text-align: left;
+            text-align: center;
             position: absolute;
-            left: 0;
+            left: 50%;
+            transform: translateX(-50%);
             top: 12vh;
-            font-weight: 600; /* Semi-bold for time */
+            font-weight: 600;
         }
 
         /* Coming Soon Styling */
@@ -132,14 +133,18 @@
             }
 
             .logo-container {
-            position: relative;
-                text-align: left;
+                position: relative;
+                text-align: center;
+                left: 50%;
+                transform: translateX(-50%);
                 margin-left: 0;
                 top: 0;
             }
 
             .time {
                 display: block;
+                left: 50%;
+                transform: translateX(-50%);
             }
 
             .line-under-time {
@@ -166,19 +171,8 @@
                 bottom: 0;
                 z-index: 100;
             }
-
-            .footer-top-line {
-                display: block;
-                width: 100%;
-                height: 1px;
-                background-color: #000;
-                margin-top: 20px;
-            }
-
-            .coming-soon {
-                margin-top: 0vh;
-            }
         }
+
 
         /* Desktop-Specific Nav and Footer */
         @media (min-width: 769px) {
@@ -190,24 +184,25 @@
                 display: none;
             }
 
-            .logo-container {
-            position: relative;
-                text-align: center;
-                top: 30px;
-                left: 50%;
-                transform: translateX(-50%);
-                width: 20vw;
-                height: 20vh;
-            }
+                    .logo-container {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20vw;
+            height: 20vh;
+            margin-top: -40px;
+        }
 
-            .time {
-                text-align: center;
-                margin: 0 auto;
-                left: 50%;
-                transform: translateX(-50%);
-                top: 15vh;
-                position: absolute;
-            }
+                    .time {
+            font-size: 0.7rem;
+            text-align: center;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 12vh;
+            font-weight: 600;
+        }
 
             .line-under-time,
             .footer-top-line {
