@@ -35,42 +35,38 @@ function initSliders() {
 document.addEventListener('DOMContentLoaded', () => {
   initSliders();
 
-  // Ensure header layout matches shop.html
-  document.body.style.height = 'auto';
-  document.body.style.display = 'block';
-
+  // Apply header style similar to pants.html
   const header = document.querySelector('.header-container');
   if (header) {
     header.style.position = 'relative';
-    header.style.height = 'auto';
   }
 
   const logo = document.querySelector('.logo-container');
   if (logo) {
-    logo.style.position = 'static';
-    logo.style.top = '';
-    logo.style.left = '';
-    logo.style.transform = '';
+    logo.style.position = 'absolute';
+    logo.style.top = '0';
+    logo.style.left = '50%';
+    logo.style.transform = 'translateX(-50%)';
     logo.style.width = '20vw';
     logo.style.height = '20vh';
-    logo.style.marginTop = '0';
+    logo.style.marginTop = '-40px';
   }
 
   const timeEl = document.querySelector('.time');
   if (timeEl) {
-    timeEl.style.position = 'static';
-    timeEl.style.left = '';
-    timeEl.style.transform = '';
-    timeEl.style.top = '';
-    timeEl.style.marginTop = '10px';
+    timeEl.style.position = 'absolute';
+    timeEl.style.left = '50%';
+    timeEl.style.transform = 'translateX(-50%)';
+    timeEl.style.top = '12vh';
+    timeEl.style.marginTop = '';
+    timeEl.style.fontWeight = '600';
   }
 
   const headerLine = document.querySelector('.header-line');
   if (headerLine) {
-    headerLine.style.position = 'static';
-    headerLine.style.bottom = '';
-    headerLine.style.width = '100%';
+    headerLine.style.borderTop = '1px solid #000';
     headerLine.style.marginTop = '10px';
+    headerLine.style.width = '100%';
   }
 
   const productItem = document.querySelector('.product-item');
@@ -79,6 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
     productItem.style.display = 'flex';
     productItem.style.flexDirection = 'column';
     productItem.style.alignItems = 'center';
+    productItem.style.textAlign = 'center';
   }
 
   // Inject footer similar to shop.html
@@ -127,10 +124,12 @@ document.addEventListener('DOMContentLoaded', () => {
     .footer-links a { color:#000; text-decoration:none; transition:all 0.3s ease; }
     .footer-links a:hover, .footer-links a:focus, .footer-links a:active { color:red; border:2px solid red; background:white; }
     .full-site-link { text-align:center; margin-top:20px; }
-    .image-slider { position:relative; display:flex; align-items:center; }
+    .image-slider { position:relative; display:flex; justify-content:center; align-items:center; width:100%; }
+    .image-slider img { margin:0 auto; }
     .image-slider button { position:absolute; top:50%; transform:translateY(-50%); background:transparent; border:none; font-size:2rem; cursor:pointer; }
     .image-slider .prev { left:10px; }
     .image-slider .next { right:10px; }
+    .product-item h1, .product-item p, .product-details { text-align:center; }
   `;
   document.head.appendChild(style);
 

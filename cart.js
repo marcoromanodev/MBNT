@@ -30,8 +30,29 @@ function updateCartCounter() {
     }
 }
 
+function ensureCartCounter() {
+    if (!document.getElementById('cart-count')) {
+        const header = document.querySelector('.header-container');
+        if (header) {
+            const counter = document.createElement('div');
+            counter.className = 'cart-counter';
+            counter.innerHTML = '<span class="cart-icon">🛒</span><span id="cart-count">0</span>';
+            header.appendChild(counter);
+            updateCartCounter();
+        }
+    }
+
+    if (!document.getElementById('cart-counter-style')) {
+        const style = document.createElement('style');
+        style.id = 'cart-counter-style';
+        style.textContent = '.cart-counter{margin-top:5px;font-size:0.7rem;text-align:center;font-weight:600;}';
+        document.head.appendChild(style);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     initCart();
+    ensureCartCounter();
     document.querySelectorAll('.color-option').forEach(opt => {
         opt.addEventListener('click', () => {
             const item = opt.closest('.product-item');
