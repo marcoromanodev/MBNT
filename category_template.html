@@ -33,6 +33,17 @@
             margin-top: -40px;
         }
 
+        .logo-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+
         iframe {
             width: 100%;
             height: 100%;
@@ -172,6 +183,7 @@
 <div class="header-container">
     <div class="logo-container">
         <iframe id="8b9281ad-097b-4408-88e2-ef824efa63eb" src="https://www.vectary.com/viewer/v1/?model=8b9281ad-097b-4408-88e2-ef824efa63eb&env=studio3&turntable=1" frameborder="0"></iframe>
+        <div class="logo-overlay"></div>
     </div>
     <div class="time" id="current-time"></div>
 </div>
@@ -257,12 +269,11 @@
         }
     });
 
-    // Redirect to home page when the logo is clicked
-    const logoFrame = document.getElementById('8b9281ad-097b-4408-88e2-ef824efa63eb');
-    if (logoFrame) {
-        logoFrame.addEventListener('click', () => {
-            window.location.href = 'index.html';
-        });
+        const logoOverlay = document.querySelector(".logo-overlay");
+    if (logoOverlay) {
+        const goHome = () => { window.location.href = "index.html"; };
+        logoOverlay.addEventListener("mousedown", goHome);
+        logoOverlay.addEventListener("touchstart", goHome);
     }
 </script>
 
