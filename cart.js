@@ -32,12 +32,12 @@ function updateCartCounter() {
 
 function ensureCartCounter() {
     if (!document.getElementById('cart-count')) {
-        const header = document.querySelector('.header-container');
-        if (header) {
+        const headerLine = document.querySelector('.header-line');
+        if (headerLine) {
             const counter = document.createElement('div');
             counter.className = 'cart-counter';
             counter.innerHTML = '<span class="cart-icon">🛒</span><span id="cart-count">0</span>';
-            header.appendChild(counter);
+            headerLine.insertAdjacentElement('afterend', counter);
             updateCartCounter();
         }
     }
