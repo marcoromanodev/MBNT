@@ -249,6 +249,67 @@
                 transform: translate(-50%, -50%);
             }
         }
+            /* Header and overlay fixes */
+        .header-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .logo-container {
+            position: static;
+            top: auto;
+            left: auto;
+            transform: none;
+            margin-top: 0;
+            width: 20vw;
+            height: 20vh;
+        }
+        .time {
+            position: static;
+            top: auto;
+            left: auto;
+            transform: none;
+            margin-top: 10px;
+            font-weight: 600;
+            font-size: 0.7rem;
+            text-align: center;
+        }
+        .header-line {
+            margin-top: 10px;
+            width: 100%;
+            border-top: 1px solid #000;
+        }
+        .product-grid {
+            margin-top: 20px;
+        }
+        .mobile-nav {
+            margin-top: 20px;
+        }
+        .product-info {
+            pointer-events: none;
+        }
+        .product-info button {
+            pointer-events: auto;
+            margin-top: 5px;
+            font-family: 'Courier New', Courier, monospace;
+            cursor: pointer;
+            background: #fff;
+            color: #000;
+            border: 1px solid #000;
+        }
+        .product-info button:hover {
+            background: red;
+            color: #fff;
+        }
+        .coming-soon {
+            position: static;
+            margin-top: 20px;
+            transform: none;
+            left: auto;
+            top: auto;
+            text-align: center;
+            font-size: 2rem;
+        }
     </style>
 </head>
 <body>
@@ -259,12 +320,11 @@
         <div class="logo-overlay"></div>
     </div>
     <div class="time" id="current-time"></div>
-    <div class="line-under-time"></div> <!-- Line below time, only on mobile -->
+    <div class="header-line"></div>
 </div>
 
 <div class="coming-soon">coming soon..</div>
 
-<div class="footer-top-line"></div> <!-- Line above footer, only on mobile -->
 
 <footer>
     <br>
