@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Black Jeans - MaybeNot Shop</title>
+<title>American Denim - MaybeNot Shop</title>
 <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="196x196">
 <style>
 body,html{margin:0;padding:0;font-family:'Courier New',Courier,monospace;background-color:#f7f7f7;color:#000;height:100%;display:flex;flex-direction:column;}
@@ -26,14 +26,18 @@ px;font-family:'Courier New',Courier,monospace;cursor:pointer;}
 <div class="time" id="current-time"></div></header>
 <div class="header-line"></div>
 <div class="cart-counter"><span class="cart-icon">🛒</span><span id="cart-count">0</span></div>
-<div class="product-item" data-product="blackjeans" data-price="100">
-<div class="image-slider" data-images="blackjeans.png">
+<div class="product-item" data-product="american-denim" data-price="120" data-selected-color="black">
+<div class="image-slider" data-images="blackjeans.png,bluejeans.png">
 <button class="prev">&#10094;</button>
-<img id="product-image" src="blackjeans.png" alt="Black Jeans">
+<img id="product-image" src="blackjeans.png" alt="American Denim">
 <button class="next">&#10095;</button>
 </div>
-<h1>Black Jeans</h1>
-<p>$100</p>
+<h1>American Denim</h1>
+<p>$120</p>
+<div class="color-options">
+<span class="color-option" data-color="black" data-image="blackjeans.png" style="background:#000;"></span>
+<span class="color-option" data-color="blue" data-image="bluejeans.png" style="background:#00f;border:1px solid #000;"></span>
+</div>
 <div class="product-details">
 <p>100% raw denim.</p>
 <p>All American made cut and sew in house: vertical integration process all American sourcing and printing locally.</p>

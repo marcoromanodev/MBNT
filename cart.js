@@ -1,7 +1,13 @@
 let cart = [];
 
+const SESSION_LIMIT = 5 * 60 * 1000; // 5 minutes
+
 function initCart() {
-    cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    const now = Date.now();
+    cart = (JSON.parse(localStorage.getItem('cart') || '[]')).filter(item => {
+        return now - (item.timestamp || 0) < SESSION_LIMIT;
+    });
+    localStorage.setItem('cart', JSON.stringify(cart));
     updateCartCounter();
 }
 
@@ -10,13 +16,13 @@ function addToCart(button) {
     const product = {
         name: item.dataset.product,
         color: item.dataset.selectedColor || '',
-        price: item.dataset.price
+        price: item.dataset.price,
+        timestamp: Date.now()
     };
     cart.push(product);
     localStorage.setItem('cart', JSON.stringify(cart));
     // TODO: sync with store server for inventory management
     updateCartCounter();
-    alert('Added to cart');
 }
 
 function checkout(button) {
@@ -64,7 +70,7 @@ function ensureCartCounter() {
     if (!document.getElementById('cart-counter-style')) {
         const style = document.createElement('style');
         style.id = 'cart-counter-style';
-        style.textContent = '.cart-counter{font-size:0.7rem;text-align:center;font-weight:600;}.header-line{border-top:1px solid #000;width:100%;}';
+        style.textContent = '.cart-counter{font-size:0.7rem;text-align:center;font-weight:600;}.header-line{border-top:1px solid #000;width:100%;}.product-item img{width:300px;height:300px;object-fit:cover;}';
         document.head.appendChild(style);
     }
 }
