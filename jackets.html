@@ -24,10 +24,11 @@
             background-color: #f7f7f7;
         }
 
-        .logo-container {
+                .logo-container {
             position: absolute;
             top: 0;
-            left: 0;
+            left: 50%;
+            transform: translateX(-50%);
             width: 20vw;
             height: 20vh;
             margin-top: -40px;
@@ -50,14 +51,24 @@
             border: none;
         }
 
-        .time {
+                .time {
             font-size: 0.7rem;
-            margin-left: 25px;
-            text-align: left;
+            text-align: center;
             position: absolute;
-            left: 0;
+            left: 50%;
+            transform: translateX(-50%);
             top: 12vh;
             font-weight: 600;
+        }
+
+        .coming-soon {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-size: 2rem;
+            margin-top: 0vh;
+            flex-grow: 2;
         }
 
         /* Mobile Navigation */
@@ -188,32 +199,7 @@
     <div class="time" id="current-time"></div>
 </div>
 
-<div class="product-grid">
-    
-<div class="product-item">
-    <img src="https://via.placeholder.com/400x400" alt="Jackets Item 1">
-    <div class="product-info">
-        <p>Jackets Item 1</p>
-        <p>$100</p>
-    </div>
-</div>
-    
-<div class="product-item">
-    <img src="https://via.placeholder.com/400x400" alt="Jackets Item 2">
-    <div class="product-info">
-        <p>Jackets Item 2</p>
-        <p>$120</p>
-    </div>
-</div>
-    
-<div class="product-item">
-    <img src="https://via.placeholder.com/400x400" alt="Jackets Item 3">
-    <div class="product-info">
-        <p>Jackets Item 3</p>
-        <p>$140</p>
-    </div>
-</div>
-</div>
+<div class="coming-soon">Coming Soon</div>
 
 <nav class="mobile-nav">
     <ul>
