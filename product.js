@@ -65,8 +65,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const headerLine = document.querySelector('.header-line');
   if (headerLine) {
     headerLine.style.borderTop = '1px solid #000';
-    headerLine.style.marginTop = '10px';
+    headerLine.style.marginTop = '200px';
     headerLine.style.width = '100%';
+  }
+
+  const cartCounter = document.querySelector('.cart-counter');
+  if (cartCounter) {
+    cartCounter.style.marginTop = '150px';
   }
 
   const productItem = document.querySelector('.product-item');
