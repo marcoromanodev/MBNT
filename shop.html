@@ -32,7 +32,7 @@
             background-color: #f7f7f7; /* Off-white background color for mobile header */
         }
 
-                .logo-container {
+        .logo-container {
             position: absolute;
             top: 0;
             left: 50%;
@@ -59,7 +59,7 @@
             border: none;
         }
 
-                .time {
+        .time {
             font-size: 0.7rem;
             text-align: center;
             position: absolute;
@@ -67,6 +67,12 @@
             transform: translateX(-50%);
             top: 12vh;
             font-weight: 600;
+        }
+
+        .header-line {
+            border-top: 1px solid #000;
+            width: 100%;
+            margin-top: 60px;
         }
 
         /* Mobile Navigation */
@@ -90,10 +96,6 @@
             border-bottom: 1px solid #e0e0e0;
         }
 
-        nav.mobile-nav ul li:first-child {
-            border-top: 1px solid #000; /* Line above first nav link */
-        }
-
         nav.mobile-nav ul li a {
             display: block;
             text-decoration: none;
@@ -104,6 +106,39 @@
         nav.mobile-nav ul li a:hover {
             background-color: red;
             color: white;
+        }
+
+        /* Desktop Navigation */
+        .desktop-nav {
+            display: none;
+            width: 100%;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .desktop-nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .desktop-nav ul li {
+            margin: 4px 0;
+        }
+
+        .desktop-nav ul li a {
+            color: #000;
+            text-decoration: none;
+            display: inline-block;
+            padding: 5px 0;
+            width: 100%;
+            font-weight: 600;
+        }
+
+        .desktop-nav ul li a:hover {
+            border: 2px solid red;
+            color: red;
+            background-color: white;
         }
 
         /* Footer Links styling */
@@ -267,11 +302,32 @@
     <div class="time" id="current-time"></div>
 </div>
 
+<div class="header-line"></div>
+
+<!-- Desktop Nav -->
+<nav class="desktop-nav">
+    <ul>
+        <li><a href="new.html">new</a></li>
+        <li><a href="jackets.html">jackets</a></li>
+        <li><a href="shirts.html">shirts</a></li>
+        <li><a href="tops-sweaters.html">tops/sweaters</a></li>
+        <li><a href="sweatshirts.html">sweatshirts</a></li>
+        <li><a href="pants.html">pants</a></li>
+        <li><a href="t-shirts.html">t-shirts</a></li>
+        <li><a href="hats.html">hats</a></li>
+        <li><a href="bags.html">bags</a></li>
+        <li><a href="accessories.html">accessories</a></li>
+        <li><a href="shoes.html">shoes</a></li>
+        <li><a href="gym.html">gym</a></li>
+        <li><a href="skate.html">skate</a></li>
+        <li><a href="all.html">all</a></li>
+    </ul>
+</nav>
 
 <!-- Mobile Nav -->
 <nav class="mobile-nav">
     <ul>
-        <li><a href="new.html">new</a></li> <!-- Line above first link added -->
+        <li><a href="new.html">new</a></li>
         <li><a href="jackets.html">jackets</a></li>
         <li><a href="shirts.html">shirts</a></li>
         <li><a href="tops-sweaters.html">tops/sweaters</a></li>
