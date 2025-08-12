@@ -22,6 +22,9 @@
             width: 100%;
             padding: 10px;
             background-color: #f7f7f7;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
                 .logo-container {
@@ -63,7 +66,8 @@
 
         .header-line {
             border-top: 1px solid #000;
-            margin-top: 60px;
+            margin-top: 10px;
+            width: 100%;
         }
 
         /* Mobile Navigation */
@@ -121,6 +125,25 @@
         .product-item img {
             width: 100%;
             display: block;
+        }
+
+        .color-options {
+            display: flex;
+            gap: 5px;
+            margin: 5px 0;
+        }
+
+        .color-option {
+            width: 15px;
+            height: 15px;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .product-info button {
+            margin-top: 5px;
+            font-family: 'Courier New', Courier, monospace;
+            cursor: pointer;
         }
 
         .product-info {
@@ -192,39 +215,40 @@
         <div class="logo-overlay"></div>
     </div>
     <div class="time" id="current-time"></div>
+    <div class="header-line"></div>
 </div>
-
-<div class="header-line"></div>
 <div class="product-grid">
-<div class="product-item">
-    <img src="blackhat.png" alt="Black Hat">
+<div class="product-item" data-product="hat" data-price="100" data-selected-color="black">
+    <a href="hat.html"><img src="blackhat.png" alt="Hat"></a>
     <div class="product-info">
-        <p>Black Hat</p>
+        <p>Hat</p>
         <p>$100</p>
+        <div class="color-options">
+            <span class="color-option" data-color="black" data-image="blackhat.png" style="background:#000;"></span>
+            <span class="color-option" data-color="white" data-image="whitehat.png" style="background:#fff;border:1px solid #000;"></span>
+        </div>
+        <button onclick="addToCart(this)">Add to Cart</button>
+        <button onclick="checkout(this)">Checkout</button>
     </div>
 </div>
 
-<div class="product-item">
-    <img src="blackhat2.png" alt="Black Hat 2">
+<div class="product-item" data-product="blackhat2" data-price="120">
+    <a href="blackhat2.html"><img src="blackhat2.png" alt="Black Hat 2"></a>
     <div class="product-info">
         <p>Black Hat 2</p>
         <p>$120</p>
+        <button onclick="addToCart(this)">Add to Cart</button>
+        <button onclick="checkout(this)">Checkout</button>
     </div>
 </div>
 
-<div class="product-item">
-    <img src="whitehat.png" alt="White Hat">
-    <div class="product-info">
-        <p>White Hat</p>
-        <p>$140</p>
-    </div>
-</div>
-
-<div class="product-item">
-    <img src="whitehat2.png" alt="White Hat 2">
+<div class="product-item" data-product="whitehat2" data-price="160">
+    <a href="whitehat2.html"><img src="whitehat2.png" alt="White Hat 2"></a>
     <div class="product-info">
         <p>White Hat 2</p>
         <p>$160</p>
+        <button onclick="addToCart(this)">Add to Cart</button>
+        <button onclick="checkout(this)">Checkout</button>
     </div>
 </div>
 </div>
@@ -281,6 +305,7 @@
     </div>
 </footer>
 
+<script src="cart.js"></script>
 <script>
     function updateChicagoTime() {
         const options = {

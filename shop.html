@@ -29,7 +29,10 @@
         .header-container {
             width: 100%;
             padding: 10px;
-            background-color: #f7f7f7; /* Off-white background color for mobile header */
+            background-color: #f7f7f7;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Off-white background color for mobile header */
         }
 
         .logo-container {
@@ -71,8 +74,8 @@
 
         .header-line {
             border-top: 1px solid #000;
+            margin-top: 10px;
             width: 100%;
-            margin-top: 60px;
         }
 
         /* Mobile Navigation */
@@ -300,9 +303,8 @@
         <div class="logo-overlay"></div>
     </div>
     <div class="time" id="current-time"></div>
+    <div class="header-line"></div>
 </div>
-
-<div class="header-line"></div>
 
 <!-- Desktop Nav -->
 <nav class="desktop-nav">
@@ -377,6 +379,7 @@
     </div>
 </footer>
 
+<script src="cart.js"></script>
 <script>
     // Function to get Chicago time without the comma and without seconds
     function updateChicagoTime() {
