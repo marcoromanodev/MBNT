@@ -11,25 +11,17 @@
             margin: 0;
             padding: 0;
             font-family: 'Courier New', Courier, monospace;
-            background-color: #f7f7f7; /* Off-white background color */
+            background-color: #f7f7f7;
             color: #000;
             height: 100%;
             display: flex;
             flex-direction: column;
         }
 
-        .container {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: flex-start;
-        }
-
         .header-container {
             width: 100%;
             padding: 10px;
-            background-color: #f7f7f7; /* Off-white background color for mobile header */
+            background-color: #f7f7f7;
         }
 
         .logo-container {
@@ -54,14 +46,14 @@
             position: absolute;
             left: 0;
             top: 12vh;
-            font-weight: 600; /* Semi-bold for time */
+            font-weight: 600;
         }
 
         /* Mobile Navigation */
         .mobile-nav {
             display: block;
             width: 100%;
-            margin-top: 120px; /* Ensure spacing between time and the first nav link */
+            margin-top: 120px;
         }
 
         nav.mobile-nav ul {
@@ -79,7 +71,7 @@
         }
 
         nav.mobile-nav ul li:first-child {
-            border-top: 1px solid #000; /* Line above first nav link */
+            border-top: 1px solid #000;
         }
 
         nav.mobile-nav ul li a {
@@ -94,13 +86,54 @@
             color: white;
         }
 
+        /* Product grid */
+        .product-grid {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            margin-top: 160px;
+        }
+
+        .product-item {
+            position: relative;
+            width: 80%;
+            max-width: 400px;
+        }
+
+        .product-item img {
+            width: 100%;
+            display: block;
+        }
+
+        .product-info {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .product-item:hover .product-info,
+        .product-item:focus .product-info {
+            opacity: 1;
+        }
+
         /* Footer Links styling */
         .footer-links {
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
             gap: 15px;
-            background-color: #f7f7f7; /* Footer background color */
+            background-color: #f7f7f7;
         }
 
         .footer-line {
@@ -122,133 +155,15 @@
         .footer-links a {
             color: #000;
             text-decoration: none;
-            font-size: 0.7rem;
-            transition: all 0.3s ease;
         }
 
         .footer-links a:hover {
-            border: 2px solid red;
+            color: red;
         }
 
-        /* Mobile-Specific Nav and Footer */
-        @media (max-width: 768px) {
-            .header-container {
-                background-color: #f7f7f7; /* Off-white background color for mobile header */
-                padding-top: 10px;
-                padding-bottom: 0;
-            }
-
-            .mobile-nav {
-                display: block;
-            }
-
-            .desktop-nav {
-                display: none;
-            }
-
-            .container {
-                align-items: flex-start;
-            }
-
-            .logo-container {
-                text-align: left;
-                margin-left: 0;
-                top: 0;
-            }
-
-            .time {
-                display: block;
-            }
-
-            footer .footer-links {
-                justify-content: center;
-                padding-bottom: 25px;
-                margin-top: 40px; /* Adds more space between the last nav link and the footer links */
-            }
-
-            .full-site-link {
-                display: block; /* Ensure it's visible only on mobile */
-                width: 100%;
-                text-align: center;
-                padding: 10px;
-                background-color: #f7f7f7;
-                color: #000;
-                bottom: 0;
-                z-index: 100;
-            }
-
-            .coming-soon {
-                display: none; /* Hide Coming Soon on mobile */
-            }
-        }
-
-        /* Desktop-Specific Nav and Footer */
-        @media (min-width: 769px) {
-            .desktop-nav {
-                display: block;
-            }
-
-            .mobile-nav {
-                display: none;
-            }
-
-            .logo-container {
-                text-align: center;
-                top: 30px; /* Move down a bit on desktop */
-                left: 50%;
-                transform: translateX(-50%);
-                width: 20vw;
-                height: 20vh;
-            }
-
-            .time {
-                text-align: center;
-                margin: 0 auto;
-                left: 50%;
-                transform: translateX(-50%);
-                top: 15vh;
-                position: absolute;
-            }
-
-            footer {
-                position: fixed;
-                bottom: 0;
-                width: 100%;
-                text-align: center;
-                background-color: #f7f7f7; /* Apply the off-white background color for desktop footer */
-                padding: 20px 0;
-            }
-
-            footer .footer-links {
-                display: flex;
-                justify-content: center;
-            }
-
-            .footer-line {
-                justify-content: space-between;
-                flex-wrap: wrap;
-                width: 70%;
-                font-size: 0.9rem;
-                letter-spacing: 0.1rem;
-            }
-
-            .footer-links {
-                padding-bottom: 30px;
-            }
-
-            .full-site-link {
-                display: none !important; /* Ensure full-site link doesn't show on desktop */
-            }
-
-            .coming-soon {
-                display: block;
-                text-align: center;
-                font-size: 2rem;
-                position: absolute;
-                top: 40%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-            }
+        .full-site-link {
+            text-align: center;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -261,12 +176,36 @@
     <div class="time" id="current-time"></div>
 </div>
 
-<div class="coming-soon">Bags coming soon..</div>
+<div class="product-grid">
+    
+<div class="product-item">
+    <img src="https://via.placeholder.com/400x400" alt="Bags Item 1">
+    <div class="product-info">
+        <p>Bags Item 1</p>
+        <p>$100</p>
+    </div>
+</div>
+    
+<div class="product-item">
+    <img src="https://via.placeholder.com/400x400" alt="Bags Item 2">
+    <div class="product-info">
+        <p>Bags Item 2</p>
+        <p>$120</p>
+    </div>
+</div>
+    
+<div class="product-item">
+    <img src="https://via.placeholder.com/400x400" alt="Bags Item 3">
+    <div class="product-info">
+        <p>Bags Item 3</p>
+        <p>$140</p>
+    </div>
+</div>
+</div>
 
-<!-- Mobile Nav -->
 <nav class="mobile-nav">
     <ul>
-        <li><a href="new.html">new</a></li> <!-- Line above first link added -->
+        <li><a href="new.html">new</a></li>
         <li><a href="jackets.html">jackets</a></li>
         <li><a href="shirts.html">shirts</a></li>
         <li><a href="tops-sweaters.html">tops/sweaters</a></li>
@@ -317,7 +256,6 @@
 </footer>
 
 <script>
-    // Function to get Chicago time without the comma and without seconds
     function updateChicagoTime() {
         const options = {
             timeZone: 'America/Chicago',
@@ -333,7 +271,6 @@
 
     setInterval(updateChicagoTime, 1000);
 
-    // Show the full-site link only when the user scrolls to the bottom on mobile
     window.addEventListener('scroll', function() {
         var fullSiteLink = document.getElementById('full-site-link');
         if (window.innerHeight + window.scrollY >= document.body.offsetHeight && window.innerWidth <= 768) {
