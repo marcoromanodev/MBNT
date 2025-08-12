@@ -27,14 +27,11 @@
             align-items: center;
         }
 
-                .logo-container {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
+        .logo-container {
+            position: static;
             width: 20vw;
             height: 20vh;
-            margin-top: -40px;
+            margin-top: 0;
         }
 
         .logo-overlay {
@@ -54,13 +51,10 @@
             border: none;
         }
 
-                .time {
+        .time {
             font-size: 0.7rem;
             text-align: center;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            top: 12vh;
+            margin-top: 10px;
             font-weight: 600;
         }
 
@@ -70,11 +64,18 @@
             width: 100%;
         }
 
+        .cart-counter {
+            margin-top: 5px;
+            font-size: 0.7rem;
+            text-align: center;
+            font-weight: 600;
+        }
+
         /* Mobile Navigation */
         .mobile-nav {
             display: block;
             width: 100%;
-            margin-top: 70px;
+            margin-top: 20px;
         }
 
         nav.mobile-nav ul {
@@ -113,7 +114,7 @@
             flex-direction: column;
             align-items: center;
             gap: 20px;
-            margin-top: 160px;
+            margin-top: 20px;
         }
 
         .product-item {
@@ -146,6 +147,19 @@
         .product-item:hover .product-info,
         .product-item:focus .product-info {
             opacity: 1;
+        }
+
+        .color-options {
+            display: flex;
+            gap: 5px;
+            margin: 5px 0;
+        }
+
+        .color-option {
+            width: 15px;
+            height: 15px;
+            cursor: pointer;
+            display: inline-block;
         }
 
         /* Footer Links styling */
@@ -249,119 +263,58 @@
     </div>
     <div class="time" id="current-time"></div>
     <div class="header-line"></div>
+    <div class="cart-counter">
+        <span class="cart-icon">🛍️</span><span id="cart-count">0</span>
+    </div>
 </div>
 <div class="product-grid">
-<div class="product-item">
-    <img src="blackhat.png" alt="Black Hat">
-    <div class="product-info">
-        <p>Black Hat</p>
-        <p>$100</p>
+    <div class="product-item" data-product="hoodie" data-price="220" data-selected-color="black">
+        <img src="blackhoodie.png" alt="Hoodie">
+        <div class="product-info">
+            <p>Hoodie</p>
+            <p>$220</p>
+        </div>
+        <div class="color-options">
+            <span class="color-option" data-color="black" data-image="blackhoodie.png" style="background:#000;"></span>
+            <span class="color-option" data-color="white" data-image="whitehoodie.png" style="background:#fff;border:1px solid #000;"></span>
+        </div>
     </div>
-</div>
 
-<div class="product-item">
-    <img src="blackhat2.png" alt="Black Hat 2">
-    <div class="product-info">
-        <p>Black Hat 2</p>
-        <p>$120</p>
+    <div class="product-item" data-product="shirt" data-price="180" data-selected-color="black">
+        <img src="blackshirt.png" alt="Shirt">
+        <div class="product-info">
+            <p>Shirt</p>
+            <p>$180</p>
+        </div>
+        <div class="color-options">
+            <span class="color-option" data-color="black" data-image="blackshirt.png" style="background:#000;"></span>
+            <span class="color-option" data-color="white" data-image="whiteshirt.png" style="background:#fff;border:1px solid #000;"></span>
+        </div>
     </div>
-</div>
 
-<div class="product-item">
-    <img src="whitehat.png" alt="White Hat">
-    <div class="product-info">
-        <p>White Hat</p>
-        <p>$140</p>
+    <div class="product-item" data-product="hat" data-price="100" data-selected-color="black">
+        <img src="blackhat.png" alt="Hat">
+        <div class="product-info">
+            <p>Hat</p>
+            <p>$100</p>
+        </div>
+        <div class="color-options">
+            <span class="color-option" data-color="black" data-image="blackhat.png" style="background:#000;"></span>
+            <span class="color-option" data-color="white" data-image="whitehat.png" style="background:#fff;border:1px solid #000;"></span>
+        </div>
     </div>
-</div>
 
-<div class="product-item">
-    <img src="whitehat2.png" alt="White Hat 2">
-    <div class="product-info">
-        <p>White Hat 2</p>
-        <p>$160</p>
+    <div class="product-item" data-product="hat2" data-price="120" data-selected-color="black">
+        <img src="blackhat2.png" alt="Hat 2">
+        <div class="product-info">
+            <p>Hat 2</p>
+            <p>$120</p>
+        </div>
+        <div class="color-options">
+            <span class="color-option" data-color="black" data-image="blackhat2.png" style="background:#000;"></span>
+            <span class="color-option" data-color="white" data-image="whitehat2.png" style="background:#fff;border:1px solid #000;"></span>
+        </div>
     </div>
-</div>
-
-<div class="product-item">
-    <img src="blackshirt.png" alt="Black Shirt">
-    <div class="product-info">
-        <p>Black Shirt</p>
-        <p>$180</p>
-    </div>
-</div>
-
-<div class="product-item">
-    <img src="whiteshirt.png" alt="White Shirt">
-    <div class="product-info">
-        <p>White Shirt</p>
-        <p>$200</p>
-    </div>
-</div>
-
-<div class="product-item">
-    <img src="blackhoodie.png" alt="Black Hoodie">
-    <div class="product-info">
-        <p>Black Hoodie</p>
-        <p>$220</p>
-    </div>
-</div>
-
-<div class="product-item">
-    <img src="whitehoodie.png" alt="White Hoodie">
-    <div class="product-info">
-        <p>White Hoodie</p>
-        <p>$240</p>
-    </div>
-</div>
-
-<div class="product-item">
-    <img src="blackjeans.png" alt="Black Jeans">
-    <div class="product-info">
-        <p>Black Jeans</p>
-        <p>$260</p>
-    </div>
-</div>
-
-<div class="product-item">
-    <img src="bluejeans.png" alt="Blue Jeans">
-    <div class="product-info">
-        <p>Blue Jeans</p>
-        <p>$280</p>
-    </div>
-</div>
-
-<div class="product-item">
-    <img src="blackjoggers.png" alt="Black Joggers">
-    <div class="product-info">
-        <p>Black Joggers</p>
-        <p>$300</p>
-    </div>
-</div>
-
-<div class="product-item">
-    <img src="whitejoggers.png" alt="White Joggers">
-    <div class="product-info">
-        <p>White Joggers</p>
-        <p>$320</p>
-    </div>
-</div>
-
-<div class="product-item">
-    <img src="blackshorts.png" alt="Black Shorts">
-    <div class="product-info">
-        <p>Black Shorts</p>
-        <p>$340</p>
-    </div>
-</div>
-
-<div class="product-item">
-    <img src="whiteshorts.png" alt="White Shorts">
-    <div class="product-info">
-        <p>White Shorts</p>
-        <p>$360</p>
-    </div>
-</div>
 </div>
 
 <nav class="mobile-nav">
@@ -416,6 +369,7 @@
     </div>
 </footer>
 
+<script src="cart.js"></script>
 <script>
     function updateChicagoTime() {
         const options = {

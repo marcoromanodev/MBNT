@@ -9,12 +9,13 @@
     <style>
         body, html { margin:0; padding:0; font-family:'Courier New', Courier, monospace; background-color:#f7f7f7; color:#000; height:100%; display:flex; flex-direction:column; }
         .header-container { width:100%; padding:10px; background-color:#f7f7f7; display:flex; flex-direction:column; align-items:center; }
-        .logo-container { position:absolute; top:0; left:50%; transform:translateX(-50%); width:20vw; height:20vh; margin-top:-40px; }
+        .logo-container { position:static; width:20vw; height:20vh; margin-top:0; }
         .logo-overlay { position:absolute; top:0; left:0; width:100%; height:100%; cursor:pointer; z-index:10; }
         iframe { width:100%; height:100%; border:none; }
-        .time { font-size:0.7rem; text-align:center; position:absolute; left:50%; transform:translateX(-50%); top:12vh; font-weight:600; }
+        .time { font-size:0.7rem; text-align:center; margin-top:10px; font-weight:600; }
         .header-line { border-top:1px solid #000; margin-top:10px; width:100%; }
-        .product-item { margin-top:160px; display:flex; flex-direction:column; align-items:center; }
+        .cart-counter { margin-top:5px; font-size:0.7rem; text-align:center; font-weight:600; }
+        .product-item { margin-top:20px; display:flex; flex-direction:column; align-items:center; }
         .product-item img { width:80%; max-width:400px; }
         .color-options { display:flex; gap:5px; margin:5px 0; }
         .color-option { width:15px; height:15px; cursor:pointer; display:inline-block; }
@@ -29,6 +30,9 @@
     </div>
     <div class="time" id="current-time"></div>
     <div class="header-line"></div>
+    <div class="cart-counter">
+        <span class="cart-icon">🛍️</span><span id="cart-count">0</span>
+    </div>
 </div>
 <div class="product-item" data-product="hoodie" data-price="100" data-selected-color="black">
     <img src="blackhoodie.png" alt="Hoodie">
@@ -41,6 +45,11 @@
     <button onclick="addToCart(this)">Add to Cart</button>
     <button onclick="checkout(this)">Checkout</button>
 </div>
+<footer>
+    <div class="footer-links">
+        <a href="index.html">home</a>
+    </div>
+</footer>
 <script src="cart.js"></script>
 <script>
     function updateChicagoTime(){const options={timeZone:'America/Chicago',hour:'2-digit',minute:'2-digit',year:'numeric',month:'2-digit',day:'2-digit'};const currentTime=new Intl.DateTimeFormat('en-US',options).format(new Date()).replace(","," ");document.getElementById('current-time').textContent=currentTime+" CHICAGO";}
