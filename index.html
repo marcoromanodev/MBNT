@@ -301,10 +301,14 @@
         }
     };
 
-        const logoOverlay = document.querySelector(".logo-overlay");
+                const logoOverlay = document.querySelector(".logo-overlay");
     if (logoOverlay) {
         let pressTimer;
         let moved = false;
+
+        const restoreOverlay = () => {
+            logoOverlay.style.display = "block";
+        };
 
         const cancel = () => {
             clearTimeout(pressTimer);
@@ -314,6 +318,7 @@
             document.removeEventListener("touchend", cancel);
             document.removeEventListener("touchcancel", cancel);
             logoOverlay.style.display = "none";
+            setTimeout(restoreOverlay, 1000);
         };
 
         const moveHandler = () => {
