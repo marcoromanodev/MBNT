@@ -35,40 +35,42 @@ function initSliders() {
 document.addEventListener('DOMContentLoaded', () => {
   initSliders();
 
-  // Adjust layout so clock appears under logo and page is scrollable
+  // Ensure header layout matches shop.html
   document.body.style.height = 'auto';
   document.body.style.display = 'block';
 
   const header = document.querySelector('.header-container');
   if (header) {
     header.style.position = 'relative';
-    header.style.height = '160px';
+    header.style.height = 'auto';
   }
 
   const logo = document.querySelector('.logo-container');
   if (logo) {
-    logo.style.position = 'absolute';
-    logo.style.top = '0';
-    logo.style.left = '50%';
-    logo.style.transform = 'translateX(-50%)';
+    logo.style.position = 'static';
+    logo.style.top = '';
+    logo.style.left = '';
+    logo.style.transform = '';
     logo.style.width = '20vw';
     logo.style.height = '20vh';
-    logo.style.marginTop = '-40px';
+    logo.style.marginTop = '0';
   }
 
   const timeEl = document.querySelector('.time');
   if (timeEl) {
-    timeEl.style.position = 'absolute';
-    timeEl.style.left = '50%';
-    timeEl.style.transform = 'translateX(-50%)';
-    timeEl.style.top = '12vh';
+    timeEl.style.position = 'static';
+    timeEl.style.left = '';
+    timeEl.style.transform = '';
+    timeEl.style.top = '';
+    timeEl.style.marginTop = '10px';
   }
 
   const headerLine = document.querySelector('.header-line');
   if (headerLine) {
-    headerLine.style.position = 'absolute';
-    headerLine.style.bottom = '0';
+    headerLine.style.position = 'static';
+    headerLine.style.bottom = '';
     headerLine.style.width = '100%';
+    headerLine.style.marginTop = '10px';
   }
 
   const productItem = document.querySelector('.product-item');
@@ -122,9 +124,13 @@ document.addEventListener('DOMContentLoaded', () => {
     .footer-line { display:flex; justify-content:center; flex-wrap:wrap; gap:15px; padding-bottom:10px; }
     .footer-line.extra-padding { padding-bottom:10px; }
     .footer-line.less-padding { padding-bottom:25px; }
-    .footer-links a { color:#000; text-decoration:none; }
-    .footer-links a:hover { color:red; }
+    .footer-links a { color:#000; text-decoration:none; transition:all 0.3s ease; }
+    .footer-links a:hover, .footer-links a:focus, .footer-links a:active { color:red; border:2px solid red; background:white; }
     .full-site-link { text-align:center; margin-top:20px; }
+    .image-slider { position:relative; display:flex; align-items:center; }
+    .image-slider button { position:absolute; top:50%; transform:translateY(-50%); background:transparent; border:none; font-size:2rem; cursor:pointer; }
+    .image-slider .prev { left:10px; }
+    .image-slider .next { right:10px; }
   `;
   document.head.appendChild(style);
 

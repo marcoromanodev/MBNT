@@ -79,11 +79,6 @@
             margin: 4px 0;
         }
 
-        .desktop-nav ul li:first-child a {
-            position: relative;
-            z-index: 1;
-        }
-
         .desktop-nav ul li a {
             color: #000;
             text-decoration: none;
@@ -92,18 +87,15 @@
             box-sizing: border-box;
             width: 100%;
             font-weight: 600; /* Semi-bold for nav links */
+            position: relative;
+            z-index: 1;
+            transition: none;
         }
 
-        /* Fix for first nav link hover effect */
-        .desktop-nav ul li:first-child a:hover,
         .desktop-nav ul li a:hover {
             border: 2px solid red;
             color: red;
             background-color: white;
-        }
-
-        .desktop-nav ul li a {
-            transition: none;
         }
 
         /* Social icons styling */
