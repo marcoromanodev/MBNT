@@ -25,13 +25,18 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            position: relative;
+            height: 160px;
         }
 
         .logo-container {
-            position: static;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
             width: 20vw;
             height: 20vh;
-            margin-top: 0;
+            margin-top: -40px;
         }
 
         .logo-overlay {
@@ -54,13 +59,17 @@
         .time {
             font-size: 0.7rem;
             text-align: center;
-            margin-top: -90px;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 12vh;
             font-weight: 600;
         }
 
         .header-line {
             border-top: 1px solid #000;
-            margin-top: 10px;
+            position: absolute;
+            bottom: 0;
             width: 100%;
         }
 
@@ -75,7 +84,7 @@
         .mobile-nav {
             display: block;
             width: 100%;
-            margin-top: 20px;
+            margin-top: 70px;
         }
 
         nav.mobile-nav ul {
@@ -199,58 +208,6 @@
         .full-site-link {
             text-align: center;
             margin-top: 20px;
-        }
-            /* Header and overlay fixes */
-        .header-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .logo-container {
-            position: static;
-            top: auto;
-            left: auto;
-            transform: none;
-            margin-top: 0;
-            width: 20vw;
-            height: 20vh;
-        }
-        .time {
-            position: static;
-            top: auto;
-            left: auto;
-            transform: none;
-            margin-top: -90px;
-            font-weight: 600;
-            font-size: 0.7rem;
-            text-align: center;
-        }
-        .header-line {
-            margin-top: 10px;
-            width: 100%;
-            border-top: 1px solid #000;
-        }
-        .product-grid {
-            margin-top: 20px;
-        }
-        .mobile-nav {
-            margin-top: 20px;
-        }
-        .product-info {
-            pointer-events: none;
-        }
-        .product-info button {
-            pointer-events: auto;
-            margin-top: 5px;
-            font-family: 'Courier New', Courier, monospace;
-            cursor: pointer;
-            background: #fff;
-            color: #000;
-            border: 1px solid #000;
-        }
-        .product-info button:hover {
-            background: red;
-            color: #fff;
         }
     </style>
 </head>
