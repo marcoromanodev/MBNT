@@ -220,9 +220,11 @@ function createCartModal() {
             #cart-modal .cart-buttons {display:flex;flex-direction:column;align-items:center;}
             #cart-modal button:not(.pay-btn){background:#000;color:#fff;border:none;padding:10px;margin:5px auto;cursor:pointer;display:block;}
             #cart-modal .pay-btn{background:transparent;border:none;margin:0;padding:0;display:flex;justify-content:center;align-items:center;}
-            #cart-modal .pay-btn.paypal{background:#ffc439;padding:5px 10px;}
+            #cart-modal .pay-btn.paypal{background:#ffc439;padding:5px;}
+            #cart-modal .pay-btn.paypal img{width:60px;}
             #cart-modal .payment-icons{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin:10px 0;justify-items:center;}
             #cart-modal .payment-icons img{width:80px;height:auto;}
+            #cart-modal .payment-methods .pay-option[data-method="paypal"] img{width:60px;}
             #cart-modal .cost-summary div, #cart-modal .cart-item {display:flex;justify-content:space-between;margin:5px 0;}
             #cart-modal .or {margin:10px 0;}
             #cart-modal footer a {color:#000;margin:0 5px;font-size:0.8em;text-decoration:none;}
@@ -507,7 +509,7 @@ function ensureCartCounter() {
     if (!document.getElementById('cart-counter-style')) {
         const style = document.createElement('style');
         style.id = 'cart-counter-style';
-        style.textContent = '.cart-counter{font-size:0.7rem;text-align:center;font-weight:600;cursor:pointer;}.header-line{border-top:1px solid #000;width:100%;}.product-item img{width:300px;height:450px;object-fit:contain;}.payment-icons{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;justify-items:center;margin:10px 0;}.pay-option{background:transparent;border:2px solid transparent;padding:5px;cursor:pointer;display:flex;align-items:center;justify-content:center;}.pay-option.selected{border-color:#000;}.pay-option.shop-pay span{margin-left:5px;font-size:0.8em;}.redirect-icon{text-align:center;font-size:2rem;}.paypal-inline{height:1em;vertical-align:middle;filter:invert(1);}.empty-cart-message{text-align:center;}';
+        style.textContent = '.cart-counter{font-size:0.7rem;text-align:center;font-weight:600;cursor:pointer;}.header-line{border-top:1px solid #000;width:100%;}.product-item img{width:300px;height:450px;object-fit:contain;}.payment-icons{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;justify-items:center;margin:10px 0;}.pay-option{background:transparent;border:2px solid transparent;padding:5px;cursor:pointer;display:flex;align-items:center;justify-content:center;}.pay-option.selected{border-color:#000;}.pay-option.shop-pay span{margin-left:5px;font-size:0.8em;}.pay-btn.paypal{background:#ffc439;padding:5px;}.pay-btn.paypal img{width:60px;}.pay-option[data-method="paypal"] img{width:60px;}.redirect-icon{text-align:center;font-size:2rem;}.paypal-inline{height:1em;vertical-align:middle;filter:invert(1);}.empty-cart-message{text-align:center;}';
         document.head.appendChild(style);
     }
 }
