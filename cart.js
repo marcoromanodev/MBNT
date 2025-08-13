@@ -99,18 +99,20 @@ function createCartModal() {
                 </div>
             </form>
             <div id="final-checkout" style="display:none;">
-                <div class="checkout-header">
-                    <h2 class="checkout-domain">maybenot.com</h2>
-                    <h2 class="checkout-title">Checkout</h2>
-                </div>
-                <h3>Order summary</h3>
-                <p>Original price</p>
-                <p class="original-price">$0.00</p>
                 <form id="final-form">
                     <h3>Sign up and know first!</h3>
                     <input type="email" name="signup_email" placeholder="Enter an email" required>
                     <p class="consent-text">By submitting this form, you consent to receive informational (eg, order updates) and/or marketing texts (eg, cart reminders) from maybenot.com including texts sent by autodialer. Consent is not a condition of purchase. Msg & data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available). Privacy Policy & Terms.</p>
                     <button type="submit">Submit</button>
+                    <h2>Cart</h2>
+                    <p class="item-count">0 Item(s)</p>
+                    <div class="checkout-header">
+                        <h2 class="checkout-domain">maybenot.com</h2>
+                        <h2 class="checkout-title">Checkout</h2>
+                    </div>
+                    <h3>Order summary</h3>
+                    <p>Original price</p>
+                    <p class="original-price">$0.00</p>
                     <h3>Express checkout</h3>
                     <div class="payment-icons">
                         <button class="pay-btn" data-method="Shop Pay"><img src="shoppay.png" alt="Shop Pay"></button>
@@ -306,6 +308,7 @@ function showFinalPage(root = document.getElementById('cart-modal')) {
         cart.forEach(item => {
             summary.innerHTML += `<p>${item.name} ${item.color ? '(' + item.color + ')' : ''} - $${parseFloat(item.price).toFixed(2)}</p>`;
         });
+        finalPage.querySelector('.item-count').textContent = `${cart.length} Item(s)`;
         finalPage.querySelector('.original-price').textContent = `$${total.toFixed(2)}`;
         finalPage.querySelector('.subtotal').textContent = `$${total.toFixed(2)}`;
         finalPage.querySelector('.total').textContent = `$${total.toFixed(2)}`;
