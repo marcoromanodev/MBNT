@@ -83,7 +83,11 @@ for slug, title in categories:
     for product in products:
         if slug in product["categories"]:
             items.append(item_template.format(**product))
-    page = template.replace("{{TITLE}}", title).replace("{{ITEMS}}", "\n    ".join(items))
+    if not items:
+        items_content = '<div class="coming-soon">Coming Soon..</div>'
+    else:
+        items_content = "\n    ".join(items)
+    page = template.replace("{{TITLE}}", title).replace("{{ITEMS}}", items_content)
     filename = f"{slug}.html"
     with open(filename, "w") as f:
         f.write(page)

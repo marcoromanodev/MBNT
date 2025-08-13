@@ -156,6 +156,7 @@
             width: 100%;
             max-width: 400px;
             margin: 0 auto;
+            aspect-ratio: 1 / 1;
         }
 
         .product-item a {
@@ -166,8 +167,20 @@
 
         .product-item img {
             width: 100%;
+            height: 100%;
+            object-fit: contain;
             display: block;
             margin: 0 auto;
+        }
+
+        .coming-soon {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-align: center;
         }
 
         @media (min-width: 768px) {
@@ -285,7 +298,7 @@
 </div>
 
 <div class="product-grid">
-    
+    <div class="coming-soon">Coming Soon..</div>
 </div>
 
 <!-- Desktop Nav -->
