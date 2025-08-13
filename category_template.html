@@ -99,7 +99,9 @@
             padding: 10px;
         }
 
-        nav.mobile-nav ul li a:hover {
+        nav.mobile-nav ul li a:hover,
+        nav.mobile-nav ul li a:focus,
+        nav.mobile-nav ul li a:active {
             background-color: red;
             color: white;
         }
@@ -173,10 +175,15 @@
         .footer-links a {
             color: #000;
             text-decoration: none;
+            transition: all 0.3s ease;
         }
 
-        .footer-links a:hover {
+        .footer-links a:hover,
+        .footer-links a:focus,
+        .footer-links a:active {
             color: red;
+            border: 2px solid red;
+            background: white;
         }
 
         .full-site-link {
