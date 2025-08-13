@@ -1,76 +1,251 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>American Denim - MaybeNot Shop</title>
-<link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="196x196">
-<style>
-body,html{margin:0;padding:0;font-family:'Courier New',Courier,monospace;background-color:#f7f7f7;color:#000;height:100%;display:flex;flex-direction:column;align-items:center;}
-.header-container{width:100%;padding:10px;background-color:#f7f7f7;display:flex;flex-direction:column;align-items:center;}
-.logo-container{position:static;width:20vw;height:20vh;margin-top:0;}
-.logo-overlay{position:absolute;top:0;left:0;width:100%;height:100%;cursor:pointer;z-index:10;}
-iframe{width:100%;height:100%;border:none;}
-.time{font-size:0.7rem;text-align:center;margin-top:10px;font-weight:600;}
-.header-line{border-top:1px solid #000;margin-top:5px;width:100%;}
-.cart-counter{margin-top:5px;font-size:0.7rem;text-align:center;font-weight:600;}
-.product-item{margin-top:20px;display:flex;flex-direction:column;align-items:center;}
-.product-item img{width:80%;max-width:400px;}
-/* Mobile Navigation */
-.mobile-nav{display:block;width:100%;margin-top:20px;}
-nav.mobile-nav ul{list-style-type:none;padding:0;margin:0;width:100%;}
-nav.mobile-nav ul li{margin:0;padding:10px 20px;text-align:left;border-bottom:1px solid #e0e0e0;}
-nav.mobile-nav ul li a{display:block;text-decoration:none;color:#000;padding:10px;}
-nav.mobile-nav ul li a:hover,nav.mobile-nav ul li a:focus,nav.mobile-nav ul li a:active{background-color:red;color:white;}
-/* Desktop Navigation */
-.desktop-nav{display:none;width:100%;text-align:center;margin-top:20px;}
-.desktop-nav ul{list-style-type:none;padding:0;margin:0;}
-.desktop-nav ul li{margin:4px 0;}
-.desktop-nav ul li a{color:#000;text-decoration:none;display:inline-block;padding:5px 0;width:100%;font-weight:600;}
-.desktop-nav ul li a:hover,.desktop-nav ul li a:focus,.desktop-nav ul li a:active{border:2px solid red;color:red;background-color:white;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="American Denim product page">
+    <title>American Denim - MaybeNot Shop</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="196x196">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #f7f7f7;
+            color: #000;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .header-container {
+            width: 100%;
+            padding: 10px;
+            background-color: #f7f7f7;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .logo-container {
+            position: static;
+            width: 20vw;
+            height: 20vh;
+            margin-top: 0;
+        }
+        .logo-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            z-index: 10;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .time {
+            font-size: 0.7rem;
+            text-align: center;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+        .header-line {
+            border-top: 1px solid #000;
+            margin-top:5px;
+            width: 100%;
+        }
+
+        .cart-counter {
+            margin-top:5px;
+            font-size:0.7rem;
+            text-align:center;
+            font-weight:600;
+        }
+        .product-item {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .image-slider {
+            position: relative;
+            width: 80%;
+            max-width: 400px;
+        }
+        .image-slider img {
+            width: 100%;
+            display: block;
+        }
+        .image-slider .prev,
+        .image-slider .next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.5);
+            color: #fff;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+        }
+        .image-slider .prev {
+            left: 0;
+        }
+        .image-slider .next {
+            right: 0;
+        }
+        .color-options {
+            display: flex;
+            gap: 5px;
+            margin: 5px 0;
+        }
+        .color-option {
+            width: 15px;
+            height: 15px;
+            cursor: pointer;
+            display: inline-block;
+        }
+        .product-categories {
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+    </style>
 </head>
 <body>
 <header class="header-container">
-<div class="logo-container"><iframe id="8b9281ad-097b-4408-88e2-ef824efa63eb" src="https://www.vectary.com/viewer/v1/?model=8b9281ad-097b-4408-88e2-ef824efa63eb&env=studio3&turntable=1" frameborder="0"></iframe><div class="logo-overlay"></div></div>
-<div class="time" id="current-time"></div></header>
+    <div class="logo-container">
+        <iframe id="8b9281ad-097b-4408-88e2-ef824efa63eb" src="https://www.vectary.com/viewer/v1/?model=8b9281ad-097b-4408-88e2-ef824efa63eb&env=studio3&turntable=1" frameborder="0"></iframe>
+        <div class="logo-overlay"></div>
+    </div>
+    <div class="time" id="current-time"></div>
+    </header>
 <div class="header-line"></div>
-<div class="cart-counter"><span class="cart-icon">🛒</span><span id="cart-count">0</span></div>
+<div class="cart-counter">
+        <span class="cart-icon">🛒</span><span id="cart-count">0</span>
 
+</div>
 <div class="product-item" data-product="american-denim" data-price="120" data-selected-color="black">
-<div class="image-slider" data-images="blackjeans.png,bluejeans.png">
-<button class="prev">&#10094;</button>
-<img id="product-image" src="blackjeans.png" alt="American Denim">
-<button class="next">&#10095;</button>
-</div>
-<h1>American Denim</h1>
-<p>$120</p>
-<div class="color-options">
-<span class="color-option" data-color="black" data-image="blackjeans.png" style="background:#000;"></span>
-<span class="color-option" data-color="blue" data-image="bluejeans.png" style="background:#00f;border:1px solid #000;"></span>
-</div>
-<div class="product-details">
-<p>100% raw denim.</p>
-<p>All American made cut and sew in house: vertical integration process all American sourcing and printing locally.</p>
-<p>Only national shipping for now.</p>
-</div>
+    <div class="image-slider" data-images="blackjeans.png,bluejeans.png">
+        <button class="prev">&#10094;</button>
+        <img id="product-image" src="blackjeans.png" alt="American Denim">
+        <button class="next">&#10095;</button>
+    </div>
+    <h1>American Denim</h1>
+    <p>$120</p>
+    <div class="color-options">
+        <span class="color-option" data-color="black" data-image="blackjeans.png" style="background:#000;"></span>
+        <span class="color-option" data-color="blue" data-image="bluejeans.png" style="background:#00f;border:1px solid #000;"></span>
+    </div>
+    <div class="product-details">
+        <p>100% raw denim.</p>
+        <p>All American made cut and sew in house: vertical integration process all American sourcing and printing locally.</p>
+        <p>Only national shipping for now.</p>
+    </div>
+    <div class="product-categories">Categories: pants, new, all</div>
     <button onclick="addToCart(this)">Add to Cart</button>
     <button onclick="checkout(this)">Checkout</button>
 </div>
 
 <!-- Desktop Nav -->
-<nav class="desktop-nav"><ul><li><a href="new.html">new</a></li><li><a href="jackets.html">jackets</a></li><li><a href="shirts.html">shirts</a></li><li><a href="tops-sweaters.html">tops/sweaters</a></li><li><a href="sweatshirts.html">sweatshirts</a></li><li><a href="pants.html">pants</a></li><li><a href="t-shirts.html">t-shirts</a></li><li><a href="hats.html">hats</a></li><li><a href="bags.html">bags</a></li><li><a href="accessories.html">accessories</a></li><li><a href="shoes.html">shoes</a></li><li><a href="gym.html">gym</a></li><li><a href="skate.html">skate</a></li><li><a href="all.html">all</a></li></ul></nav>
+<nav class="desktop-nav">
+    <ul>
+        <li><a href="new.html">new</a></li>
+        <li><a href="jackets.html">jackets</a></li>
+        <li><a href="shirts.html">shirts</a></li>
+        <li><a href="tops-sweaters.html">tops/sweaters</a></li>
+        <li><a href="sweatshirts.html">sweatshirts</a></li>
+        <li><a href="pants.html">pants</a></li>
+        <li><a href="t-shirts.html">t-shirts</a></li>
+        <li><a href="hats.html">hats</a></li>
+        <li><a href="bags.html">bags</a></li>
+        <li><a href="accessories.html">accessories</a></li>
+        <li><a href="shoes.html">shoes</a></li>
+        <li><a href="gym.html">gym</a></li>
+        <li><a href="skate.html">skate</a></li>
+        <li><a href="all.html">all</a></li>
+    </ul>
+</nav>
 
 <!-- Mobile Nav -->
-<nav class="mobile-nav"><ul><li><a href="new.html">new</a></li><li><a href="jackets.html">jackets</a></li><li><a href="shirts.html">shirts</a></li><li><a href="tops-sweaters.html">tops/sweaters</a></li><li><a href="sweatshirts.html">sweatshirts</a></li><li><a href="pants.html">pants</a></li><li><a href="t-shirts.html">t-shirts</a></li><li><a href="hats.html">hats</a></li><li><a href="bags.html">bags</a></li><li><a href="accessories.html">accessories</a></li><li><a href="shoes.html">shoes</a></li><li><a href="gym.html">gym</a></li><li><a href="skate.html">skate</a></li><li><a href="all.html">all</a></li></ul></nav>
-<footer><div class="footer-links"><a href="index.html">home</a></div></footer>
+<nav class="mobile-nav">
+    <ul>
+        <li><a href="new.html">new</a></li>
+        <li><a href="jackets.html">jackets</a></li>
+        <li><a href="shirts.html">shirts</a></li>
+        <li><a href="tops-sweaters.html">tops/sweaters</a></li>
+        <li><a href="sweatshirts.html">sweatshirts</a></li>
+        <li><a href="pants.html">pants</a></li>
+        <li><a href="t-shirts.html">t-shirts</a></li>
+        <li><a href="hats.html">hats</a></li>
+        <li><a href="bags.html">bags</a></li>
+        <li><a href="accessories.html">accessories</a></li>
+        <li><a href="shoes.html">shoes</a></li>
+        <li><a href="gym.html">gym</a></li>
+        <li><a href="skate.html">skate</a></li>
+        <li><a href="all.html">all</a></li>
+    </ul>
+</nav>
+<footer>
+    <div class="footer-links">
+        <a href="index.html">home</a>
+    </div>
+</footer>
 <script src="cart.js"></script>
 <script src="product.js"></script>
 <script>
-function updateChicagoTime(){const options={timeZone:'America/Chicago',hour:'2-digit',minute:'2-digit',year:'numeric',month:'2-digit',day:'2-digit'};const currentTime=new Intl.DateTimeFormat('en-US',options).format(new Date()).replace(","," ");document.getElementById('current-time').textContent=currentTime+" CHICAGO";}
-setInterval(updateChicagoTime,1000);
-const logoOverlay=document.querySelector('.logo-overlay');
-if(logoOverlay){let pressTimer;let moved=false;const restoreOverlay=()=>{logoOverlay.style.display='block';};const cancel=()=>{clearTimeout(pressTimer);document.removeEventListener('mousemove',moveHandler);document.removeEventListener('touchmove',moveHandler);document.removeEventListener('mouseup',cancel);document.removeEventListener('touchend',cancel);document.removeEventListener('touchcancel',cancel);logoOverlay.style.display='none';setTimeout(restoreOverlay,1000);};const moveHandler=()=>{moved=true;cancel();};const startPress=()=>{moved=false;document.addEventListener('mousemove',moveHandler);document.addEventListener('touchmove',moveHandler);document.addEventListener('mouseup',cancel);document.addEventListener('touchend',cancel);document.addEventListener('touchcancel',cancel);pressTimer=setTimeout(()=>{if(!moved){window.location.href='index.html';}cancel();},600);};logoOverlay.addEventListener('mousedown',startPress);logoOverlay.addEventListener('touchstart',startPress);}
+    function updateChicagoTime() {
+        const options = {
+            timeZone: 'America/Chicago',
+            hour: '2-digit',
+            minute: '2-digit',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+        };
+        const currentTime = new Intl.DateTimeFormat('en-US', options).format(new Date()).replace(",", "");
+        document.getElementById('current-time').textContent = currentTime + " CHICAGO";
+    }
+    setInterval(updateChicagoTime, 1000);
+    const logoOverlay = document.querySelector(".logo-overlay");
+    if (logoOverlay) {
+        let pressTimer;
+        let moved = false;
+        const restoreOverlay = () => {
+            logoOverlay.style.display = "block";
+        };
+        const cancel = () => {
+            clearTimeout(pressTimer);
+            document.removeEventListener("mousemove", moveHandler);
+            document.removeEventListener("touchmove", moveHandler);
+            document.removeEventListener("mouseup", cancel);
+            document.removeEventListener("touchend", cancel);
+            document.removeEventListener("touchcancel", cancel);
+            logoOverlay.style.display = "none";
+            setTimeout(restoreOverlay, 1000);
+        };
+        const moveHandler = () => {
+            moved = true;
+            cancel();
+        };
+        const startPress = () => {
+            moved = false;
+            document.addEventListener("mousemove", moveHandler);
+            document.addEventListener("touchmove", moveHandler);
+            document.addEventListener("mouseup", cancel);
+            document.addEventListener("touchend", cancel);
+            document.addEventListener("touchcancel", cancel);
+            pressTimer = setTimeout(() => {
+                if (!moved) {
+                    window.location.href = "index.html";
+                }
+                cancel();
+            }, 600);
+        };
+        logoOverlay.addEventListener("mousedown", startPress);
+        logoOverlay.addEventListener("touchstart", startPress);
+    }
 </script>
 </body>
 </html>

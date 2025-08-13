@@ -153,8 +153,9 @@
 
         .product-item {
             position: relative;
-            width: 80%;
+            width: 100%;
             max-width: 400px;
+            margin: 0 auto;
         }
 
         .product-item a {
@@ -166,6 +167,21 @@
         .product-item img {
             width: 100%;
             display: block;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 768px) {
+            .product-grid {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .product-item {
+                flex: 1 1 calc(25% - 40px);
+                max-width: calc(25% - 40px);
+                margin: 10px;
+            }
         }
 
         .product-info {
