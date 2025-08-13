@@ -46,32 +46,55 @@ function createCartModal() {
     modal.id = 'cart-modal';
     modal.innerHTML = `
         <div class="cart-content">
-            <h2>Your Cart</h2>
+            <button id="cart-close" class="close-btn">&times;</button>
+            <h2>Cart</h2>
+            <div class="item-count"></div>
             <div class="cart-items"></div>
-            <div class="cart-total"></div>
-            <div class="cart-actions">
-                <button id="cart-close">Close</button>
-                <button id="cart-checkout">Checkout</button>
+            <div class="cost-summary">
+                <div><span>Subtotal</span><span class="subtotal">$0.00</span></div>
+                <div><span>Tax</span><span class="tax">Calculated at checkout</span></div>
+                <div><span>Shipping</span><span class="shipping">Calculated at checkout</span></div>
+                <div><strong>Total</strong><strong class="total">$0.00</strong></div>
             </div>
-            <div class="pay-options">
-                <button class="pay-btn" data-method="Apple Pay">Apple Pay</button>
-                <button class="pay-btn" data-method="Google Pay">Google Pay</button>
-                <button class="pay-btn" data-method="Samsung Pay">Samsung Pay</button>
-                <button class="pay-btn" data-method="PayPal">PayPal</button>
-                <button class="pay-btn" data-method="MetaMask">MetaMask</button>
+            <button id="view-cart">VIEW CART</button>
+            <div class="or">OR</div>
+            <div class="express-checkout">
+                <h3>Express checkout</h3>
+                <div class="payment-icons">
+                    <button class="pay-btn" data-method="Shop Pay"><img src="https://upload.wikimedia.org/wikipedia/commons/4/4c/Shop_Pay_logo.svg" alt="Shop Pay"></button>
+                    <button class="pay-btn" data-method="Apple Pay"><img src="https://upload.wikimedia.org/wikipedia/commons/3/30/Apple_Pay_logo.svg" alt="Apple Pay"></button>
+                    <button class="pay-btn" data-method="PayPal"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></button>
+                    <button class="pay-btn" data-method="Google Pay"><img src="https://upload.wikimedia.org/wikipedia/commons/5/5b/Google_Pay_logo.svg" alt="Google Pay"></button>
+                    <button class="pay-btn" data-method="Venmo"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/Venmo_logo.svg" alt="Venmo"></button>
+                </div>
             </div>
             <form id="checkout-form" style="display:none;">
-                <h3>Checkout</h3>
-                <input type="text" name="name" placeholder="Name" required>
+                <h3>Sign up and know first!</h3>
                 <input type="email" name="email" placeholder="Email" required>
-                <input type="text" name="address" placeholder="Address" required>
-                <button type="submit">Submit Order</button>
+                <p class="consent-text">By submitting this form, you consent to receive informational (eg, order updates) and/or marketing texts (eg, cart reminders) from us.bape.com including texts sent by autodialer. Consent is not a condition of purchase. Msg & data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available). Privacy Policy & Terms.</p>
+                <button type="submit">Submit</button>
+                <h3>Express checkout</h3>
+                <div class="payment-icons">
+                    <button class="pay-btn" data-method="Shop Pay"><img src="https://upload.wikimedia.org/wikipedia/commons/4/4c/Shop_Pay_logo.svg" alt="Shop Pay"></button>
+                    <button class="pay-btn" data-method="Apple Pay"><img src="https://upload.wikimedia.org/wikipedia/commons/3/30/Apple_Pay_logo.svg" alt="Apple Pay"></button>
+                    <button class="pay-btn" data-method="PayPal"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></button>
+                    <button class="pay-btn" data-method="Google Pay"><img src="https://upload.wikimedia.org/wikipedia/commons/5/5b/Google_Pay_logo.svg" alt="Google Pay"></button>
+                    <button class="pay-btn" data-method="Venmo"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/Venmo_logo.svg" alt="Venmo"></button>
+                </div>
             </form>
+            <footer class="cart-footer">
+                <a href="#">refund policy</a> |
+                <a href="#">shipping</a> |
+                <a href="#">privacy policy</a> |
+                <a href="#">terms of service</a> |
+                <a href="#">cookies</a>
+            </footer>
         </div>`;
     document.body.appendChild(modal);
 
     modal.querySelector('#cart-close').addEventListener('click', closeCart);
-    modal.querySelector('#cart-checkout').addEventListener('click', showCheckoutForm);
+    modal.querySelector('#view-cart').addEventListener('click', () => alert('Cart view not implemented.'));
+    modal.querySelector('#cart-checkout')?.addEventListener('click', showCheckoutForm);
     modal.querySelectorAll('.pay-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             alert(`${btn.dataset.method} payment not implemented.`);
@@ -88,10 +111,16 @@ function createCartModal() {
         style.id = 'cart-modal-style';
         style.textContent = `
             #cart-modal {position:fixed;top:0;left:0;right:0;bottom:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);z-index:1000;}
-            #cart-modal .cart-content {background:#fff;padding:20px;max-width:400px;width:90%;text-align:center;}
-            #cart-modal .cart-items div {margin-bottom:5px;}
-            #cart-modal button {margin:5px;}
+            #cart-modal .cart-content {background:#fff;padding:20px;max-width:400px;width:90%;text-align:center;position:relative;font-family:sans-serif;}
+            #cart-modal .close-btn {position:absolute;top:10px;left:10px;background:#000;color:#fff;border:none;padding:5px 10px;cursor:pointer;}
+            #cart-modal button {background:#000;color:#fff;border:none;padding:10px;margin:5px;cursor:pointer;}
+            #cart-modal .payment-icons {display:flex;justify-content:space-between;gap:5px;margin:10px 0;}
+            #cart-modal .payment-icons img {height:24px;}
+            #cart-modal .cost-summary div, #cart-modal .cart-item {display:flex;justify-content:space-between;margin:5px 0;}
+            #cart-modal .or {margin:10px 0;}
+            #cart-modal footer a {color:#000;margin:0 5px;font-size:0.8em;text-decoration:none;}
             #checkout-form input {display:block;width:90%;margin:5px auto;padding:8px;}
+            .consent-text {font-size:0.7rem;margin-top:10px;}
         `;
         document.head.appendChild(style);
     }
@@ -106,16 +135,20 @@ function populateCartModal() {
     let total = 0;
     cart.forEach(item => {
         const div = document.createElement('div');
-        div.textContent = `${item.name} ${item.color ? '(' + item.color + ')' : ''} - $${item.price}`;
+        div.className = 'cart-item';
+        div.innerHTML = `<span>${item.name} ${item.color ? '(' + item.color + ')' : ''}</span><span>$${parseFloat(item.price).toFixed(2)}</span>`;
         itemsContainer.appendChild(div);
         total += parseFloat(item.price);
     });
-    modal.querySelector('.cart-total').textContent = `Total: $${total.toFixed(2)}`;
+    modal.querySelector('.item-count').textContent = `${cart.length} Item(s)`;
+    modal.querySelector('.subtotal').textContent = `$${total.toFixed(2)}`;
+    modal.querySelector('.total').textContent = `$${total.toFixed(2)}`;
     modal.querySelector('#checkout-form').style.display = 'none';
     modal.querySelector('.cart-items').style.display = 'block';
-    modal.querySelector('.cart-total').style.display = 'block';
-    modal.querySelector('.cart-actions').style.display = 'block';
-    modal.querySelector('.pay-options').style.display = 'block';
+    modal.querySelector('.cost-summary').style.display = 'block';
+    modal.querySelector('#view-cart').style.display = 'block';
+    modal.querySelector('.or').style.display = 'block';
+    modal.querySelector('.express-checkout').style.display = 'block';
 }
 
 function closeCart() {
@@ -128,9 +161,10 @@ function closeCart() {
 function showCheckoutForm() {
     const modal = document.getElementById('cart-modal');
     modal.querySelector('.cart-items').style.display = 'none';
-    modal.querySelector('.cart-total').style.display = 'none';
-    modal.querySelector('.cart-actions').style.display = 'none';
-    modal.querySelector('.pay-options').style.display = 'none';
+    modal.querySelector('.cost-summary').style.display = 'none';
+    modal.querySelector('#view-cart').style.display = 'none';
+    modal.querySelector('.or').style.display = 'none';
+    modal.querySelector('.express-checkout').style.display = 'none';
     modal.querySelector('#checkout-form').style.display = 'block';
 }
 
@@ -184,6 +218,10 @@ function ensureCartCounter() {
 document.addEventListener('DOMContentLoaded', () => {
     initCart();
     ensureCartCounter();
+    document.querySelectorAll('button').forEach(btn => {
+        btn.style.background = '#000';
+        btn.style.color = '#fff';
+    });
     document.querySelectorAll('.color-option').forEach(opt => {
         opt.addEventListener('click', () => {
             const item = opt.closest('.product-item');
