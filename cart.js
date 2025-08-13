@@ -75,10 +75,12 @@ function createCartModal() {
             <div class="express-checkout">
                 <h3>Express checkout</h3>
                 <div class="payment-icons">
-                    <button class="pay-btn" data-method="Shop Pay"><img src="https://upload.wikimedia.org/wikipedia/commons/4/4c/Shop_Pay_logo.svg" alt="Shop Pay"></button>
-                    <button class="pay-btn" data-method="Apple Pay"><img src="https://upload.wikimedia.org/wikipedia/commons/3/30/Apple_Pay_logo.svg" alt="Apple Pay"></button>
-                    <button class="pay-btn" data-method="PayPal"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></button>
-                    <button class="pay-btn" data-method="Google Pay"><img src="https://upload.wikimedia.org/wikipedia/commons/5/5b/Google_Pay_logo.svg" alt="Google Pay"></button>
+                    <button class="pay-btn" data-method="Shop Pay"><img src="shoppay.png" alt="Shop Pay"></button>
+                    <button class="pay-btn" data-method="Apple Pay"><img src="applepay.png" alt="Apple Pay"></button>
+                    <button class="pay-btn paypal" data-method="PayPal"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></button>
+                    <button class="pay-btn" data-method="Google Pay"><img src="googlepay.png" alt="Google Pay"></button>
+                    <button class="pay-btn" data-method="Klarna"><img src="klarna.png" alt="Klarna"></button>
+                    <button class="pay-btn" data-method="Venmo"><img src="venmo.png" alt="Venmo"></button>
                 </div>
             </div>
             <form id="checkout-form" style="display:none;">
@@ -88,10 +90,12 @@ function createCartModal() {
                 <button type="submit">Submit</button>
                 <h3>Express checkout</h3>
                 <div class="payment-icons">
-                    <button class="pay-btn" data-method="Shop Pay"><img src="https://upload.wikimedia.org/wikipedia/commons/4/4c/Shop_Pay_logo.svg" alt="Shop Pay"></button>
-                    <button class="pay-btn" data-method="Apple Pay"><img src="https://upload.wikimedia.org/wikipedia/commons/3/30/Apple_Pay_logo.svg" alt="Apple Pay"></button>
-                    <button class="pay-btn" data-method="PayPal"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></button>
-                    <button class="pay-btn" data-method="Google Pay"><img src="https://upload.wikimedia.org/wikipedia/commons/5/5b/Google_Pay_logo.svg" alt="Google Pay"></button>
+                    <button class="pay-btn" data-method="Shop Pay"><img src="shoppay.png" alt="Shop Pay"></button>
+                    <button class="pay-btn" data-method="Apple Pay"><img src="applepay.png" alt="Apple Pay"></button>
+                    <button class="pay-btn paypal" data-method="PayPal"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></button>
+                    <button class="pay-btn" data-method="Google Pay"><img src="googlepay.png" alt="Google Pay"></button>
+                    <button class="pay-btn" data-method="Klarna"><img src="klarna.png" alt="Klarna"></button>
+                    <button class="pay-btn" data-method="Venmo"><img src="venmo.png" alt="Venmo"></button>
                 </div>
             </form>
             <div id="final-checkout" style="display:none;">
@@ -109,10 +113,12 @@ function createCartModal() {
                     <button type="submit">Submit</button>
                     <h3>Express checkout</h3>
                     <div class="payment-icons">
-                        <button class="pay-btn" data-method="Shop Pay"><img src="https://upload.wikimedia.org/wikipedia/commons/4/4c/Shop_Pay_logo.svg" alt="Shop Pay"></button>
-                        <button class="pay-btn" data-method="Apple Pay"><img src="https://upload.wikimedia.org/wikipedia/commons/3/30/Apple_Pay_logo.svg" alt="Apple Pay"></button>
-                        <button class="pay-btn" data-method="PayPal"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></button>
-                        <button class="pay-btn" data-method="Google Pay"><img src="https://upload.wikimedia.org/wikipedia/commons/5/5b/Google_Pay_logo.svg" alt="Google Pay"></button>
+                        <button class="pay-btn" data-method="Shop Pay"><img src="shoppay.png" alt="Shop Pay"></button>
+                        <button class="pay-btn" data-method="Apple Pay"><img src="applepay.png" alt="Apple Pay"></button>
+                        <button class="pay-btn paypal" data-method="PayPal"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></button>
+                        <button class="pay-btn" data-method="Google Pay"><img src="googlepay.png" alt="Google Pay"></button>
+                        <button class="pay-btn" data-method="Klarna"><img src="klarna.png" alt="Klarna"></button>
+                        <button class="pay-btn" data-method="Venmo"><img src="venmo.png" alt="Venmo"></button>
                     </div>
                     <div class="or">OR</div>
                     <h3>Contact</h3>
@@ -207,13 +213,15 @@ function createCartModal() {
             #cart-modal .cart-content {background:#fff;padding:20px;max-width:400px;width:90%;text-align:center;position:relative;font-family:sans-serif;max-height:90vh;overflow-y:auto;}
             #cart-modal .close-btn {position:absolute;top:10px;left:10px;background:#000;color:#fff;border:none;width:20px;height:20px;line-height:20px;padding:0;font-size:14px;cursor:pointer;}
             #cart-modal .cart-buttons {display:flex;flex-direction:column;align-items:center;}
-            #cart-modal button {background:#000;color:#fff;border:none;padding:10px;margin:5px auto;cursor:pointer;display:block;}
-            #cart-modal .payment-icons {display:flex;flex-direction:column;gap:5px;margin:10px 0;align-items:center;}
-            #cart-modal .payment-icons img {height:24px;}
+            #cart-modal button:not(.pay-btn){background:#000;color:#fff;border:none;padding:10px;margin:5px auto;cursor:pointer;display:block;}
+            #cart-modal .pay-btn{background:transparent;border:none;margin:0;padding:0;display:flex;justify-content:center;align-items:center;}
+            #cart-modal .pay-btn.paypal{background:#ffc439;padding:5px 10px;}
+            #cart-modal .payment-icons{display:flex;flex-direction:column;gap:5px;margin:10px 0;align-items:center;}
+            #cart-modal .payment-icons img{width:80px;height:auto;}
             #cart-modal .cost-summary div, #cart-modal .cart-item {display:flex;justify-content:space-between;margin:5px 0;}
             #cart-modal .or {margin:10px 0;}
             #cart-modal footer a {color:#000;margin:0 5px;font-size:0.8em;text-decoration:none;}
-            #cart-modal button:hover,#cart-modal button:focus,#cart-modal button:active,#cart-modal footer a:hover,#cart-modal footer a:focus,#cart-modal footer a:active{border:2px solid red;color:red;background:#fff;}
+            #cart-modal button:not(.pay-btn):hover,#cart-modal button:not(.pay-btn):focus,#cart-modal button:not(.pay-btn):active,#cart-modal footer a:hover,#cart-modal footer a:focus,#cart-modal footer a:active{border:2px solid red;color:red;background:#fff;}
             #checkout-form input {display:block;width:90%;margin:5px auto;padding:8px;}
             .consent-text {font-size:0.7rem;margin-top:10px;}
             #final-checkout{text-align:center;}
@@ -406,7 +414,7 @@ function ensureCartCounter() {
 document.addEventListener('DOMContentLoaded', () => {
     initCart();
     ensureCartCounter();
-    document.querySelectorAll('button').forEach(btn => {
+    document.querySelectorAll('button:not(.pay-btn)').forEach(btn => {
         btn.style.background = '#000';
         btn.style.color = '#fff';
     });
