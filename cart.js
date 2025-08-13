@@ -188,7 +188,7 @@ function createCartModal() {
             #cart-modal .cart-content {background:#fff;padding:20px;max-width:400px;width:90%;text-align:center;position:relative;font-family:sans-serif;max-height:90vh;overflow-y:auto;}
             #cart-modal .close-btn {position:absolute;top:10px;left:10px;background:#000;color:#fff;border:none;width:20px;height:20px;line-height:20px;padding:0;font-size:14px;cursor:pointer;}
             #cart-modal .cart-buttons {display:flex;flex-direction:column;align-items:center;}
-            #cart-modal button {background:#000;color:#fff;border:none;padding:10px;margin:5px;cursor:pointer;width:100%;}
+            #cart-modal button {background:#000;color:#fff;border:none;padding:10px;margin:5px auto;cursor:pointer;display:block;}
             #cart-modal .payment-icons {display:flex;flex-direction:column;gap:5px;margin:10px 0;align-items:center;}
             #cart-modal .payment-icons img {height:24px;}
             #cart-modal .cost-summary div, #cart-modal .cart-item {display:flex;justify-content:space-between;margin:5px 0;}
@@ -197,8 +197,9 @@ function createCartModal() {
             #cart-modal button:hover,#cart-modal button:focus,#cart-modal button:active,#cart-modal footer a:hover,#cart-modal footer a:focus,#cart-modal footer a:active{border:2px solid red;color:red;background:#fff;}
             #checkout-form input {display:block;width:90%;margin:5px auto;padding:8px;}
             .consent-text {font-size:0.7rem;margin-top:10px;}
-            #final-checkout{text-align:left;}
+            #final-checkout{text-align:center;}
             #final-checkout input {display:block;width:90%;margin:5px auto;padding:8px;}
+            .checkout-header{display:flex;flex-direction:column;align-items:center;}
             .checkout-logo{display:block;margin:0 auto;width:80px;}
             #final-checkout .time{font-size:0.7rem;text-align:center;margin-top:5px;font-weight:600;}
             .credit-card input{width:90%;}
