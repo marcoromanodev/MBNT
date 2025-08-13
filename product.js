@@ -10,9 +10,11 @@ function initSliders() {
     const img = slider.querySelector('img');
     if (img) {
       img.style.width = '100%';
-      img.style.height = 'auto';
+      img.style.height = '100%';
       img.style.objectFit = 'contain';
     }
+    slider.style.aspectRatio = '1 / 1';
+    slider.style.overflow = 'hidden';
     const prev = slider.querySelector('.prev');
     const next = slider.querySelector('.next');
 
