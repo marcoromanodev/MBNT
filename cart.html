@@ -108,13 +108,19 @@
         }
         .pay-btn.paypal {
             background: #ffc439;
-            padding: 5px;
+            width: 80px;
+            height: 40px;
+            padding: 0;
         }
         .payment-icons img {
             width: 80px;
             height: auto;
         }
-        .pay-btn.paypal img,
+        .pay-btn.paypal img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
         .pay-option[data-method="paypal"] img {
             width: 60px;
         }
