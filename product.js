@@ -9,9 +9,9 @@ function initSliders() {
     let index = 0;
     const img = slider.querySelector('img');
     if (img) {
-      img.style.width = '400px';
-      img.style.height = '400px';
-      img.style.objectFit = 'cover';
+      img.style.width = '100%';
+      img.style.height = 'auto';
+      img.style.objectFit = 'contain';
     }
     const prev = slider.querySelector('.prev');
     const next = slider.querySelector('.next');
@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
     <br>
     <div class="footer-links">
         <div class="footer-line extra-padding">
-            <a href="#">shop</a>
+            <a href="shop.html">shop</a>
             <a href="#">view all</a>
             <a href="soon.html">preview</a>
             <a href="soon.html">lookbook</a>
@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .footer-links a:hover, .footer-links a:focus, .footer-links a:active { color:red; border:2px solid red; background:white; }
     .full-site-link { text-align:center; margin-top:20px; }
     .image-slider { position:relative; display:flex; justify-content:center; align-items:center; width:80%; max-width:400px; margin:0 auto; }
-    .image-slider img { margin:0 auto; width:400px; height:400px; object-fit:cover; }
+    .image-slider img { margin:0 auto; width:100%; height:auto; object-fit:contain; }
     .image-slider button { position:absolute; top:50%; transform:translateY(-50%); background:transparent; border:none; font-size:2rem; cursor:pointer; color:red; }
     .image-slider button:hover, .image-slider button:focus, .image-slider button:active { background:white; border:2px solid red; }
     .image-slider .prev { left:0; }
