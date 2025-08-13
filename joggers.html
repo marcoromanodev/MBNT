@@ -54,6 +54,27 @@
     <span class="cart-icon">🛒</span><span id="cart-count">0</span>
 </div>
 
+<div class="product-item" data-product="joggers" data-price="140" data-selected-color="black">
+    <div class="image-slider" data-images="blackjoggers.png,whitejoggers.png">
+        <button class="prev">&#10094;</button>
+        <img src="blackjoggers.png" alt="Joggers">
+        <button class="next">&#10095;</button>
+    </div>
+    <h1>Joggers</h1>
+    <p>$140</p>
+    <div class="color-options">
+        <span class="color-option" data-color="black" data-image="blackjoggers.png" style="background:#000;"></span>
+        <span class="color-option" data-color="white" data-image="whitejoggers.png" style="background:#fff;border:1px solid #000;"></span>
+    </div>
+    <div class="product-details">
+        <p>100% heavyweight cotton.</p>
+        <p>All American made cut and sew in house: vertical integration process all American sourcing and printing locally.</p>
+        <p>Only national shipping for now.</p>
+    </div>
+    <button onclick="addToCart(this)">Add to Cart</button>
+    <button onclick="checkout(this)">Checkout</button>
+</div>
+
 <!-- Desktop Nav -->
 <nav class="desktop-nav">
     <ul>
@@ -93,27 +114,6 @@
         <li><a href="all.html">all</a></li>
     </ul>
 </nav>
-
-<div class="product-item" data-product="joggers" data-price="140" data-selected-color="black">
-    <div class="image-slider" data-images="blackjoggers.png,whitejoggers.png">
-        <button class="prev">&#10094;</button>
-        <img src="blackjoggers.png" alt="Joggers">
-        <button class="next">&#10095;</button>
-    </div>
-    <h1>Joggers</h1>
-    <p>$140</p>
-    <div class="color-options">
-        <span class="color-option" data-color="black" data-image="blackjoggers.png" style="background:#000;"></span>
-        <span class="color-option" data-color="white" data-image="whitejoggers.png" style="background:#fff;border:1px solid #000;"></span>
-    </div>
-    <div class="product-details">
-        <p>100% heavyweight cotton.</p>
-        <p>All American made cut and sew in house: vertical integration process all American sourcing and printing locally.</p>
-        <p>Only national shipping for now.</p>
-    </div>
-    <button onclick="addToCart(this)">Add to Cart</button>
-    <button onclick="checkout(this)">Checkout</button>
-</div>
 <footer></footer>
 <script src="cart.js"></script>
 <script src="product.js"></script>
