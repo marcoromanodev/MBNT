@@ -126,8 +126,9 @@ document.addEventListener('DOMContentLoaded', () => {
       display:flex;
       justify-content:center;
       align-items:center;
-      width:400px;
-      height:400px;
+      width:80%;
+      max-width:400px;
+      aspect-ratio:1/1;
       margin:0 auto;
     }
     .image-slider img {
