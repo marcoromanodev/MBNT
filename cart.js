@@ -20,6 +20,9 @@ function addToCart(button) {
         name: item.dataset.product,
         color: item.dataset.selectedColor || '',
         price: item.dataset.price,
+        image: item.querySelector('img') ? item.querySelector('img').src : '',
+        style: item.dataset.style || '',
+        size: item.dataset.size || '',
         timestamp: Date.now()
     };
     cart.push(product);
@@ -100,6 +103,19 @@ function createCartModal() {
             </form>
             <div id="final-checkout" style="display:none;">
                 <form id="final-form">
+                    <div class="summary-header" id="order-summary-toggle">Order summary <span class="arrow">&#9660;</span></div>
+                    <div id="order-summary" style="display:none;">
+                        <p class="original-price">Original price <span class="original-total">$0.00</span></p>
+                        <h4>Shopping cart</h4>
+                        <div class="cart-summary"></div>
+                        <h4>Cost summary</h4>
+                        <div class="cost-summary">
+                            <div><span>Subtotal</span><span class="subtotal">$0.00</span></div>
+                            <div><span>Shipping</span><span>Enter shipping address</span></div>
+                            <div><span>Total</span><span class="total">$0.00</span></div>
+                        </div>
+                        <p class="order-note">PLEASE NOTE: WE DO NOT PROCESS ORDERS ON SATURDAYS AND SUNDAYS, PLEASE ALLOW AN ADDITIONAL 2 - 3 BUSINESS DAYS FOR PROCESSING TIME WHEN PLACED ON THE WEEKEND. ALL SALES FINAL. NO EXCHANGES OR RETURNS. EXPECT ALL ORDERS TO BE SHIPPED WITH DELAYS DUE TO THE 4TH OF JULY HOLIDAY.</p>
+                    </div>
                     <h3>Sign up and know first!</h3>
                     <input type="email" name="signup_email" placeholder="Enter an email" required>
                     <p class="consent-text">By submitting this form, you consent to receive informational (eg, order updates) and/or marketing texts (eg, cart reminders) from maybenot.com including texts sent by autodialer. Consent is not a condition of purchase. Msg & data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available). Privacy Policy & Terms.</p>
@@ -110,9 +126,6 @@ function createCartModal() {
                         <h2 class="checkout-domain">maybenot.com</h2>
                         <h2 class="checkout-title">Checkout</h2>
                     </div>
-                    <h3>Order summary</h3>
-                    <p>Original price</p>
-                    <p class="original-price">$0.00</p>
                     <h3>Express checkout</h3>
                     <div class="payment-icons">
                         <button class="pay-btn" data-method="Shop Pay"><img src="shoppay.png" alt="Shop Pay"></button>
@@ -154,16 +167,6 @@ function createCartModal() {
                     <div id="phone-container" style="display:none;"><input type="tel" name="remember_phone" placeholder="Mobile phone number"></div>
                     <p class="phone-error" style="display:none;color:red;">The specified phone number does not match the expected pattern.</p>
                     <p>Secure and encrypted</p>
-                    <h3>Order summary</h3>
-                    <p class="order-note">PLEASE NOTE: WE DO NOT PROCESS ORDERS ON SATURDAYS AND SUNDAYS, PLEASE ALLOW AN ADDITIONAL 2 - 3 BUSINESS DAYS FOR PROCESSING TIME WHEN PLACED ON THE WEEKEND. ALL SALES FINAL. NO EXCHANGES OR RETURNS. EXPECT ALL ORDERS TO BE SHIPPED WITH DELAYS DUE TO THE 4TH OF JULY HOLIDAY.</p>
-                    <h4>Shopping cart</h4>
-                    <div class="cart-summary"></div>
-                    <h4>Cost summary</h4>
-                    <div class="cost-summary">
-                        <div><span>Subtotal</span><span class="subtotal">$0.00</span></div>
-                        <div><span>Shipping</span><span>Enter shipping address</span></div>
-                        <div><span>Total</span><span class="total">$0.00</span></div>
-                    </div>
                     <button id="final-order-submit" type="submit">Pay now</button>
                     <p id="remember-message" style="display:none;">Your info will be saved to a Shop account. By continuing, you agree to Shop’s Terms of Service and acknowledge the Privacy Policy.</p>
                 </form>
@@ -225,7 +228,13 @@ function createCartModal() {
             #cart-modal .payment-icons{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin:10px 0;justify-items:center;}
             #cart-modal .payment-icons img{width:80px;height:auto;}
             #cart-modal .payment-methods .pay-option[data-method="paypal"] img{width:60px;}
-            #cart-modal .cost-summary div, #cart-modal .cart-item {display:flex;justify-content:space-between;margin:5px 0;}
+            #cart-modal .cost-summary div{display:flex;justify-content:space-between;margin:5px 0;}
+            #cart-modal .cart-item{display:flex;align-items:center;justify-content:space-between;margin:5px 0;}
+            #cart-modal .cart-item img{width:50px;height:50px;object-fit:cover;margin-right:10px;}
+            #cart-modal .cart-item .cart-item-info{text-align:left;flex:1;}
+            #final-checkout .summary-header{display:flex;align-items:center;cursor:pointer;font-weight:bold;justify-content:flex-start;}
+            #final-checkout .summary-header .arrow{margin-left:5px;}
+            #final-checkout .cart-header{display:flex;justify-content:space-between;font-weight:bold;margin:5px 0;}
             #cart-modal .or {margin:10px 0;}
             #cart-modal footer a {color:#000;margin:0 5px;font-size:0.8em;text-decoration:none;}
             #cart-modal button:not(.pay-btn):hover,#cart-modal button:not(.pay-btn):focus,#cart-modal button:not(.pay-btn):active,#cart-modal footer a:hover,#cart-modal footer a:focus,#cart-modal footer a:active{border:2px solid red;color:red;background:#fff;}
@@ -241,6 +250,17 @@ function createCartModal() {
             #cart-modal .cart-time{text-align:center;font-size:0.7rem;font-weight:600;margin-top:5px;}
         `;
         document.head.appendChild(style);
+    }
+
+    const toggle = modal.querySelector('#order-summary-toggle');
+    const details = modal.querySelector('#order-summary');
+    if (toggle && details) {
+        toggle.addEventListener('click', () => {
+            const expanded = details.style.display === 'block';
+            details.style.display = expanded ? 'none' : 'block';
+            const arrow = toggle.querySelector('.arrow');
+            if (arrow) arrow.innerHTML = expanded ? '&#9660;' : '&#9650;';
+        });
     }
 
     return modal;
@@ -274,7 +294,15 @@ function populateCartModal() {
     cart.forEach(item => {
         const div = document.createElement('div');
         div.className = 'cart-item';
-        div.innerHTML = `<span>${item.name} ${item.color ? '(' + item.color + ')' : ''}</span><span>$${parseFloat(item.price).toFixed(2)}</span>`;
+        div.innerHTML = `
+            <img src="${item.image}" alt="${item.name}">
+            <div class="cart-item-info">
+                <span>${item.name}</span>
+                ${item.style ? `<div>Style: ${item.style}</div>` : ''}
+                ${item.color ? `<div>Color: ${item.color}</div>` : ''}
+                ${item.size ? `<div>Size: ${item.size}</div>` : ''}
+            </div>
+            <span>$${parseFloat(item.price).toFixed(2)}</span>`;
         itemsContainer.appendChild(div);
         total += parseFloat(item.price);
     });
@@ -343,16 +371,36 @@ function showFinalPage(root = document.getElementById('cart-modal')) {
     const finalPage = root.querySelector('#final-checkout');
     if (finalPage) {
         finalPage.style.display = 'block';
+        const toggle = finalPage.querySelector('#order-summary-toggle');
+        const details = finalPage.querySelector('#order-summary');
+        if (toggle && details && !toggle.dataset.bound) {
+            toggle.dataset.bound = 'true';
+            toggle.addEventListener('click', () => {
+                const expanded = details.style.display === 'block';
+                details.style.display = expanded ? 'none' : 'block';
+                const arrow = toggle.querySelector('.arrow');
+                if (arrow) arrow.innerHTML = expanded ? '&#9660;' : '&#9650;';
+            });
+        }
         const total = cart.reduce((sum, item) => sum + parseFloat(item.price), 0);
         const summary = finalPage.querySelector('.cart-summary');
-        summary.innerHTML = '';
+        summary.innerHTML = '<div class="cart-header"><span>Product image</span><span>Description</span><span>Quantity</span><span>Price</span></div>';
         cart.forEach(item => {
-            summary.innerHTML += `<p>${item.name} ${item.color ? '(' + item.color + ')' : ''} - $${parseFloat(item.price).toFixed(2)}</p>`;
+            summary.innerHTML += `
+                <div class="cart-item">
+                    <img src="${item.image}" alt="${item.name}">
+                    <div class="cart-item-info">
+                        <span>${item.name}</span>
+                        ${item.style || item.color || item.size ? `<div>${[item.style, item.color, item.size].filter(Boolean).join(' / ')}</div>` : ''}
+                    </div>
+                    <span>1</span>
+                    <span>$${parseFloat(item.price).toFixed(2)}</span>
+                </div>`;
         });
         finalPage.querySelector('.item-count').textContent = `${cart.length} Item(s)`;
-        finalPage.querySelector('.original-price').textContent = `$${total.toFixed(2)}`;
-        finalPage.querySelector('.subtotal').textContent = `$${total.toFixed(2)}`;
-        finalPage.querySelector('.total').textContent = `$${total.toFixed(2)}`;
+        finalPage.querySelector('#order-summary .original-total').textContent = `$${total.toFixed(2)}`;
+        finalPage.querySelector('#order-summary .subtotal').textContent = `$${total.toFixed(2)}`;
+        finalPage.querySelector('#order-summary .total').textContent = `$${total.toFixed(2)}`;
         setupFinalForm(finalPage.querySelector('#final-form'));
     }
 }
@@ -422,7 +470,15 @@ function populateCartPage() {
     cart.forEach(item => {
         const div = document.createElement('div');
         div.className = 'cart-item';
-        div.innerHTML = `<span>${item.name} ${item.color ? '(' + item.color + ')' : ''}</span><span>$${parseFloat(item.price).toFixed(2)}</span>`;
+        div.innerHTML = `
+            <img src="${item.image}" alt="${item.name}">
+            <div class="cart-item-info">
+                <span>${item.name}</span>
+                ${item.style ? `<div>Style: ${item.style}</div>` : ''}
+                ${item.color ? `<div>Color: ${item.color}</div>` : ''}
+                ${item.size ? `<div>Size: ${item.size}</div>` : ''}
+            </div>
+            <span>$${parseFloat(item.price).toFixed(2)}</span>`;
         itemsContainer.appendChild(div);
         total += parseFloat(item.price);
     });
