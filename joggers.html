@@ -29,7 +29,7 @@
         .desktop-nav ul li a:hover, .desktop-nav ul li a:focus, .desktop-nav ul li a:active { border:2px solid red; color:red; background-color:white; }
         .product-item { margin-top:20px; display:flex; flex-direction:column; align-items:center; text-align:center; }
         .image-slider { position:relative; display:flex; justify-content:center; align-items:center; width:80%; max-width:400px; margin:0 auto; }
-        .image-slider img { width:400px; height:400px; object-fit:cover; }
+        .image-slider img { width:100%; height:auto; object-fit:contain; }
         .image-slider button { position:absolute; top:50%; transform:translateY(-50%); background:transparent; border:none; font-size:2rem; cursor:pointer; color:red; }
         .image-slider .prev { left:0; }
         .image-slider .next { right:0; }
@@ -57,7 +57,7 @@
 <div class="product-item" data-product="joggers" data-price="140" data-selected-color="black">
     <div class="image-slider" data-images="blackjoggers.png,whitejoggers.png">
         <button class="prev">&#10094;</button>
-        <img src="blackjoggers.png" alt="Joggers" width="400" height="400">
+        <img src="blackjoggers.png" alt="Joggers">
         <button class="next">&#10095;</button>
     </div>
     <h1>Joggers</h1>

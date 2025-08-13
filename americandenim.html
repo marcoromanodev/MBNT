@@ -145,9 +145,9 @@
             max-width: 400px;
         }
         .image-slider img {
-            width: 400px;
-            height: 400px;
-            object-fit: cover;
+            width: 100%;
+            height: auto;
+            object-fit: contain;
             display: block;
             margin: 0 auto;
         }
@@ -197,7 +197,7 @@
 <div class="product-item" data-product="american-denim" data-price="120" data-selected-color="black">
     <div class="image-slider" data-images="blackjeans.png,bluejeans.png">
         <button class="prev">&#10094;</button>
-        <img id="product-image" src="blackjeans.png" alt="American Denim" width="400" height="400">
+        <img id="product-image" src="blackjeans.png" alt="American Denim">
         <button class="next">&#10095;</button>
     </div>
     <h1>American Denim</h1>
