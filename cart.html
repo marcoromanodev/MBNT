@@ -60,7 +60,7 @@
             margin: 10px 0;
             align-items: center;
         }
-        button {
+        button:not(.pay-btn) {
             background: #000;
             color: #fff;
             border: none;
@@ -73,12 +73,18 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            background: transparent;
+            border: none;
+            margin: 0;
+            padding: 0;
         }
         .pay-btn.paypal {
             background: #ffc439;
+            padding: 5px 10px;
         }
         .payment-icons img {
-            height: 24px;
+            width: 80px;
+            height: auto;
         }
         .cart-item,
         .cost-summary div {
@@ -95,9 +101,9 @@
             font-size: 0.8em;
             text-decoration: none;
         }
-        button:hover,
-        button:focus,
-        button:active,
+        button:not(.pay-btn):hover,
+        button:not(.pay-btn):focus,
+        button:not(.pay-btn):active,
         .cart-footer a:hover,
         .cart-footer a:focus,
         .cart-footer a:active {
