@@ -110,6 +110,19 @@ function createCartModal() {
             <div id="final-checkout" style="display:none;">
                 <form id="final-form">
                     <h2 class="checkout-domain">maybenot.com</h2>
+                    <div class="order-summary-bar">
+                        <button class="summary-toggle">Order summary <span class="arrow">&#9660;</span></button>
+                        <strong class="order-total">$0.00</strong>
+                    </div>
+                    <div class="order-summary-details" style="display:none;">
+                        <div class="cart-items"></div>
+                        <div class="cost-summary">
+                            <div><span>Subtotal</span><span class="subtotal">$0.00</span></div>
+                            <div><span>Tax</span><span class="tax">Calculated at checkout</span></div>
+                            <div><span>Shipping</span><span class="shipping">Calculated at checkout</span></div>
+                            <div><strong>Total</strong><strong class="total">$0.00</strong></div>
+                        </div>
+                    </div>
                     <h3>Sign up and know first!</h3>
                     <input type="email" name="signup_email" placeholder="Enter an email" required>
                     <p class="consent-text">By submitting this form, you consent to receive informational (eg, order updates) and/or marketing texts (eg, cart reminders) from maybenot.com including texts sent by autodialer. Consent is not a condition of purchase. Msg & data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available). Privacy Policy & Terms.</p>
@@ -362,6 +375,49 @@ function showCheckoutForm(root = document.getElementById('cart-modal')) {
     root.querySelector('#checkout-form').style.display = 'block';
 }
 
+function populateOrderSummary(section) {
+    if (!section) return;
+    const itemsContainer = section.querySelector('.order-summary-details .cart-items');
+    const subtotalEl = section.querySelector('.order-summary-details .subtotal');
+    const totalEl = section.querySelector('.order-summary-details .total');
+    const orderTotalEl = section.querySelector('.order-summary-bar .order-total');
+    const bar = section.querySelector('.order-summary-bar');
+    const details = section.querySelector('.order-summary-details');
+    if (!itemsContainer || !subtotalEl || !totalEl || !orderTotalEl || !bar || !details) return;
+    itemsContainer.innerHTML = '';
+    let total = 0;
+    cart.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'cart-item';
+        div.innerHTML = `
+            <img src="${item.image}" alt="${item.name}">
+            <div class="cart-item-info">
+                <span>${item.name}</span>
+                ${item.style ? `<div>Style: ${item.style}</div>` : ''}
+                ${item.color ? `<div>Color: ${item.color}</div>` : ''}
+                ${item.size ? `<div>Size: ${item.size}</div>` : ''}
+            </div>
+            <span>$${parseFloat(item.price).toFixed(2)}</span>`;
+        itemsContainer.appendChild(div);
+        total += parseFloat(item.price);
+    });
+    subtotalEl.textContent = `$${total.toFixed(2)}`;
+    totalEl.textContent = `$${total.toFixed(2)}`;
+    orderTotalEl.textContent = `$${total.toFixed(2)}`;
+    bar.style.display = 'flex';
+    details.style.display = 'none';
+    const toggle = section.querySelector('.summary-toggle');
+    const arrow = bar.querySelector('.arrow');
+    if (toggle && !toggle.dataset.bound) {
+        toggle.addEventListener('click', () => {
+            const hidden = details.style.display === 'none';
+            details.style.display = hidden ? 'block' : 'none';
+            if (arrow) arrow.textContent = hidden ? '▲' : '▼';
+        });
+        toggle.dataset.bound = 'true';
+    }
+}
+
 function showFinalPage(root = document.getElementById('cart-modal')) {
     root.querySelector('#checkout-form').style.display = 'none';
     const bar = root.querySelector('.order-summary-bar');
@@ -381,6 +437,7 @@ function showFinalPage(root = document.getElementById('cart-modal')) {
     const finalPage = root.querySelector('#final-checkout');
     if (finalPage) {
         finalPage.style.display = 'block';
+        populateOrderSummary(finalPage);
         setupFinalForm(finalPage.querySelector('#final-form'));
     }
 }
@@ -485,7 +542,9 @@ function setupCartPage() {
     const page = document.getElementById('cart-page');
     if (!page) return;
     populateCartPage();
-    page.querySelector('#cart-checkout').addEventListener('click', () => showCheckoutForm(page));
+    page.querySelector('#cart-checkout').addEventListener('click', () => {
+        window.location.href = 'checkout.html';
+    });
     page.querySelectorAll('.pay-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             alert(`${btn.dataset.method} payment not implemented.`);
@@ -505,6 +564,13 @@ function setupCartPage() {
             alert('Order submitted!');
         });
     }
+}
+
+function setupCheckoutPage() {
+    const finalPage = document.getElementById('final-checkout');
+    if (!finalPage) return;
+    populateOrderSummary(finalPage);
+    setupFinalForm(finalPage.querySelector('#final-form'));
 }
 
 function updateCartCounter() {
@@ -570,4 +636,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
     setupCartPage();
+    setupCheckoutPage();
 });
