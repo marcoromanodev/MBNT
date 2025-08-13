@@ -55,7 +55,7 @@ function createCartModal() {
         <div class="cart-content">
             <button id="cart-close" class="close-btn">&times;</button>
             <div class="checkout-header">
-                <img src="xlogo.png" alt="Logo" class="checkout-logo">
+                <iframe src="https://www.vectary.com/viewer/v1/?model=8b9281ad-097b-4408-88e2-ef824efa63eb&env=studio3&turntable=1" frameborder="0" class="checkout-logo"></iframe>
             </div>
             <h2>Cart</h2>
             <div class="item-count"></div>
@@ -95,9 +95,10 @@ function createCartModal() {
             </form>
             <div id="final-checkout" style="display:none;">
                 <div class="checkout-header">
-                    <img src="xlogo.png" alt="Logo" class="checkout-logo">
-                    <h2>maybenot.com Checkout</h2>
+                    <iframe src="https://www.vectary.com/viewer/v1/?model=8b9281ad-097b-4408-88e2-ef824efa63eb&env=studio3&turntable=1" frameborder="0" class="checkout-logo"></iframe>
                     <div class="time" id="modal-time"></div>
+                    <h2 class="checkout-domain">maybenot.com</h2>
+                    <h2 class="checkout-title">Checkout</h2>
                 </div>
                 <h3>Order summary</h3>
                 <p>Original price</p>
@@ -203,8 +204,9 @@ function createCartModal() {
             #final-checkout{text-align:center;}
             #final-checkout input {display:block;width:90%;margin:5px auto;padding:8px;}
             .checkout-header{display:flex;flex-direction:column;align-items:center;}
-            .checkout-logo{display:block;margin:0 auto;width:80px;}
+            .checkout-logo{display:block;margin:0 auto;width:80px;height:80px;border:none;}
             #final-checkout .time{font-size:0.7rem;text-align:center;margin-top:5px;font-weight:600;}
+            .checkout-domain,.checkout-title{margin-top:5px;}
             .credit-card input{width:90%;}
         `;
         document.head.appendChild(style);
