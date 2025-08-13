@@ -76,8 +76,11 @@
             max-width: 400px;
         }
         .image-slider img {
-            width: 100%;
+            width: 400px;
+            height: 400px;
+            object-fit: cover;
             display: block;
+            margin: 0 auto;
         }
         .image-slider .prev,
         .image-slider .next {
@@ -107,10 +110,6 @@
             cursor: pointer;
             display: inline-block;
         }
-        .product-categories {
-            font-size: 0.8rem;
-            margin-top: 5px;
-        }
     </style>
 </head>
 <body>
@@ -129,7 +128,7 @@
 <div class="product-item" data-product="american-denim" data-price="120" data-selected-color="black">
     <div class="image-slider" data-images="blackjeans.png,bluejeans.png">
         <button class="prev">&#10094;</button>
-        <img id="product-image" src="blackjeans.png" alt="American Denim">
+        <img id="product-image" src="blackjeans.png" alt="American Denim" width="400" height="400">
         <button class="next">&#10095;</button>
     </div>
     <h1>American Denim</h1>
@@ -143,7 +142,6 @@
         <p>All American made cut and sew in house: vertical integration process all American sourcing and printing locally.</p>
         <p>Only national shipping for now.</p>
     </div>
-    <div class="product-categories">Categories: pants, new, all</div>
     <button onclick="addToCart(this)">Add to Cart</button>
     <button onclick="checkout(this)">Checkout</button>
 </div>
