@@ -121,8 +121,20 @@ document.addEventListener('DOMContentLoaded', () => {
     .footer-links a { color:#000; text-decoration:none; transition:all 0.3s ease; }
     .footer-links a:hover, .footer-links a:focus, .footer-links a:active { color:red; border:2px solid red; background:white; }
     .full-site-link { text-align:center; margin-top:20px; }
-    .image-slider { position:relative; display:flex; justify-content:center; align-items:center; width:80%; max-width:400px; margin:0 auto; }
-    .image-slider img { margin:0 auto; width:100%; height:auto; object-fit:contain; }
+    .image-slider {
+      position:relative;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      width:400px;
+      height:400px;
+      margin:0 auto;
+    }
+    .image-slider img {
+      width:100%;
+      height:100%;
+      object-fit:contain;
+    }
     .image-slider button { position:absolute; top:50%; transform:translateY(-50%); background:transparent; border:none; font-size:2rem; cursor:pointer; color:red; }
     .image-slider button:hover, .image-slider button:focus, .image-slider button:active { background:white; border:2px solid red; }
     .image-slider .prev { left:0; }
