@@ -156,6 +156,44 @@
         }
 
 
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+<header class="header-container">
+    <div class="logo-container">
+        <iframe id="8b9281ad-097b-4408-88e2-ef824efa63eb" src="https://www.vectary.com/viewer/v1/?model=8b9281ad-097b-4408-88e2-ef824efa63eb&env=studio3&turntable=1" frameborder="0"></iframe>
+        <div class="logo-overlay"></div>
+    </div>
+    <div class="time" id="current-time"></div>
+    </header>
+<div class="header-line"></div>
+<div class="cart-counter">
+        <span class="cart-icon">🛒</span><span id="cart-count">0</span>
+    
+</div>
+<div class="product-item" data-product="shirt" data-price="100" data-selected-color="black">
+    <div class="image-slider" data-images="blackshirt.png,whiteshirt.png">
+        <button class="prev">&#10094;</button>
+        <img id="product-image" src="blackshirt.png" alt="Shirt">
+        <button class="next">&#10095;</button>
+    </div>
+    <h1>Shirt</h1>
+    <p>$100</p>
+    <div class="color-options">
+        <span class="color-option" data-color="black" data-image="blackshirt.png" style="background:#000;"></span>
+        <span class="color-option" data-color="white" data-image="whiteshirt.png" style="background:#fff;border:1px solid #000;"></span>
+    </div>
+    <div class="product-details">
+        <p>100% heavyweight cotton.</p>
+        <p>All American made cut and sew in house: vertical integration process all American sourcing and printing locally.</p>
+        <p>Only national shipping for now.</p>
+    </div>
+    <button onclick="addToCart(this)">Add to Cart</button>
+    <button onclick="checkout(this)">Checkout</button>
+</div>
+
 <!-- Desktop Nav -->
 <nav class="desktop-nav">
     <ul>
@@ -195,45 +233,6 @@
         <li><a href="all.html">all</a></li>
     </ul>
 </nav>
-px;
-            font-family: 'Courier New', Courier, monospace;
-            cursor: pointer;
-        }
-    </style>
-</head>
-<body>
-<header class="header-container">
-    <div class="logo-container">
-        <iframe id="8b9281ad-097b-4408-88e2-ef824efa63eb" src="https://www.vectary.com/viewer/v1/?model=8b9281ad-097b-4408-88e2-ef824efa63eb&env=studio3&turntable=1" frameborder="0"></iframe>
-        <div class="logo-overlay"></div>
-    </div>
-    <div class="time" id="current-time"></div>
-    </header>
-<div class="header-line"></div>
-<div class="cart-counter">
-        <span class="cart-icon">🛒</span><span id="cart-count">0</span>
-    
-</div>
-<div class="product-item" data-product="shirt" data-price="100" data-selected-color="black">
-    <div class="image-slider" data-images="blackshirt.png,whiteshirt.png">
-        <button class="prev">&#10094;</button>
-        <img id="product-image" src="blackshirt.png" alt="Shirt">
-        <button class="next">&#10095;</button>
-    </div>
-    <h1>Shirt</h1>
-    <p>$100</p>
-    <div class="color-options">
-        <span class="color-option" data-color="black" data-image="blackshirt.png" style="background:#000;"></span>
-        <span class="color-option" data-color="white" data-image="whiteshirt.png" style="background:#fff;border:1px solid #000;"></span>
-    </div>
-    <div class="product-details">
-        <p>100% heavyweight cotton.</p>
-        <p>All American made cut and sew in house: vertical integration process all American sourcing and printing locally.</p>
-        <p>Only national shipping for now.</p>
-    </div>
-    <button onclick="addToCart(this)">Add to Cart</button>
-    <button onclick="checkout(this)">Checkout</button>
-</div>
 <footer>
     <div class="footer-links">
         <a href="index.html">home</a>
