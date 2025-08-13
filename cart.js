@@ -43,7 +43,7 @@ function openCart(showForm = false) {
     }
     populateCartModal();
     modal.style.display = 'flex';
-    if (showForm) {
+    if (showForm && cart.length > 0) {
         showCheckoutForm(modal);
     }
 }
@@ -143,26 +143,29 @@ function createCartModal() {
                         <input type="text" name="cvv" placeholder="Enter the CVV or security code on your card" required>
                         <input type="text" name="card_name" placeholder="Enter your name exactly as it’s written on your card" required>
                     </div>
-                    <h4>Apple Pay</h4>
-                    <h4>PayPal</h4>
-                    <h4>Shop Pay</h4>
-                    <p>Pay in full or in installments</p>
-                    <h4>Klarna - Flexible payments</h4>
-                    <label><input type="checkbox" name="remember"> Save my information for a faster checkout with a Shop account</label>
+                    <div class="payment-methods payment-icons">
+                        <button type="button" class="pay-option" data-method="apple"><img src="applepay.png" alt="Apple Pay"></button>
+                        <button type="button" class="pay-option" data-method="paypal"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></button>
+                        <button type="button" class="pay-option shop-pay" data-method="shop"><img src="shoppay.png" alt="Shop Pay"><span>Pay in full or in installments</span></button>
+                        <button type="button" class="pay-option" data-method="klarna"><img src="klarna.png" alt="Klarna"></button>
+                    </div>
+                    <div id="payment-message"></div>
+                    <label><input type="checkbox" name="remember" id="remember-me"> Save my information for a faster checkout with a Shop account</label>
+                    <div id="phone-container" style="display:none;"><input type="tel" name="remember_phone" placeholder="Mobile phone number"></div>
                     <p class="phone-error" style="display:none;color:red;">The specified phone number does not match the expected pattern.</p>
                     <p>Secure and encrypted</p>
                     <h3>Order summary</h3>
                     <p class="order-note">PLEASE NOTE: WE DO NOT PROCESS ORDERS ON SATURDAYS AND SUNDAYS, PLEASE ALLOW AN ADDITIONAL 2 - 3 BUSINESS DAYS FOR PROCESSING TIME WHEN PLACED ON THE WEEKEND. ALL SALES FINAL. NO EXCHANGES OR RETURNS. EXPECT ALL ORDERS TO BE SHIPPED WITH DELAYS DUE TO THE 4TH OF JULY HOLIDAY.</p>
                     <h4>Shopping cart</h4>
                     <div class="cart-summary"></div>
-                    <button id="final-order-submit" type="submit">Submit</button>
                     <h4>Cost summary</h4>
                     <div class="cost-summary">
                         <div><span>Subtotal</span><span class="subtotal">$0.00</span></div>
                         <div><span>Shipping</span><span>Enter shipping address</span></div>
                         <div><span>Total</span><span class="total">$0.00</span></div>
                     </div>
-                    <p>Your info will be saved to a Shop account. By continuing, you agree to Shop’s Terms of Service and acknowledge the Privacy Policy.</p>
+                    <button id="final-order-submit" type="submit">Pay now</button>
+                    <p id="remember-message" style="display:none;">Your info will be saved to a Shop account. By continuing, you agree to Shop’s Terms of Service and acknowledge the Privacy Policy.</p>
                 </form>
             </div>
             <footer class="cart-footer">
@@ -218,7 +221,7 @@ function createCartModal() {
             #cart-modal button:not(.pay-btn){background:#000;color:#fff;border:none;padding:10px;margin:5px auto;cursor:pointer;display:block;}
             #cart-modal .pay-btn{background:transparent;border:none;margin:0;padding:0;display:flex;justify-content:center;align-items:center;}
             #cart-modal .pay-btn.paypal{background:#ffc439;padding:5px 10px;}
-            #cart-modal .payment-icons{display:flex;flex-direction:column;gap:5px;margin:10px 0;align-items:center;}
+            #cart-modal .payment-icons{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin:10px 0;justify-items:center;}
             #cart-modal .payment-icons img{width:80px;height:auto;}
             #cart-modal .cost-summary div, #cart-modal .cart-item {display:flex;justify-content:space-between;margin:5px 0;}
             #cart-modal .or {margin:10px 0;}
@@ -245,6 +248,26 @@ function populateCartModal() {
     const modal = document.getElementById('cart-modal');
     const itemsContainer = modal.querySelector('.cart-items');
     itemsContainer.innerHTML = '';
+    if (cart.length === 0) {
+        const hideSelectors = ['.logo-container', '#cart-current-time', 'h2', '.item-count', '.cart-items', '.cost-summary', '.cart-buttons', '.or', '.express-checkout', '#checkout-form', '.cart-footer'];
+        hideSelectors.forEach(sel => { const el = modal.querySelector(sel); if (el) el.style.display = 'none'; });
+        const content = modal.querySelector('.cart-content');
+        content.style.display = 'flex';
+        content.style.flexDirection = 'column';
+        content.style.alignItems = 'center';
+        content.style.justifyContent = 'center';
+        const finalPage = modal.querySelector('#final-checkout');
+        if (finalPage) finalPage.style.display = 'none';
+        let msg = modal.querySelector('.empty-cart-message');
+        if (!msg) {
+            msg = document.createElement('p');
+            msg.className = 'empty-cart-message';
+            msg.textContent = 'Your cart is currently empty.';
+            content.appendChild(msg);
+        }
+        msg.style.display = 'block';
+        return;
+    }
     let total = 0;
     cart.forEach(item => {
         const div = document.createElement('div');
@@ -257,6 +280,14 @@ function populateCartModal() {
     modal.querySelector('.subtotal').textContent = `$${total.toFixed(2)}`;
     modal.querySelector('.total').textContent = `$${total.toFixed(2)}`;
     modal.querySelector('#checkout-form').style.display = 'none';
+    const content = modal.querySelector('.cart-content');
+    content.style.display = 'block';
+    content.style.justifyContent = '';
+    content.style.alignItems = '';
+    modal.querySelector('.logo-container').style.display = 'block';
+    modal.querySelector('#cart-current-time').style.display = 'block';
+    modal.querySelector('h2').style.display = 'block';
+    modal.querySelector('.item-count').style.display = 'block';
     modal.querySelector('.cart-items').style.display = 'block';
     modal.querySelector('.cost-summary').style.display = 'block';
     modal.querySelector('.cart-buttons').style.display = 'flex';
@@ -264,6 +295,10 @@ function populateCartModal() {
     modal.querySelector('.express-checkout').style.display = 'block';
     const finalPage = modal.querySelector('#final-checkout');
     if (finalPage) finalPage.style.display = 'none';
+    const footer = modal.querySelector('.cart-footer');
+    if (footer) footer.style.display = 'block';
+    const msg = modal.querySelector('.empty-cart-message');
+    if (msg) msg.style.display = 'none';
 }
 
 function closeCart() {
@@ -312,6 +347,48 @@ function showFinalPage(root = document.getElementById('cart-modal')) {
         finalPage.querySelector('.original-price').textContent = `$${total.toFixed(2)}`;
         finalPage.querySelector('.subtotal').textContent = `$${total.toFixed(2)}`;
         finalPage.querySelector('.total').textContent = `$${total.toFixed(2)}`;
+        setupFinalForm(finalPage.querySelector('#final-form'));
+    }
+}
+
+function setupFinalForm(form) {
+    if (!form) return;
+    const payBtn = form.querySelector('#final-order-submit');
+    const paymentMsg = form.querySelector('#payment-message');
+    form.querySelectorAll('.pay-option').forEach(opt => {
+        opt.addEventListener('click', () => {
+            form.querySelectorAll('.pay-option').forEach(o => o.classList.remove('selected'));
+            opt.classList.add('selected');
+            paymentMsg.innerHTML = '';
+            switch (opt.dataset.method) {
+                case 'apple':
+                    payBtn.textContent = 'Pay with Apple Pay';
+                    break;
+                case 'paypal':
+                    payBtn.innerHTML = 'Pay now with <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" class="paypal-inline">';
+                    paymentMsg.innerHTML = '<div class="redirect-icon">↗</div>After clicking "Pay with PayPal", you will be redirected to PayPal to complete your purchase securely.';
+                    break;
+                case 'shop':
+                    payBtn.textContent = 'Pay now';
+                    break;
+                case 'klarna':
+                    payBtn.textContent = 'Pay now';
+                    paymentMsg.innerHTML = '<div class="redirect-icon">↗</div>After clicking "Pay now", you will be redirected to Klarna - Flexible payments to complete your purchase securely.';
+                    break;
+                default:
+                    payBtn.textContent = 'Pay now';
+            }
+        });
+    });
+    const remember = form.querySelector('#remember-me');
+    const phone = form.querySelector('#phone-container');
+    const msg = form.querySelector('#remember-message');
+    if (remember) {
+        remember.addEventListener('change', () => {
+            const show = remember.checked;
+            if (phone) phone.style.display = show ? 'block' : 'none';
+            if (msg) msg.style.display = show ? 'block' : 'none';
+        });
     }
 }
 
@@ -320,6 +397,21 @@ function populateCartPage() {
     if (!page) return;
     const itemsContainer = page.querySelector('.cart-items');
     itemsContainer.innerHTML = '';
+    if (cart.length === 0) {
+        const toHide = ['h2', '.item-count', '.cart-items', '.cost-summary', '.cart-buttons', '.or', '.express-checkout', '#checkout-form', '.cart-footer'];
+        toHide.forEach(sel => { const el = page.querySelector(sel); if (el) el.style.display = 'none'; });
+        const finalPage = page.querySelector('#final-checkout');
+        if (finalPage) finalPage.style.display = 'none';
+        let msg = page.querySelector('.empty-cart-message');
+        if (!msg) {
+            msg = document.createElement('p');
+            msg.className = 'empty-cart-message';
+            msg.textContent = 'Your cart is currently empty.';
+            page.appendChild(msg);
+        }
+        msg.style.display = 'block';
+        return;
+    }
     let total = 0;
     cart.forEach(item => {
         const div = document.createElement('div');
@@ -332,13 +424,19 @@ function populateCartPage() {
     page.querySelector('.subtotal').textContent = `$${total.toFixed(2)}`;
     page.querySelector('.total').textContent = `$${total.toFixed(2)}`;
     page.querySelector('#checkout-form').style.display = 'none';
+    page.querySelector('h2').style.display = 'block';
+    page.querySelector('.item-count').style.display = 'block';
     page.querySelector('.cart-items').style.display = 'block';
     page.querySelector('.cost-summary').style.display = 'block';
     page.querySelector('.cart-buttons').style.display = 'flex';
     page.querySelector('.or').style.display = 'block';
     page.querySelector('.express-checkout').style.display = 'block';
+    const footer = page.querySelector('.cart-footer');
+    if (footer) footer.style.display = 'block';
     const finalPage = page.querySelector('#final-checkout');
     if (finalPage) finalPage.style.display = 'none';
+    const msg = page.querySelector('.empty-cart-message');
+    if (msg) msg.style.display = 'none';
 }
 
 function setupCartPage() {
@@ -409,7 +507,7 @@ function ensureCartCounter() {
     if (!document.getElementById('cart-counter-style')) {
         const style = document.createElement('style');
         style.id = 'cart-counter-style';
-        style.textContent = '.cart-counter{font-size:0.7rem;text-align:center;font-weight:600;cursor:pointer;}.header-line{border-top:1px solid #000;width:100%;}.product-item img{width:300px;height:450px;object-fit:contain;}';
+        style.textContent = '.cart-counter{font-size:0.7rem;text-align:center;font-weight:600;cursor:pointer;}.header-line{border-top:1px solid #000;width:100%;}.product-item img{width:300px;height:450px;object-fit:contain;}.payment-icons{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;justify-items:center;margin:10px 0;}.pay-option{background:transparent;border:2px solid transparent;padding:5px;cursor:pointer;display:flex;align-items:center;justify-content:center;}.pay-option.selected{border-color:#000;}.pay-option.shop-pay span{margin-left:5px;font-size:0.8em;}.redirect-icon{text-align:center;font-size:2rem;}.paypal-inline{height:1em;vertical-align:middle;filter:invert(1);}.empty-cart-message{text-align:center;}';
         document.head.appendChild(style);
     }
 }
