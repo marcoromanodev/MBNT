@@ -4,9 +4,12 @@ const SESSION_LIMIT = 5 * 60 * 1000; // 5 minutes
 
 function initCart() {
     const now = Date.now();
-    cart = (JSON.parse(localStorage.getItem('cart') || '[]')).filter(item => {
-        return now - (item.timestamp || 0) < SESSION_LIMIT;
-    });
+    try {
+        const stored = JSON.parse(localStorage.getItem('cart') || '[]');
+        cart = Array.isArray(stored) ? stored.filter(item => now - (item.timestamp || 0) < SESSION_LIMIT) : [];
+    } catch (e) {
+        cart = [];
+    }
     localStorage.setItem('cart', JSON.stringify(cart));
     updateCartCounter();
 }
@@ -166,7 +169,8 @@ function closeCart() {
 function showCheckoutForm(root = document.getElementById('cart-modal')) {
     root.querySelector('.cart-items').style.display = 'none';
     root.querySelector('.cost-summary').style.display = 'none';
-    root.querySelector('.cart-buttons')?.style.display = 'none';
+    const cartButtons = root.querySelector('.cart-buttons');
+    if (cartButtons) cartButtons.style.display = 'none';
     root.querySelector('.or').style.display = 'none';
     root.querySelector('.express-checkout').style.display = 'none';
     root.querySelector('#checkout-form').style.display = 'block';
