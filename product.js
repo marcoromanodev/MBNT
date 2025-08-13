@@ -8,6 +8,11 @@ function initSliders() {
     if (images.length === 0) return;
     let index = 0;
     const img = slider.querySelector('img');
+    if (img) {
+      img.style.width = '400px';
+      img.style.height = '400px';
+      img.style.objectFit = 'cover';
+    }
     const prev = slider.querySelector('.prev');
     const next = slider.querySelector('.next');
 
@@ -72,6 +77,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const headerLine = document.querySelector('.header-line');
   const cartCounter = document.querySelector('.cart-counter');
+  if (header && headerLine) {
+    header.insertAdjacentElement('afterend', headerLine);
+  }
+  if (headerLine && cartCounter) {
+    headerLine.insertAdjacentElement('afterend', cartCounter);
+  }
   if (headerLine) {
     headerLine.style.borderTop = '1px solid #000';
     headerLine.style.marginTop = window.innerWidth <= 768 ? '40px' : '10px';
