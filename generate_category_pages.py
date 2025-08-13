@@ -58,6 +58,13 @@ products = [
         "link": "shorts.html",
         "categories": ["pants", "new", "all"],
     },
+    {
+        "name": "American Denim",
+        "price": 120,
+        "image": "bluejeans.png",
+        "link": "americandenim.html",
+        "categories": ["pants", "new", "all"],
+    },
 ]
 
 item_template = """
