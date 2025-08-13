@@ -170,10 +170,6 @@ function createCartModal() {
             alert(`${btn.dataset.method} payment not implemented.`);
         });
     });
-    modal.querySelector('#checkout-form').addEventListener('submit', e => {
-        e.preventDefault();
-        showFinalPage(modal);
-    });
     modal.querySelector('#final-form').addEventListener('submit', e => {
         e.preventDefault();
         alert('Order submitted!');
@@ -242,14 +238,20 @@ function closeCart() {
 }
 
 function showCheckoutForm(root = document.getElementById('cart-modal')) {
+    const finalPage = root.querySelector('#final-checkout');
+    if (finalPage) {
+        // If a final checkout page exists, show it immediately without requiring
+        // submission of the initial email form.
+        showFinalPage(root);
+        return;
+    }
+    // Fallback to original behaviour if no final page is present.
     root.querySelector('.cart-items').style.display = 'none';
     root.querySelector('.cost-summary').style.display = 'none';
     const cartButtons = root.querySelector('.cart-buttons');
     if (cartButtons) cartButtons.style.display = 'none';
     root.querySelector('.or').style.display = 'none';
     root.querySelector('.express-checkout').style.display = 'none';
-    const finalPage = root.querySelector('#final-checkout');
-    if (finalPage) finalPage.style.display = 'none';
     root.querySelector('#checkout-form').style.display = 'block';
 }
 
