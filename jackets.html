@@ -57,10 +57,7 @@
                 .time {
             font-size: 0.7rem;
             text-align: center;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            top: 12vh;
+            margin-top: -90px;
             font-weight: 600;
         }
 
@@ -68,16 +65,6 @@
             border-top: 1px solid #000;
             margin-top: 10px;
             width: 100%;
-        }
-
-        .coming-soon {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            font-size: 2rem;
-            margin-top: 20px;
-            flex-grow: 2;
         }
 
         /* Mobile Navigation */
@@ -112,7 +99,9 @@
             padding: 10px;
         }
 
-        nav.mobile-nav ul li a:hover {
+        nav.mobile-nav ul li a:hover,
+        nav.mobile-nav ul li a:focus,
+        nav.mobile-nav ul li a:active {
             background-color: red;
             color: white;
         }
@@ -186,10 +175,15 @@
         .footer-links a {
             color: #000;
             text-decoration: none;
+            transition: all 0.3s ease;
         }
 
-        .footer-links a:hover {
+        .footer-links a:hover,
+        .footer-links a:focus,
+        .footer-links a:active {
             color: red;
+            border: 2px solid red;
+            background: white;
         }
 
         .full-site-link {
@@ -216,7 +210,7 @@
             top: auto;
             left: auto;
             transform: none;
-            margin-top: 10px;
+            margin-top: -90px;
             font-weight: 600;
             font-size: 0.7rem;
             text-align: center;
@@ -261,7 +255,32 @@
     </header>
 <div class="header-line"></div>
 
-<div class="coming-soon">Coming Soon</div>
+<div class="product-grid">
+    
+<div class="product-item">
+    <img src="https://via.placeholder.com/400x400" alt="Jackets Item 1">
+    <div class="product-info">
+        <p>Jackets Item 1</p>
+        <p>$100</p>
+    </div>
+</div>
+    
+<div class="product-item">
+    <img src="https://via.placeholder.com/400x400" alt="Jackets Item 2">
+    <div class="product-info">
+        <p>Jackets Item 2</p>
+        <p>$120</p>
+    </div>
+</div>
+    
+<div class="product-item">
+    <img src="https://via.placeholder.com/400x400" alt="Jackets Item 3">
+    <div class="product-info">
+        <p>Jackets Item 3</p>
+        <p>$140</p>
+    </div>
+</div>
+</div>
 
 <nav class="mobile-nav">
     <ul>
