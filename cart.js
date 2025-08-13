@@ -54,6 +54,9 @@ function createCartModal() {
     modal.innerHTML = `
         <div class="cart-content">
             <button id="cart-close" class="close-btn">&times;</button>
+            <div class="checkout-header">
+                <img src="xlogo.png" alt="Logo" class="checkout-logo">
+            </div>
             <h2>Cart</h2>
             <div class="item-count"></div>
             <div class="cart-items"></div>
@@ -93,12 +96,12 @@ function createCartModal() {
             <div id="final-checkout" style="display:none;">
                 <div class="checkout-header">
                     <img src="xlogo.png" alt="Logo" class="checkout-logo">
+                    <h2>maybenot.com Checkout</h2>
                     <div class="time" id="modal-time"></div>
                 </div>
                 <h3>Order summary</h3>
                 <p>Original price</p>
                 <p class="original-price">$0.00</p>
-                <h2>maybenot.com Checkout</h2>
                 <form id="final-form">
                     <h3>Sign up and know first!</h3>
                     <input type="email" name="signup_email" placeholder="Enter an email" required>
