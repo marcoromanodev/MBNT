@@ -71,10 +71,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const headerLine = document.querySelector('.header-line');
+  const cartCounter = document.querySelector('.cart-counter');
   if (headerLine) {
     headerLine.style.borderTop = '1px solid #000';
-    headerLine.style.marginTop = '10px';
+    headerLine.style.marginTop = window.innerWidth <= 768 ? '40px' : '10px';
     headerLine.style.width = '100%';
+  }
+  if (cartCounter && window.innerWidth <= 768) {
+    cartCounter.style.marginTop = '20px';
   }
 
   const productItem = document.querySelector('.product-item');
