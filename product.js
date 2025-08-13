@@ -47,34 +47,8 @@ function initSliders() {
 document.addEventListener('DOMContentLoaded', () => {
   initSliders();
 
-  // Apply header style similar to pants.html
+  // Ensure the header line sits directly below the clock
   const header = document.querySelector('.header-container');
-  if (header) {
-    header.style.position = 'relative';
-    header.style.height = '20vh';
-  }
-
-  const logo = document.querySelector('.logo-container');
-  if (logo) {
-    logo.style.position = 'absolute';
-    logo.style.top = '0';
-    logo.style.left = '50%';
-    logo.style.transform = 'translateX(-50%)';
-    logo.style.width = '20vw';
-    logo.style.height = '20vh';
-    logo.style.marginTop = '-40px';
-  }
-
-  const timeEl = document.querySelector('.time');
-  if (timeEl) {
-    timeEl.style.position = 'absolute';
-    timeEl.style.left = '50%';
-    timeEl.style.transform = 'translateX(-50%)';
-    timeEl.style.top = '12vh';
-    timeEl.style.marginTop = '';
-    timeEl.style.fontWeight = '600';
-  }
-
   const headerLine = document.querySelector('.header-line');
   const cartCounter = document.querySelector('.cart-counter');
   if (header && headerLine) {
@@ -85,11 +59,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   if (headerLine) {
     headerLine.style.borderTop = '1px solid #000';
-    headerLine.style.marginTop = window.innerWidth <= 768 ? '40px' : '10px';
+    headerLine.style.marginTop = '5px';
     headerLine.style.width = '100%';
   }
-  if (cartCounter && window.innerWidth <= 768) {
-    cartCounter.style.marginTop = '20px';
+  if (cartCounter) {
+    cartCounter.style.marginTop = '5px';
   }
 
   const productItem = document.querySelector('.product-item');
