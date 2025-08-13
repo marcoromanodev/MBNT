@@ -39,6 +39,18 @@ function checkout(button) {
     openCart(true);
 }
 
+function removeFromCart(index) {
+    cart.splice(index, 1);
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartCounter();
+    populateCartModal();
+    populateCartPage();
+    const finalPage = document.getElementById('final-checkout');
+    if (finalPage) {
+        populateOrderSummary(finalPage);
+    }
+}
+
 function openCart(showForm = false) {
     let modal = document.getElementById('cart-modal');
     if (!modal) {
@@ -230,9 +242,10 @@ function createCartModal() {
             #cart-modal .payment-icons img{width:80px;height:auto;}
             #cart-modal .payment-methods .pay-option[data-method="paypal"] img{width:60px;}
             #cart-modal .cost-summary div{display:flex;justify-content:space-between;margin:5px 0;}
-            #cart-modal .cart-item{display:flex;align-items:center;justify-content:space-between;margin:5px 0;}
+            #cart-modal .cart-item{display:flex;align-items:center;justify-content:space-between;margin:5px 0;position:relative;}
             #cart-modal .cart-item img{width:50px;height:50px;object-fit:cover;margin-right:10px;}
             #cart-modal .cart-item .cart-item-info{text-align:left;flex:1;}
+            #cart-modal .cart-item .remove-item{background:transparent;border:none;position:absolute;top:0;right:0;cursor:pointer;font-size:1rem;}
             #cart-modal .or {margin:10px 0;}
             #cart-modal footer a {color:#000;margin:0 5px;font-size:0.8em;text-decoration:none;}
             #cart-modal button:not(.pay-btn):hover,#cart-modal button:not(.pay-btn):focus,#cart-modal button:not(.pay-btn):active,#cart-modal footer a:hover,#cart-modal footer a:focus,#cart-modal footer a:active{border:2px solid red;color:red;background:#fff;}
@@ -281,7 +294,7 @@ function populateCartModal() {
         return;
     }
     let total = 0;
-    cart.forEach(item => {
+    cart.forEach((item, index) => {
         const div = document.createElement('div');
         div.className = 'cart-item';
         div.innerHTML = `
@@ -292,9 +305,13 @@ function populateCartModal() {
                 ${item.color ? `<div>Color: ${item.color}</div>` : ''}
                 ${item.size ? `<div>Size: ${item.size}</div>` : ''}
             </div>
-            <span>$${parseFloat(item.price).toFixed(2)}</span>`;
+            <span>$${parseFloat(item.price).toFixed(2)}</span>
+            <button class="remove-item" data-index="${index}">&times;</button>`;
         itemsContainer.appendChild(div);
         total += parseFloat(item.price);
+    });
+    itemsContainer.querySelectorAll('.remove-item').forEach(btn => {
+        btn.addEventListener('click', () => removeFromCart(parseInt(btn.dataset.index)));
     });
     modal.querySelector('.item-count').textContent = `${cart.length} Item(s)`;
     modal.querySelector('.subtotal').textContent = `$${total.toFixed(2)}`;
@@ -386,7 +403,7 @@ function populateOrderSummary(section) {
     if (!itemsContainer || !subtotalEl || !totalEl || !orderTotalEl || !bar || !details) return;
     itemsContainer.innerHTML = '';
     let total = 0;
-    cart.forEach(item => {
+    cart.forEach((item, index) => {
         const div = document.createElement('div');
         div.className = 'cart-item';
         div.innerHTML = `
@@ -397,9 +414,13 @@ function populateOrderSummary(section) {
                 ${item.color ? `<div>Color: ${item.color}</div>` : ''}
                 ${item.size ? `<div>Size: ${item.size}</div>` : ''}
             </div>
-            <span>$${parseFloat(item.price).toFixed(2)}</span>`;
+            <span>$${parseFloat(item.price).toFixed(2)}</span>
+            <button class="remove-item" data-index="${index}">&times;</button>`;
         itemsContainer.appendChild(div);
         total += parseFloat(item.price);
+    });
+    itemsContainer.querySelectorAll('.remove-item').forEach(btn => {
+        btn.addEventListener('click', () => removeFromCart(parseInt(btn.dataset.index)));
     });
     subtotalEl.textContent = `$${total.toFixed(2)}`;
     totalEl.textContent = `$${total.toFixed(2)}`;
@@ -504,7 +525,7 @@ function populateCartPage() {
         return;
     }
     let total = 0;
-    cart.forEach(item => {
+    cart.forEach((item, index) => {
         const div = document.createElement('div');
         div.className = 'cart-item';
         div.innerHTML = `
@@ -515,9 +536,13 @@ function populateCartPage() {
                 ${item.color ? `<div>Color: ${item.color}</div>` : ''}
                 ${item.size ? `<div>Size: ${item.size}</div>` : ''}
             </div>
-            <span>$${parseFloat(item.price).toFixed(2)}</span>`;
+            <span>$${parseFloat(item.price).toFixed(2)}</span>
+            <button class="remove-item" data-index="${index}">&times;</button>`;
         itemsContainer.appendChild(div);
         total += parseFloat(item.price);
+    });
+    itemsContainer.querySelectorAll('.remove-item').forEach(btn => {
+        btn.addEventListener('click', () => removeFromCart(parseInt(btn.dataset.index)));
     });
     page.querySelector('.item-count').textContent = `${cart.length} Item(s)`;
     page.querySelector('.subtotal').textContent = `$${total.toFixed(2)}`;
@@ -581,37 +606,39 @@ function updateCartCounter() {
 }
 
 function ensureCartCounter() {
-    const header = document.querySelector('.header-container');
-    let headerLine = document.querySelector('.header-line');
-
-    // Make sure the header line exists and sits directly below the header
-    if (header) {
-        if (!headerLine) {
-            headerLine = document.createElement('div');
-            headerLine.className = 'header-line';
-        }
-        header.insertAdjacentElement('afterend', headerLine);
-        headerLine.style.marginTop = '5px';
-    }
-
-    // Ensure cart counter exists and appears below the header line
     let counter = document.getElementById('cart-count')?.closest('.cart-counter');
     if (!counter) {
         counter = document.createElement('div');
         counter.className = 'cart-counter';
         counter.innerHTML = '<span class="cart-icon">🛒</span><span id="cart-count">0</span>';
     }
-    if (headerLine) {
-        headerLine.insertAdjacentElement('afterend', counter);
-    } else if (header) {
-        header.insertAdjacentElement('afterend', counter);
+
+    const isCheckoutPage = document.getElementById('final-checkout') && !document.getElementById('cart-page');
+    if (isCheckoutPage) {
+        const domain = document.querySelector('.checkout-domain');
+        if (domain) domain.insertAdjacentElement('afterend', counter);
+    } else {
+        const header = document.querySelector('.header-container');
+        let headerLine = document.querySelector('.header-line');
+        if (header) {
+            if (!headerLine) {
+                headerLine = document.createElement('div');
+                headerLine.className = 'header-line';
+            }
+            header.insertAdjacentElement('afterend', headerLine);
+            headerLine.style.marginTop = '5px';
+        }
+        if (headerLine) {
+            headerLine.insertAdjacentElement('afterend', counter);
+        } else if (header) {
+            header.insertAdjacentElement('afterend', counter);
+        }
     }
     counter.style.marginTop = '5px';
     counter.addEventListener('click', () => openCart());
 
     updateCartCounter();
 
-    // Inject shared styles if not already present
     if (!document.getElementById('cart-counter-style')) {
         const style = document.createElement('style');
         style.id = 'cart-counter-style';
