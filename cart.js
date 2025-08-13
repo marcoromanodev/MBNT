@@ -54,6 +54,10 @@ function createCartModal() {
     modal.innerHTML = `
         <div class="cart-content">
             <button id="cart-close" class="close-btn">&times;</button>
+            <div class="logo-container">
+                <iframe id="cart-logo" src="https://www.vectary.com/viewer/v1/?model=8b9281ad-097b-4408-88e2-ef824efa63eb&env=studio3&turntable=1" frameborder="0"></iframe>
+            </div>
+            <div class="cart-time" id="cart-current-time"></div>
             <h2>Cart</h2>
             <div class="item-count"></div>
             <div class="cart-items"></div>
@@ -179,6 +183,22 @@ function createCartModal() {
         closeCart();
     });
 
+    function updateCartTime() {
+        const options = {
+            timeZone: 'America/Chicago',
+            hour: '2-digit',
+            minute: '2-digit',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+        };
+        const currentTime = new Intl.DateTimeFormat('en-US', options).format(new Date()).replace(',', '');
+        const timeEl = modal.querySelector('#cart-current-time');
+        if (timeEl) timeEl.textContent = `${currentTime} CHICAGO`;
+    }
+    updateCartTime();
+    setInterval(updateCartTime, 1000);
+
     if (!document.getElementById('cart-modal-style')) {
         const style = document.createElement('style');
         style.id = 'cart-modal-style';
@@ -201,6 +221,9 @@ function createCartModal() {
             .checkout-header{display:flex;flex-direction:column;align-items:center;}
             .checkout-domain,.checkout-title{margin-top:5px;}
             .credit-card input{width:90%;}
+            #cart-modal .logo-container{width:80px;height:80px;margin:0 auto;}
+            #cart-modal .logo-container iframe{width:100%;height:100%;border:none;}
+            #cart-modal .cart-time{text-align:center;font-size:0.7rem;font-weight:600;margin-top:5px;}
         `;
         document.head.appendChild(style);
     }
