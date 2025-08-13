@@ -37,16 +37,16 @@ function updateCartCounter() {
 }
 
 function ensureCartCounter() {
-    const time = document.querySelector('.time');
+    const header = document.querySelector('.header-container');
     let headerLine = document.querySelector('.header-line');
 
-    // Make sure the header line exists and sits directly below the clock
-    if (time) {
+    // Make sure the header line exists and sits directly below the header
+    if (header) {
         if (!headerLine) {
             headerLine = document.createElement('div');
             headerLine.className = 'header-line';
         }
-        time.insertAdjacentElement('afterend', headerLine);
+        header.insertAdjacentElement('afterend', headerLine);
         headerLine.style.marginTop = '5px';
     }
 
@@ -59,8 +59,8 @@ function ensureCartCounter() {
     }
     if (headerLine) {
         headerLine.insertAdjacentElement('afterend', counter);
-    } else if (time) {
-        time.insertAdjacentElement('afterend', counter);
+    } else if (header) {
+        header.insertAdjacentElement('afterend', counter);
     }
     counter.style.marginTop = '5px';
 
@@ -70,7 +70,7 @@ function ensureCartCounter() {
     if (!document.getElementById('cart-counter-style')) {
         const style = document.createElement('style');
         style.id = 'cart-counter-style';
-        style.textContent = '.cart-counter{font-size:0.7rem;text-align:center;font-weight:600;}.header-line{border-top:1px solid #000;width:100%;}.product-item img{width:300px;height:300px;object-fit:cover;}';
+        style.textContent = '.cart-counter{font-size:0.7rem;text-align:center;font-weight:600;}.header-line{border-top:1px solid #000;width:100%;}.product-item img{width:300px;height:450px;object-fit:contain;}';
         document.head.appendChild(style);
     }
 }
