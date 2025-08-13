@@ -87,55 +87,68 @@ function createCartModal() {
                 </div>
             </form>
             <div id="final-checkout" style="display:none;">
+                <div class="checkout-header">
+                    <img src="xlogo.png" alt="Logo" class="checkout-logo">
+                    <div class="time" id="modal-time"></div>
+                </div>
                 <h3>Order summary</h3>
                 <p>Original price</p>
-                <p>$335.00</p>
+                <p class="original-price">$0.00</p>
                 <h2>us.bape.com Checkout</h2>
-                <h3>Sign up and know first!</h3>
-                <p class="consent-text">By submitting this form, you consent to receive informational (eg, order updates) and/or marketing texts (eg, cart reminders) from us.bape.com including texts sent by autodialer. Consent is not a condition of purchase. Msg & data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available). Privacy Policy & Terms.</p>
-                <button id="final-submit">Submit</button>
-                <h3>Express checkout</h3>
-                <div class="payment-icons">
-                    <button class="pay-btn" data-method="Shop Pay"><img src="https://upload.wikimedia.org/wikipedia/commons/4/4c/Shop_Pay_logo.svg" alt="Shop Pay"></button>
-                    <button class="pay-btn" data-method="Apple Pay"><img src="https://upload.wikimedia.org/wikipedia/commons/3/30/Apple_Pay_logo.svg" alt="Apple Pay"></button>
-                    <button class="pay-btn" data-method="PayPal"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></button>
-                    <button class="pay-btn" data-method="Google Pay"><img src="https://upload.wikimedia.org/wikipedia/commons/5/5b/Google_Pay_logo.svg" alt="Google Pay"></button>
-                </div>
-                <div class="or">OR</div>
-                <h3>Contact</h3>
-                <button>Log in</button>
-                <h3>Delivery</h3>
-                <p>This will also be used as your billing address for this order.</p>
-                <h3>Shipping method</h3>
-                <p>Enter your shipping address to view available shipping methods.</p>
-                <h3>Payment</h3>
-                <p>Your payment method’s billing address must match the shipping address. All transactions are secure and encrypted.</p>
-                <h4>Credit card</h4>
-                <p>VISA MASTERCARD AMEX</p>
-                <p>+5 Additional payment methods</p>
-                <h4>Apple Pay</h4>
-                <h4>PayPal</h4>
-                <h4>Shop Pay</h4>
-                <p>Pay in full or in installments</p>
-                <h4>Klarna - Flexible payments</h4>
-                <p>Remember me</p>
-                <p>Save my information for a faster checkout with a Shop account</p>
-                <p>Secure and encrypted</p>
-                <h3>Order summary</h3>
-                <p>PLEASE NOTE: WE DO NOT PROCESS ORDERS ON SATURDAYS AND SUNDAYS, PLEASE ALLOW AN ADDITIONAL 2 - 3 BUSINESS DAYS FOR PROCESSING TIME WHEN PLACED ON THE WEEKEND. ALL SALES FINAL. NO EXCHANGES OR RETURNS. EXPECT ALL ORDERS TO BE SHIPPED WITH DELAYS DUE TO THE 4TH OF JULY HOLIDAY.</p>
-                <h4>Shopping cart</h4>
-                <p>Product imageDescriptionQuantityPrice</p>
-                <p>BAPE SK8 STA LADIES #1 LADIES Quantity 1 BAPE SK8 STA LADIES #1 LADIES 1L80-291-320 / Pink / 4 1 $335.00</p>
-                <p>Discount</p>
-                <button id="final-order-submit">Submit</button>
-                <h4>Cost summary</h4>
-                <div class="cost-summary">
-                    <div><span>Item</span><span>Value</span></div>
-                    <div><span>Subtotal</span><span>$335.00</span></div>
-                    <div><span>Shipping</span><span>Enter shipping address</span></div>
-                    <div><span>Total</span><span>USD $335.00</span></div>
-                </div>
-                <p>Your info will be saved to a Shop account. By continuing, you agree to Shop’s Terms of Service and acknowledge the Privacy Policy.</p>
+                <form id="final-form">
+                    <h3>Sign up and know first!</h3>
+                    <input type="email" name="signup_email" placeholder="Enter an email" required>
+                    <p class="consent-text">By submitting this form, you consent to receive informational (eg, order updates) and/or marketing texts (eg, cart reminders) from us.bape.com including texts sent by autodialer. Consent is not a condition of purchase. Msg & data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available). Privacy Policy & Terms.</p>
+                    <button type="submit">Submit</button>
+                    <h3>Express checkout</h3>
+                    <div class="payment-icons">
+                        <button class="pay-btn" data-method="Shop Pay"><img src="https://upload.wikimedia.org/wikipedia/commons/4/4c/Shop_Pay_logo.svg" alt="Shop Pay"></button>
+                        <button class="pay-btn" data-method="Apple Pay"><img src="https://upload.wikimedia.org/wikipedia/commons/3/30/Apple_Pay_logo.svg" alt="Apple Pay"></button>
+                        <button class="pay-btn" data-method="PayPal"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></button>
+                        <button class="pay-btn" data-method="Google Pay"><img src="https://upload.wikimedia.org/wikipedia/commons/5/5b/Google_Pay_logo.svg" alt="Google Pay"></button>
+                    </div>
+                    <div class="or">OR</div>
+                    <h3>Contact</h3>
+                    <button type="button" id="login-btn">Log in</button>
+                    <input type="email" name="contact_email" placeholder="Enter an email" required>
+                    <h3>Delivery</h3>
+                    <p>This will also be used as your billing address for this order.</p>
+                    <input type="text" name="first_name" placeholder="Enter a first name" required>
+                    <input type="text" name="last_name" placeholder="Enter a last name" required>
+                    <input type="text" name="address" placeholder="Enter an address" required>
+                    <input type="text" name="city" placeholder="Enter a city" required>
+                    <input type="text" name="zip" placeholder="Enter a ZIP / postal code" required>
+                    <h3>Shipping method</h3>
+                    <p>Enter your shipping address to view available shipping methods.</p>
+                    <h3>Payment</h3>
+                    <p>Your payment method’s billing address must match the shipping address. All transactions are secure and encrypted.</p>
+                    <div class="credit-card">
+                        <input type="text" name="card_number" placeholder="Enter a card number" required>
+                        <input type="text" name="exp_date" placeholder="Enter a valid expiration date" required>
+                        <input type="text" name="cvv" placeholder="Enter the CVV or security code on your card" required>
+                        <input type="text" name="card_name" placeholder="Enter your name exactly as it’s written on your card" required>
+                    </div>
+                    <h4>Apple Pay</h4>
+                    <h4>PayPal</h4>
+                    <h4>Shop Pay</h4>
+                    <p>Pay in full or in installments</p>
+                    <h4>Klarna - Flexible payments</h4>
+                    <label><input type="checkbox" name="remember"> Save my information for a faster checkout with a Shop account</label>
+                    <p class="phone-error" style="display:none;color:red;">The specified phone number does not match the expected pattern.</p>
+                    <p>Secure and encrypted</p>
+                    <h3>Order summary</h3>
+                    <p class="order-note">PLEASE NOTE: WE DO NOT PROCESS ORDERS ON SATURDAYS AND SUNDAYS, PLEASE ALLOW AN ADDITIONAL 2 - 3 BUSINESS DAYS FOR PROCESSING TIME WHEN PLACED ON THE WEEKEND. ALL SALES FINAL. NO EXCHANGES OR RETURNS. EXPECT ALL ORDERS TO BE SHIPPED WITH DELAYS DUE TO THE 4TH OF JULY HOLIDAY.</p>
+                    <h4>Shopping cart</h4>
+                    <div class="cart-summary"></div>
+                    <button id="final-order-submit" type="submit">Submit</button>
+                    <h4>Cost summary</h4>
+                    <div class="cost-summary">
+                        <div><span>Subtotal</span><span class="subtotal">$0.00</span></div>
+                        <div><span>Shipping</span><span>Enter shipping address</span></div>
+                        <div><span>Total</span><span class="total">$0.00</span></div>
+                    </div>
+                    <p>Your info will be saved to a Shop account. By continuing, you agree to Shop’s Terms of Service and acknowledge the Privacy Policy.</p>
+                </form>
             </div>
             <footer class="cart-footer">
                 <a href="#">refund policy</a> |
@@ -161,7 +174,8 @@ function createCartModal() {
         e.preventDefault();
         showFinalPage(modal);
     });
-    modal.querySelector('#final-order-submit').addEventListener('click', () => {
+    modal.querySelector('#final-form').addEventListener('submit', e => {
+        e.preventDefault();
         alert('Order submitted!');
         closeCart();
     });
@@ -184,6 +198,10 @@ function createCartModal() {
             #checkout-form input {display:block;width:90%;margin:5px auto;padding:8px;}
             .consent-text {font-size:0.7rem;margin-top:10px;}
             #final-checkout{text-align:left;}
+            #final-checkout input {display:block;width:90%;margin:5px auto;padding:8px;}
+            .checkout-logo{display:block;margin:0 auto;width:80px;}
+            #final-checkout .time{font-size:0.7rem;text-align:center;margin-top:5px;font-weight:600;}
+            .credit-card input{width:90%;}
         `;
         document.head.appendChild(style);
     }
@@ -235,6 +253,22 @@ function showCheckoutForm(root = document.getElementById('cart-modal')) {
     root.querySelector('#checkout-form').style.display = 'block';
 }
 
+function updateModalTime() {
+    const options = {
+        timeZone: 'America/Chicago',
+        hour: '2-digit',
+        minute: '2-digit',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+    };
+    const el = document.getElementById('modal-time');
+    if (el) {
+        const currentTime = new Intl.DateTimeFormat('en-US', options).format(new Date()).replace(',', '');
+        el.textContent = currentTime + ' CHICAGO';
+    }
+}
+
 function showFinalPage(root = document.getElementById('cart-modal')) {
     root.querySelector('#checkout-form').style.display = 'none';
     root.querySelector('.cart-items').style.display = 'none';
@@ -244,7 +278,22 @@ function showFinalPage(root = document.getElementById('cart-modal')) {
     root.querySelector('.or').style.display = 'none';
     root.querySelector('.express-checkout').style.display = 'none';
     const finalPage = root.querySelector('#final-checkout');
-    if (finalPage) finalPage.style.display = 'block';
+    if (finalPage) {
+        finalPage.style.display = 'block';
+        const total = cart.reduce((sum, item) => sum + parseFloat(item.price), 0);
+        const summary = finalPage.querySelector('.cart-summary');
+        summary.innerHTML = '';
+        cart.forEach(item => {
+            summary.innerHTML += `<p>${item.name} ${item.color ? '(' + item.color + ')' : ''} - $${parseFloat(item.price).toFixed(2)}</p>`;
+        });
+        finalPage.querySelector('.original-price').textContent = `$${total.toFixed(2)}`;
+        finalPage.querySelector('.subtotal').textContent = `$${total.toFixed(2)}`;
+        finalPage.querySelector('.total').textContent = `$${total.toFixed(2)}`;
+        updateModalTime();
+        if (!window.modalTimeInterval) {
+            window.modalTimeInterval = setInterval(updateModalTime, 1000);
+        }
+    }
 }
 
 function populateCartPage() {
