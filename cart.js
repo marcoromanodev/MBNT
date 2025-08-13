@@ -61,7 +61,9 @@ function createCartModal() {
                 <iframe id="cart-logo" src="https://www.vectary.com/viewer/v1/?model=8b9281ad-097b-4408-88e2-ef824efa63eb&env=studio3&turntable=1" frameborder="0"></iframe>
             </div>
             <div class="cart-time" id="cart-current-time"></div>
-            <div class="order-summary-bar">
+            <h2>Cart</h2>
+            <div class="item-count"></div>
+            <div class="order-summary-bar" style="display:none;">
                 <button id="toggle-order-summary" class="summary-toggle">Order summary <span class="arrow">▼</span></button>
                 <strong class="order-total">$0.00</strong>
             </div>
@@ -74,11 +76,36 @@ function createCartModal() {
                     <div><strong>Total</strong><strong class="total">$0.00</strong></div>
                 </div>
             </div>
-            <form id="checkout-form">
+            <div class="cart-buttons">
+                <button id="view-cart">VIEW CART</button>
+                <button id="cart-checkout">CHECKOUT</button>
+            </div>
+            <div class="or">OR</div>
+            <div class="express-checkout">
+                <h3>Express checkout</h3>
+                <div class="payment-icons">
+                    <button class="pay-btn" data-method="Shop Pay"><img src="shoppay.png" alt="Shop Pay"></button>
+                    <button class="pay-btn" data-method="Apple Pay"><img src="applepay.png" alt="Apple Pay"></button>
+                    <button class="pay-btn paypal" data-method="PayPal"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></button>
+                    <button class="pay-btn" data-method="Google Pay"><img src="googlepay.png" alt="Google Pay"></button>
+                    <button class="pay-btn" data-method="Klarna"><img src="klarna.png" alt="Klarna"></button>
+                    <button class="pay-btn" data-method="Venmo"><img src="venmo.png" alt="Venmo"></button>
+                </div>
+            </div>
+            <form id="checkout-form" style="display:none;">
                 <h3>Sign up and know first!</h3>
                 <input type="email" name="email" placeholder="Email" required>
                 <p class="consent-text">By submitting this form, you consent to receive informational (eg, order updates) and/or marketing texts (eg, cart reminders) from maybenot.com including texts sent by autodialer. Consent is not a condition of purchase. Msg & data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available). Privacy Policy & Terms.</p>
                 <button type="submit">Submit</button>
+                <h3>Express checkout</h3>
+                <div class="payment-icons">
+                    <button class="pay-btn" data-method="Shop Pay"><img src="shoppay.png" alt="Shop Pay"></button>
+                    <button class="pay-btn" data-method="Apple Pay"><img src="applepay.png" alt="Apple Pay"></button>
+                    <button class="pay-btn paypal" data-method="PayPal"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></button>
+                    <button class="pay-btn" data-method="Google Pay"><img src="googlepay.png" alt="Google Pay"></button>
+                    <button class="pay-btn" data-method="Klarna"><img src="klarna.png" alt="Klarna"></button>
+                    <button class="pay-btn" data-method="Venmo"><img src="venmo.png" alt="Venmo"></button>
+                </div>
             </form>
             <div id="final-checkout" style="display:none;">
                 <form id="final-form">
@@ -143,22 +170,14 @@ function createCartModal() {
     document.body.appendChild(modal);
 
     modal.querySelector('#cart-close').addEventListener('click', closeCart);
+    modal.querySelector('#view-cart').addEventListener('click', () => {
+        window.location.href = 'cart.html';
+    });
+    modal.querySelector('#cart-checkout').addEventListener('click', () => showCheckoutForm(modal));
     modal.querySelectorAll('.pay-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             alert(`${btn.dataset.method} payment not implemented.`);
         });
-    });
-    const toggleBtn = modal.querySelector('#toggle-order-summary');
-    const details = modal.querySelector('#order-summary-details');
-    toggleBtn.addEventListener('click', () => {
-        const hidden = details.style.display === 'none';
-        details.style.display = hidden ? 'block' : 'none';
-        toggleBtn.querySelector('.arrow').textContent = hidden ? '▲' : '▼';
-    });
-    const checkoutForm = modal.querySelector('#checkout-form');
-    checkoutForm.addEventListener('submit', e => {
-        e.preventDefault();
-        showFinalPage(modal);
     });
     modal.querySelector('#final-form').addEventListener('submit', e => {
         e.preventDefault();
@@ -216,7 +235,6 @@ function createCartModal() {
             #cart-modal .order-summary-bar{display:flex;justify-content:space-between;align-items:center;margin:10px 0;}
             #cart-modal .summary-toggle{background:transparent;border:none;font-size:1em;display:flex;align-items:center;cursor:pointer;padding:0;}
             #cart-modal .summary-toggle .arrow{margin-left:5px;}
-            #cart-modal #order-summary-details{display:none;}
             #cart-modal .order-total{font-weight:bold;}
         `;
         document.head.appendChild(style);
@@ -229,9 +247,8 @@ function populateCartModal() {
     const modal = document.getElementById('cart-modal');
     const itemsContainer = modal.querySelector('.cart-items');
     itemsContainer.innerHTML = '';
-    const details = modal.querySelector('#order-summary-details');
     if (cart.length === 0) {
-        const hideSelectors = ['.logo-container', '#cart-current-time', '.order-summary-bar', '#order-summary-details', '#checkout-form', '.cart-footer'];
+        const hideSelectors = ['.logo-container', '#cart-current-time', 'h2', '.item-count', '.order-summary-bar', '#order-summary-details', '.cart-buttons', '.or', '.express-checkout', '#checkout-form', '.cart-footer'];
         hideSelectors.forEach(sel => { const el = modal.querySelector(sel); if (el) el.style.display = 'none'; });
         const content = modal.querySelector('.cart-content');
         content.style.display = 'flex';
@@ -266,23 +283,27 @@ function populateCartModal() {
         itemsContainer.appendChild(div);
         total += parseFloat(item.price);
     });
+    modal.querySelector('.item-count').textContent = `${cart.length} Item(s)`;
     modal.querySelector('.subtotal').textContent = `$${total.toFixed(2)}`;
     modal.querySelector('.total').textContent = `$${total.toFixed(2)}`;
-    modal.querySelector('.order-total').textContent = `$${total.toFixed(2)}`;
-    modal.querySelector('#checkout-form').style.display = 'block';
+    modal.querySelector('#checkout-form').style.display = 'none';
     const content = modal.querySelector('.cart-content');
     content.style.display = 'block';
     content.style.justifyContent = '';
     content.style.alignItems = '';
     modal.querySelector('.logo-container').style.display = 'block';
     modal.querySelector('#cart-current-time').style.display = 'block';
+    modal.querySelector('h2').style.display = 'block';
+    modal.querySelector('.item-count').style.display = 'block';
     const bar = modal.querySelector('.order-summary-bar');
-    if (bar) bar.style.display = 'flex';
-    if (details) {
-        details.style.display = 'none';
-    }
-    const toggle = modal.querySelector('#toggle-order-summary .arrow');
-    if (toggle) toggle.textContent = '▼';
+    if (bar) bar.style.display = 'none';
+    const details = modal.querySelector('#order-summary-details');
+    if (details) details.style.display = 'block';
+    modal.querySelector('.cart-items').style.display = 'block';
+    modal.querySelector('.cost-summary').style.display = 'block';
+    modal.querySelector('.cart-buttons').style.display = 'flex';
+    modal.querySelector('.or').style.display = 'block';
+    modal.querySelector('.express-checkout').style.display = 'block';
     const finalPage = modal.querySelector('#final-checkout');
     if (finalPage) finalPage.style.display = 'none';
     const footer = modal.querySelector('.cart-footer');
@@ -307,19 +328,56 @@ function showCheckoutForm(root = document.getElementById('cart-modal')) {
         return;
     }
     // Fallback to original behaviour if no final page is present.
+    const bar = root.querySelector('.order-summary-bar');
     const details = root.querySelector('#order-summary-details');
-    if (details) details.style.display = 'none';
-    const arrow = root.querySelector('#toggle-order-summary .arrow');
-    if (arrow) arrow.textContent = '▼';
+    if (bar && details) {
+        bar.style.display = 'flex';
+        details.style.display = 'none';
+        const totalEl = bar.querySelector('.order-total');
+        if (totalEl) {
+            const total = cart.reduce((sum, item) => sum + parseFloat(item.price), 0);
+            totalEl.textContent = `$${total.toFixed(2)}`;
+        }
+        const toggle = root.querySelector('#toggle-order-summary');
+        const arrow = bar.querySelector('.arrow');
+        if (toggle && !toggle.dataset.bound) {
+            toggle.addEventListener('click', () => {
+                const hidden = details.style.display === 'none';
+                details.style.display = hidden ? 'block' : 'none';
+                if (arrow) arrow.textContent = hidden ? '▲' : '▼';
+            });
+            toggle.dataset.bound = 'true';
+        }
+    }
+    const cartButtons = root.querySelector('.cart-buttons');
+    if (cartButtons) cartButtons.style.display = 'none';
+    const or = root.querySelector('.or');
+    if (or) or.style.display = 'none';
+    const express = root.querySelector('.express-checkout');
+    if (express) express.style.display = 'none';
+    const header = root.querySelector('h2');
+    if (header) header.style.display = 'none';
+    const count = root.querySelector('.item-count');
+    if (count) count.style.display = 'none';
     root.querySelector('#checkout-form').style.display = 'block';
 }
 
 function showFinalPage(root = document.getElementById('cart-modal')) {
     root.querySelector('#checkout-form').style.display = 'none';
+    const bar = root.querySelector('.order-summary-bar');
+    if (bar) bar.style.display = 'none';
     const details = root.querySelector('#order-summary-details');
     if (details) details.style.display = 'none';
-    const arrow = root.querySelector('#toggle-order-summary .arrow');
-    if (arrow) arrow.textContent = '▼';
+    root.querySelector('.cart-items').style.display = 'none';
+    root.querySelector('.cost-summary').style.display = 'none';
+    const cartButtons = root.querySelector('.cart-buttons');
+    if (cartButtons) cartButtons.style.display = 'none';
+    root.querySelector('.or').style.display = 'none';
+    root.querySelector('.express-checkout').style.display = 'none';
+    const extraHeader = [...root.querySelectorAll('h2')].find(el => !el.closest('#final-checkout'));
+    const extraCount = [...root.querySelectorAll('.item-count')].find(el => !el.closest('#final-checkout'));
+    if (extraHeader) extraHeader.style.display = 'none';
+    if (extraCount) extraCount.style.display = 'none';
     const finalPage = root.querySelector('#final-checkout');
     if (finalPage) {
         finalPage.style.display = 'block';
