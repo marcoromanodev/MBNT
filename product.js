@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .image-slider img {
       width:100%;
       height:100%;
-      object-fit:contain;
+      object-fit:cover;
     }
     .image-slider button { position:absolute; top:50%; transform:translateY(-50%); background:transparent; border:none; font-size:2rem; cursor:pointer; color:red; }
     .image-slider button:hover, .image-slider button:focus, .image-slider button:active { background:white; border:2px solid red; }
