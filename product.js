@@ -69,13 +69,24 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const productItem = document.querySelector('.product-item');
-  if (productItem) {
-    productItem.style.marginTop = '20px';
-    productItem.style.display = 'flex';
-    productItem.style.flexDirection = 'column';
-    productItem.style.alignItems = 'center';
-    productItem.style.textAlign = 'center';
-  }
+    if (productItem) {
+      productItem.style.marginTop = '20px';
+      productItem.style.display = 'flex';
+      productItem.style.flexDirection = 'column';
+      productItem.style.alignItems = 'center';
+      productItem.style.textAlign = 'center';
+    }
+
+    document.querySelectorAll('.product-item').forEach(item => {
+      const checkoutBtn = item.querySelector('button[onclick="checkout(this)"]');
+      if (checkoutBtn && !item.querySelector('.view-cart-btn')) {
+        const viewBtn = document.createElement('button');
+        viewBtn.textContent = 'View Cart';
+        viewBtn.className = 'view-cart-btn';
+        viewBtn.addEventListener('click', () => openCart());
+        checkoutBtn.insertAdjacentElement('afterend', viewBtn);
+      }
+    });
 
   // Inject footer similar to shop.html
   const footer = document.querySelector('footer');
