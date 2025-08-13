@@ -320,6 +320,8 @@ function populateCartPage() {
     page.querySelector('.cart-buttons').style.display = 'flex';
     page.querySelector('.or').style.display = 'block';
     page.querySelector('.express-checkout').style.display = 'block';
+    const finalPage = page.querySelector('#final-checkout');
+    if (finalPage) finalPage.style.display = 'none';
 }
 
 function setupCartPage() {
@@ -332,10 +334,20 @@ function setupCartPage() {
             alert(`${btn.dataset.method} payment not implemented.`);
         });
     });
-    page.querySelector('#checkout-form').addEventListener('submit', e => {
-        e.preventDefault();
-        alert('Order submitted!');
-    });
+    const finalForm = page.querySelector('#final-form');
+    if (finalForm) {
+        finalForm.addEventListener('submit', e => {
+            e.preventDefault();
+            alert('Order submitted!');
+        });
+    }
+    const checkoutForm = page.querySelector('#checkout-form');
+    if (checkoutForm) {
+        checkoutForm.addEventListener('submit', e => {
+            e.preventDefault();
+            alert('Order submitted!');
+        });
+    }
 }
 
 function updateCartCounter() {
