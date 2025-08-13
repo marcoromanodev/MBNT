@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cart</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="196x196">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #f7f7f7;
+            color: #000;
+            text-align: center;
+        }
+        .header-container {
+            width: 100%;
+            padding: 10px;
+            background-color: #f7f7f7;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .logo-container {
+            position: static;
+            width: 20vw;
+            height: 20vh;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .header-line {
+            border-top: 1px solid #000;
+            width: 100%;
+            margin-top: 5px;
+        }
+        .cart-page {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .cart-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .payment-icons {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin: 10px 0;
+            align-items: center;
+        }
+        button {
+            background: #000;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            margin: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+        .pay-btn {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .payment-icons img {
+            height: 24px;
+        }
+        .cart-item,
+        .cost-summary div {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+        }
+        .or {
+            margin: 10px 0;
+        }
+        .cart-footer a {
+            color: #000;
+            margin: 0 5px;
+            font-size: 0.8em;
+            text-decoration: none;
+        }
+        button:hover,
+        button:focus,
+        button:active,
+        .cart-footer a:hover,
+        .cart-footer a:focus,
+        .cart-footer a:active {
+            border: 2px solid red;
+            color: red;
+            background: #fff;
+        }
+        #checkout-form input {
+            display: block;
+            width: 90%;
+            margin: 5px auto;
+            padding: 8px;
+        }
+        .consent-text {
+            font-size: 0.7rem;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<header class="header-container">
+    <div class="logo-container">
+        <iframe id="8b9281ad-097b-4408-88e2-ef824efa63eb" src="https://www.vectary.com/viewer/v1/?model=8b9281ad-097b-4408-88e2-ef824efa63eb&env=studio3&turntable=1" frameborder="0"></iframe>
+        <div class="logo-overlay"></div>
+    </div>
+</header>
+<div class="header-line"></div>
+<div class="cart-counter">
+    <span class="cart-icon">🛒</span><span id="cart-count">0</span>
+</div>
+<div id="cart-page" class="cart-page">
+    <h2>Cart</h2>
+    <div class="item-count"></div>
+    <div class="cart-items"></div>
+    <div class="cost-summary">
+        <div><span>Subtotal</span><span class="subtotal">$0.00</span></div>
+        <div><span>Tax</span><span class="tax">Calculated at checkout</span></div>
+        <div><span>Shipping</span><span class="shipping">Calculated at checkout</span></div>
+        <div><strong>Total</strong><strong class="total">$0.00</strong></div>
+    </div>
+    <div class="cart-buttons">
+        <button id="cart-checkout">CHECKOUT</button>
+    </div>
+    <div class="or">OR</div>
+    <div class="express-checkout">
+        <h3>Express checkout</h3>
+        <div class="payment-icons">
+            <button class="pay-btn" data-method="Shop Pay"><img src="https://upload.wikimedia.org/wikipedia/commons/4/4c/Shop_Pay_logo.svg" alt="Shop Pay"></button>
+            <button class="pay-btn" data-method="Apple Pay"><img src="https://upload.wikimedia.org/wikipedia/commons/3/30/Apple_Pay_logo.svg" alt="Apple Pay"></button>
+            <button class="pay-btn" data-method="PayPal"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></button>
+            <button class="pay-btn" data-method="Google Pay"><img src="https://upload.wikimedia.org/wikipedia/commons/5/5b/Google_Pay_logo.svg" alt="Google Pay"></button>
+        </div>
+    </div>
+    <form id="checkout-form" style="display:none;">
+        <h3>Sign up and know first!</h3>
+        <input type="email" name="email" placeholder="Email" required>
+        <p class="consent-text">By submitting this form, you consent to receive informational (eg, order updates) and/or marketing texts (eg, cart reminders) from us.bape.com including texts sent by autodialer. Consent is not a condition of purchase. Msg & data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available). Privacy Policy & Terms.</p>
+        <button type="submit">Submit</button>
+        <h3>Express checkout</h3>
+        <div class="payment-icons">
+            <button class="pay-btn" data-method="Shop Pay"><img src="https://upload.wikimedia.org/wikipedia/commons/4/4c/Shop_Pay_logo.svg" alt="Shop Pay"></button>
+            <button class="pay-btn" data-method="Apple Pay"><img src="https://upload.wikimedia.org/wikipedia/commons/3/30/Apple_Pay_logo.svg" alt="Apple Pay"></button>
+            <button class="pay-btn" data-method="PayPal"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></button>
+            <button class="pay-btn" data-method="Google Pay"><img src="https://upload.wikimedia.org/wikipedia/commons/5/5b/Google_Pay_logo.svg" alt="Google Pay"></button>
+        </div>
+    </form>
+    <footer class="cart-footer">
+        <a href="#">refund policy</a> |
+        <a href="#">shipping</a> |
+        <a href="#">privacy policy</a> |
+        <a href="#">terms of service</a> |
+        <a href="#">cookies</a>
+    </footer>
+</div>
+<script src="cart.js"></script>
+</body>
+</html>

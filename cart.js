@@ -37,7 +37,7 @@ function openCart(showForm = false) {
     populateCartModal();
     modal.style.display = 'flex';
     if (showForm) {
-        showCheckoutForm();
+        showCheckoutForm(modal);
     }
 }
 
@@ -56,7 +56,10 @@ function createCartModal() {
                 <div><span>Shipping</span><span class="shipping">Calculated at checkout</span></div>
                 <div><strong>Total</strong><strong class="total">$0.00</strong></div>
             </div>
-            <button id="view-cart">VIEW CART</button>
+            <div class="cart-buttons">
+                <button id="view-cart">VIEW CART</button>
+                <button id="cart-checkout">CHECKOUT</button>
+            </div>
             <div class="or">OR</div>
             <div class="express-checkout">
                 <h3>Express checkout</h3>
@@ -65,7 +68,6 @@ function createCartModal() {
                     <button class="pay-btn" data-method="Apple Pay"><img src="https://upload.wikimedia.org/wikipedia/commons/3/30/Apple_Pay_logo.svg" alt="Apple Pay"></button>
                     <button class="pay-btn" data-method="PayPal"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></button>
                     <button class="pay-btn" data-method="Google Pay"><img src="https://upload.wikimedia.org/wikipedia/commons/5/5b/Google_Pay_logo.svg" alt="Google Pay"></button>
-                    <button class="pay-btn" data-method="Venmo"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/Venmo_logo.svg" alt="Venmo"></button>
                 </div>
             </div>
             <form id="checkout-form" style="display:none;">
@@ -79,7 +81,6 @@ function createCartModal() {
                     <button class="pay-btn" data-method="Apple Pay"><img src="https://upload.wikimedia.org/wikipedia/commons/3/30/Apple_Pay_logo.svg" alt="Apple Pay"></button>
                     <button class="pay-btn" data-method="PayPal"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></button>
                     <button class="pay-btn" data-method="Google Pay"><img src="https://upload.wikimedia.org/wikipedia/commons/5/5b/Google_Pay_logo.svg" alt="Google Pay"></button>
-                    <button class="pay-btn" data-method="Venmo"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/Venmo_logo.svg" alt="Venmo"></button>
                 </div>
             </form>
             <footer class="cart-footer">
@@ -93,8 +94,10 @@ function createCartModal() {
     document.body.appendChild(modal);
 
     modal.querySelector('#cart-close').addEventListener('click', closeCart);
-    modal.querySelector('#view-cart').addEventListener('click', () => alert('Cart view not implemented.'));
-    modal.querySelector('#cart-checkout')?.addEventListener('click', showCheckoutForm);
+    modal.querySelector('#view-cart').addEventListener('click', () => {
+        window.location.href = 'cart.html';
+    });
+    modal.querySelector('#cart-checkout').addEventListener('click', () => showCheckoutForm(modal));
     modal.querySelectorAll('.pay-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             alert(`${btn.dataset.method} payment not implemented.`);
@@ -113,12 +116,14 @@ function createCartModal() {
             #cart-modal {position:fixed;top:0;left:0;right:0;bottom:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);z-index:1000;}
             #cart-modal .cart-content {background:#fff;padding:20px;max-width:400px;width:90%;text-align:center;position:relative;font-family:sans-serif;}
             #cart-modal .close-btn {position:absolute;top:10px;left:10px;background:#000;color:#fff;border:none;padding:5px 10px;cursor:pointer;}
-            #cart-modal button {background:#000;color:#fff;border:none;padding:10px;margin:5px;cursor:pointer;}
-            #cart-modal .payment-icons {display:flex;justify-content:space-between;gap:5px;margin:10px 0;}
+            #cart-modal .cart-buttons {display:flex;flex-direction:column;align-items:center;}
+            #cart-modal button {background:#000;color:#fff;border:none;padding:10px;margin:5px;cursor:pointer;width:100%;}
+            #cart-modal .payment-icons {display:flex;flex-direction:column;gap:5px;margin:10px 0;align-items:center;}
             #cart-modal .payment-icons img {height:24px;}
             #cart-modal .cost-summary div, #cart-modal .cart-item {display:flex;justify-content:space-between;margin:5px 0;}
             #cart-modal .or {margin:10px 0;}
             #cart-modal footer a {color:#000;margin:0 5px;font-size:0.8em;text-decoration:none;}
+            #cart-modal button:hover,#cart-modal button:focus,#cart-modal button:active,#cart-modal footer a:hover,#cart-modal footer a:focus,#cart-modal footer a:active{border:2px solid red;color:red;background:#fff;}
             #checkout-form input {display:block;width:90%;margin:5px auto;padding:8px;}
             .consent-text {font-size:0.7rem;margin-top:10px;}
         `;
@@ -146,7 +151,7 @@ function populateCartModal() {
     modal.querySelector('#checkout-form').style.display = 'none';
     modal.querySelector('.cart-items').style.display = 'block';
     modal.querySelector('.cost-summary').style.display = 'block';
-    modal.querySelector('#view-cart').style.display = 'block';
+    modal.querySelector('.cart-buttons').style.display = 'flex';
     modal.querySelector('.or').style.display = 'block';
     modal.querySelector('.express-checkout').style.display = 'block';
 }
@@ -158,14 +163,53 @@ function closeCart() {
     }
 }
 
-function showCheckoutForm() {
-    const modal = document.getElementById('cart-modal');
-    modal.querySelector('.cart-items').style.display = 'none';
-    modal.querySelector('.cost-summary').style.display = 'none';
-    modal.querySelector('#view-cart').style.display = 'none';
-    modal.querySelector('.or').style.display = 'none';
-    modal.querySelector('.express-checkout').style.display = 'none';
-    modal.querySelector('#checkout-form').style.display = 'block';
+function showCheckoutForm(root = document.getElementById('cart-modal')) {
+    root.querySelector('.cart-items').style.display = 'none';
+    root.querySelector('.cost-summary').style.display = 'none';
+    root.querySelector('.cart-buttons')?.style.display = 'none';
+    root.querySelector('.or').style.display = 'none';
+    root.querySelector('.express-checkout').style.display = 'none';
+    root.querySelector('#checkout-form').style.display = 'block';
+}
+
+function populateCartPage() {
+    const page = document.getElementById('cart-page');
+    if (!page) return;
+    const itemsContainer = page.querySelector('.cart-items');
+    itemsContainer.innerHTML = '';
+    let total = 0;
+    cart.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'cart-item';
+        div.innerHTML = `<span>${item.name} ${item.color ? '(' + item.color + ')' : ''}</span><span>$${parseFloat(item.price).toFixed(2)}</span>`;
+        itemsContainer.appendChild(div);
+        total += parseFloat(item.price);
+    });
+    page.querySelector('.item-count').textContent = `${cart.length} Item(s)`;
+    page.querySelector('.subtotal').textContent = `$${total.toFixed(2)}`;
+    page.querySelector('.total').textContent = `$${total.toFixed(2)}`;
+    page.querySelector('#checkout-form').style.display = 'none';
+    page.querySelector('.cart-items').style.display = 'block';
+    page.querySelector('.cost-summary').style.display = 'block';
+    page.querySelector('.cart-buttons').style.display = 'flex';
+    page.querySelector('.or').style.display = 'block';
+    page.querySelector('.express-checkout').style.display = 'block';
+}
+
+function setupCartPage() {
+    const page = document.getElementById('cart-page');
+    if (!page) return;
+    populateCartPage();
+    page.querySelector('#cart-checkout').addEventListener('click', () => showCheckoutForm(page));
+    page.querySelectorAll('.pay-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            alert(`${btn.dataset.method} payment not implemented.`);
+        });
+    });
+    page.querySelector('#checkout-form').addEventListener('submit', e => {
+        e.preventDefault();
+        alert('Order submitted!');
+    });
 }
 
 function updateCartCounter() {
@@ -230,4 +274,5 @@ document.addEventListener('DOMContentLoaded', () => {
             item.dataset.selectedColor = opt.dataset.color;
         });
     });
+    setupCartPage();
 });
