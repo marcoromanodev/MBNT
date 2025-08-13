@@ -86,6 +86,57 @@ function createCartModal() {
                     <button class="pay-btn" data-method="Google Pay"><img src="https://upload.wikimedia.org/wikipedia/commons/5/5b/Google_Pay_logo.svg" alt="Google Pay"></button>
                 </div>
             </form>
+            <div id="final-checkout" style="display:none;">
+                <h3>Order summary</h3>
+                <p>Original price</p>
+                <p>$335.00</p>
+                <h2>us.bape.com Checkout</h2>
+                <h3>Sign up and know first!</h3>
+                <p class="consent-text">By submitting this form, you consent to receive informational (eg, order updates) and/or marketing texts (eg, cart reminders) from us.bape.com including texts sent by autodialer. Consent is not a condition of purchase. Msg & data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available). Privacy Policy & Terms.</p>
+                <button id="final-submit">Submit</button>
+                <h3>Express checkout</h3>
+                <div class="payment-icons">
+                    <button class="pay-btn" data-method="Shop Pay"><img src="https://upload.wikimedia.org/wikipedia/commons/4/4c/Shop_Pay_logo.svg" alt="Shop Pay"></button>
+                    <button class="pay-btn" data-method="Apple Pay"><img src="https://upload.wikimedia.org/wikipedia/commons/3/30/Apple_Pay_logo.svg" alt="Apple Pay"></button>
+                    <button class="pay-btn" data-method="PayPal"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></button>
+                    <button class="pay-btn" data-method="Google Pay"><img src="https://upload.wikimedia.org/wikipedia/commons/5/5b/Google_Pay_logo.svg" alt="Google Pay"></button>
+                </div>
+                <div class="or">OR</div>
+                <h3>Contact</h3>
+                <button>Log in</button>
+                <h3>Delivery</h3>
+                <p>This will also be used as your billing address for this order.</p>
+                <h3>Shipping method</h3>
+                <p>Enter your shipping address to view available shipping methods.</p>
+                <h3>Payment</h3>
+                <p>Your payment method’s billing address must match the shipping address. All transactions are secure and encrypted.</p>
+                <h4>Credit card</h4>
+                <p>VISA MASTERCARD AMEX</p>
+                <p>+5 Additional payment methods</p>
+                <h4>Apple Pay</h4>
+                <h4>PayPal</h4>
+                <h4>Shop Pay</h4>
+                <p>Pay in full or in installments</p>
+                <h4>Klarna - Flexible payments</h4>
+                <p>Remember me</p>
+                <p>Save my information for a faster checkout with a Shop account</p>
+                <p>Secure and encrypted</p>
+                <h3>Order summary</h3>
+                <p>PLEASE NOTE: WE DO NOT PROCESS ORDERS ON SATURDAYS AND SUNDAYS, PLEASE ALLOW AN ADDITIONAL 2 - 3 BUSINESS DAYS FOR PROCESSING TIME WHEN PLACED ON THE WEEKEND. ALL SALES FINAL. NO EXCHANGES OR RETURNS. EXPECT ALL ORDERS TO BE SHIPPED WITH DELAYS DUE TO THE 4TH OF JULY HOLIDAY.</p>
+                <h4>Shopping cart</h4>
+                <p>Product imageDescriptionQuantityPrice</p>
+                <p>BAPE SK8 STA LADIES #1 LADIES Quantity 1 BAPE SK8 STA LADIES #1 LADIES 1L80-291-320 / Pink / 4 1 $335.00</p>
+                <p>Discount</p>
+                <button id="final-order-submit">Submit</button>
+                <h4>Cost summary</h4>
+                <div class="cost-summary">
+                    <div><span>Item</span><span>Value</span></div>
+                    <div><span>Subtotal</span><span>$335.00</span></div>
+                    <div><span>Shipping</span><span>Enter shipping address</span></div>
+                    <div><span>Total</span><span>USD $335.00</span></div>
+                </div>
+                <p>Your info will be saved to a Shop account. By continuing, you agree to Shop’s Terms of Service and acknowledge the Privacy Policy.</p>
+            </div>
             <footer class="cart-footer">
                 <a href="#">refund policy</a> |
                 <a href="#">shipping</a> |
@@ -108,6 +159,9 @@ function createCartModal() {
     });
     modal.querySelector('#checkout-form').addEventListener('submit', e => {
         e.preventDefault();
+        showFinalPage(modal);
+    });
+    modal.querySelector('#final-order-submit').addEventListener('click', () => {
         alert('Order submitted!');
         closeCart();
     });
@@ -118,7 +172,7 @@ function createCartModal() {
         style.textContent = `
             #cart-modal {position:fixed;top:0;left:0;right:0;bottom:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);z-index:1000;}
             #cart-modal .cart-content {background:#fff;padding:20px;max-width:400px;width:90%;text-align:center;position:relative;font-family:sans-serif;}
-            #cart-modal .close-btn {position:absolute;top:10px;left:10px;background:#000;color:#fff;border:none;padding:5px 10px;cursor:pointer;}
+            #cart-modal .close-btn {position:absolute;top:10px;left:10px;background:#000;color:#fff;border:none;width:20px;height:20px;line-height:20px;padding:0;font-size:14px;cursor:pointer;}
             #cart-modal .cart-buttons {display:flex;flex-direction:column;align-items:center;}
             #cart-modal button {background:#000;color:#fff;border:none;padding:10px;margin:5px;cursor:pointer;width:100%;}
             #cart-modal .payment-icons {display:flex;flex-direction:column;gap:5px;margin:10px 0;align-items:center;}
@@ -129,6 +183,7 @@ function createCartModal() {
             #cart-modal button:hover,#cart-modal button:focus,#cart-modal button:active,#cart-modal footer a:hover,#cart-modal footer a:focus,#cart-modal footer a:active{border:2px solid red;color:red;background:#fff;}
             #checkout-form input {display:block;width:90%;margin:5px auto;padding:8px;}
             .consent-text {font-size:0.7rem;margin-top:10px;}
+            #final-checkout{text-align:left;}
         `;
         document.head.appendChild(style);
     }
@@ -157,6 +212,8 @@ function populateCartModal() {
     modal.querySelector('.cart-buttons').style.display = 'flex';
     modal.querySelector('.or').style.display = 'block';
     modal.querySelector('.express-checkout').style.display = 'block';
+    const finalPage = modal.querySelector('#final-checkout');
+    if (finalPage) finalPage.style.display = 'none';
 }
 
 function closeCart() {
@@ -173,7 +230,21 @@ function showCheckoutForm(root = document.getElementById('cart-modal')) {
     if (cartButtons) cartButtons.style.display = 'none';
     root.querySelector('.or').style.display = 'none';
     root.querySelector('.express-checkout').style.display = 'none';
+    const finalPage = root.querySelector('#final-checkout');
+    if (finalPage) finalPage.style.display = 'none';
     root.querySelector('#checkout-form').style.display = 'block';
+}
+
+function showFinalPage(root = document.getElementById('cart-modal')) {
+    root.querySelector('#checkout-form').style.display = 'none';
+    root.querySelector('.cart-items').style.display = 'none';
+    root.querySelector('.cost-summary').style.display = 'none';
+    const cartButtons = root.querySelector('.cart-buttons');
+    if (cartButtons) cartButtons.style.display = 'none';
+    root.querySelector('.or').style.display = 'none';
+    root.querySelector('.express-checkout').style.display = 'none';
+    const finalPage = root.querySelector('#final-checkout');
+    if (finalPage) finalPage.style.display = 'block';
 }
 
 function populateCartPage() {
