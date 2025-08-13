@@ -191,9 +191,9 @@
         }
         .order-summary-bar {
             display: flex;
-            justify-content: space-between;
             align-items: center;
             margin: 10px 0;
+            width: 100%;
         }
         .summary-toggle {
             background: transparent;
@@ -203,12 +203,14 @@
             align-items: center;
             cursor: pointer;
             padding: 0;
+            margin-right: auto;
         }
         .summary-toggle .arrow {
             margin-left: 5px;
         }
         .order-total {
             font-weight: bold;
+            margin-left: auto;
         }
     </style>
 </head>
@@ -233,7 +235,7 @@
         <div><strong>Total</strong><strong class="total">$0.00</strong></div>
     </div>
     <div class="cart-buttons">
-        <button id="cart-checkout">CHECKOUT</button>
+        <button id="cart-checkout" onclick="window.location.href='checkout.html'">CHECKOUT</button>
     </div>
     <div class="or">OR</div>
     <div class="express-checkout">
