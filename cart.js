@@ -29,6 +29,10 @@ function addToCart(button) {
 }
 
 function checkout(button) {
+    // If triggered from a product page, add the item to the cart first
+    if (button && button.closest('.product-item')) {
+        addToCart(button);
+    }
     openCart(true);
 }
 
@@ -181,7 +185,7 @@ function createCartModal() {
         style.id = 'cart-modal-style';
         style.textContent = `
             #cart-modal {position:fixed;top:0;left:0;right:0;bottom:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);z-index:1000;}
-            #cart-modal .cart-content {background:#fff;padding:20px;max-width:400px;width:90%;text-align:center;position:relative;font-family:sans-serif;}
+            #cart-modal .cart-content {background:#fff;padding:20px;max-width:400px;width:90%;text-align:center;position:relative;font-family:sans-serif;max-height:90vh;overflow-y:auto;}
             #cart-modal .close-btn {position:absolute;top:10px;left:10px;background:#000;color:#fff;border:none;width:20px;height:20px;line-height:20px;padding:0;font-size:14px;cursor:pointer;}
             #cart-modal .cart-buttons {display:flex;flex-direction:column;align-items:center;}
             #cart-modal button {background:#000;color:#fff;border:none;padding:10px;margin:5px;cursor:pointer;width:100%;}
