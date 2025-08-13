@@ -54,9 +54,6 @@ function createCartModal() {
     modal.innerHTML = `
         <div class="cart-content">
             <button id="cart-close" class="close-btn">&times;</button>
-            <div class="checkout-header">
-                <iframe src="https://www.vectary.com/viewer/v1/?model=8b9281ad-097b-4408-88e2-ef824efa63eb&env=studio3&turntable=1" frameborder="0" class="checkout-logo"></iframe>
-            </div>
             <h2>Cart</h2>
             <div class="item-count"></div>
             <div class="cart-items"></div>
@@ -95,8 +92,6 @@ function createCartModal() {
             </form>
             <div id="final-checkout" style="display:none;">
                 <div class="checkout-header">
-                    <iframe src="https://www.vectary.com/viewer/v1/?model=8b9281ad-097b-4408-88e2-ef824efa63eb&env=studio3&turntable=1" frameborder="0" class="checkout-logo"></iframe>
-                    <div class="time" id="modal-time"></div>
                     <h2 class="checkout-domain">maybenot.com</h2>
                     <h2 class="checkout-title">Checkout</h2>
                 </div>
@@ -204,8 +199,6 @@ function createCartModal() {
             #final-checkout{text-align:center;}
             #final-checkout input {display:block;width:90%;margin:5px auto;padding:8px;}
             .checkout-header{display:flex;flex-direction:column;align-items:center;}
-            .checkout-logo{display:block;margin:0 auto;width:80px;height:80px;border:none;}
-            #final-checkout .time{font-size:0.7rem;text-align:center;margin-top:5px;font-weight:600;}
             .checkout-domain,.checkout-title{margin-top:5px;}
             .credit-card input{width:90%;}
         `;
@@ -265,22 +258,6 @@ function showCheckoutForm(root = document.getElementById('cart-modal')) {
     root.querySelector('#checkout-form').style.display = 'block';
 }
 
-function updateModalTime() {
-    const options = {
-        timeZone: 'America/Chicago',
-        hour: '2-digit',
-        minute: '2-digit',
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-    };
-    const el = document.getElementById('modal-time');
-    if (el) {
-        const currentTime = new Intl.DateTimeFormat('en-US', options).format(new Date()).replace(',', '');
-        el.textContent = currentTime + ' CHICAGO';
-    }
-}
-
 function showFinalPage(root = document.getElementById('cart-modal')) {
     root.querySelector('#checkout-form').style.display = 'none';
     root.querySelector('.cart-items').style.display = 'none';
@@ -301,10 +278,6 @@ function showFinalPage(root = document.getElementById('cart-modal')) {
         finalPage.querySelector('.original-price').textContent = `$${total.toFixed(2)}`;
         finalPage.querySelector('.subtotal').textContent = `$${total.toFixed(2)}`;
         finalPage.querySelector('.total').textContent = `$${total.toFixed(2)}`;
-        updateModalTime();
-        if (!window.modalTimeInterval) {
-            window.modalTimeInterval = setInterval(updateModalTime, 1000);
-        }
     }
 }
 
