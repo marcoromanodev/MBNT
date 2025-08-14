@@ -135,8 +135,9 @@
         .cart-item img {
             width: 50px;
             height: 50px;
-            object-fit: cover;
+            object-fit: contain;
             margin-right: 10px;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
         }
         .cart-item-info {
             text-align: left;
@@ -158,6 +159,7 @@
             justify-content: center;
             line-height: 1;
             padding: 0;
+            text-align: center;
         }
         .pay-option[data-method="paypal"] img {
             width: 60px;
