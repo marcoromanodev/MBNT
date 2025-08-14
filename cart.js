@@ -1,17 +1,18 @@
 let cart = [];
 
-const SESSION_LIMIT = 5 * 60 * 1000; // 5 minutes
-
 function initCart() {
-    const now = Date.now();
     try {
         const stored = JSON.parse(localStorage.getItem('cart') || '[]');
-        cart = Array.isArray(stored) ? stored.filter(item => now - (item.timestamp || 0) < SESSION_LIMIT) : [];
+        cart = Array.isArray(stored) ? stored : [];
     } catch (e) {
         cart = [];
     }
     localStorage.setItem('cart', JSON.stringify(cart));
     updateCartCounter();
+    populateCartPage();
+    document.querySelectorAll('#final-checkout').forEach(section => {
+        populateOrderSummary(section);
+    });
 }
 
 function addToCart(button) {
@@ -231,7 +232,7 @@ function createCartModal() {
         style.textContent = `
             #cart-modal {position:fixed;top:0;left:0;right:0;bottom:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);z-index:1000;}
             #cart-modal .cart-content {background:#fff;padding:20px;max-width:400px;width:90%;text-align:center;position:relative;font-family:sans-serif;max-height:90vh;overflow-y:auto;}
-            #cart-modal .close-btn {position:absolute;top:10px;left:10px;background:#000;color:#fff;border:none;width:20px;height:20px;display:flex;align-items:center;justify-content:center;line-height:1;padding:0;font-size:14px;cursor:pointer;}
+            #cart-modal .close-btn {position:absolute;top:10px;left:10px;background:#000;color:#fff;border:none;width:20px;height:20px;display:flex;align-items:center;justify-content:center;line-height:20px;padding:0;font-size:14px;cursor:pointer;}
             #cart-modal .cart-buttons {display:flex;flex-direction:column;align-items:center;}
             #cart-modal button:not(.pay-btn){background:#000;color:#fff;border:none;padding:10px;margin:5px auto;cursor:pointer;display:block;}
             #cart-modal .pay-btn{background:transparent;border:none;margin:0;padding:0;display:flex;justify-content:center;align-items:center;}
