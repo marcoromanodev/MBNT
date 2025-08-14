@@ -12,8 +12,8 @@ function initSliders() {
       img.style.width = '100%';
       img.style.height = '100%';
       img.style.objectFit = 'contain';
-      // allow clicking the image to toggle a persistent red highlight
-      img.addEventListener('click', () => {
+      // allow tapping or clicking the image to toggle a persistent red highlight
+      img.addEventListener('pointerdown', () => {
         img.classList.toggle('selected');
       });
     }
@@ -159,6 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
       object-fit:cover;
     }
     .image-slider img:hover,
+    .image-slider img:active,
     .image-slider img.selected {
       border:2px solid red;
       box-sizing:border-box;
