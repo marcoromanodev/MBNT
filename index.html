@@ -172,6 +172,9 @@
 
         /* Mobile Adjustments */
         @media (max-width: 768px) {
+            .container {
+                padding-top: 20px; /* Shift content down slightly on mobile */
+            }
             .logo-container {
             position: relative;
                 margin-top: -80px; /* Reduced top margin for mobile */
@@ -205,11 +208,11 @@
         @media (min-width: 769px) {
             .logo-container {
             position: relative;
-                margin-top: 120px; /* Lower logo on desktop */
+                margin-top: 100px; /* Raise logo slightly on desktop */
             }
 
             .time {
-                margin-top: -120px; /* Closer to logo */
+                margin-top: -100px; /* Keep time in place as logo moves up */
             }
 
             footer .social-icons {
