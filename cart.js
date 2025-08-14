@@ -76,7 +76,7 @@ function createCartModal() {
             <h2>Cart</h2>
             <div class="item-count"></div>
             <div class="order-summary-bar" style="display:none;">
-                <button id="toggle-order-summary" class="summary-toggle">Order summary <span class="arrow">▼</span></button>
+                <button id="toggle-order-summary" class="summary-toggle" type="button">Order summary <span class="arrow">▼</span></button>
                 <strong class="order-total">$0.00</strong>
             </div>
             <div id="order-summary-details">
@@ -123,7 +123,7 @@ function createCartModal() {
                 <form id="final-form">
                     <h2 class="checkout-domain">maybenot.com</h2>
                     <div class="order-summary-bar">
-                        <button class="summary-toggle">Order summary <span class="arrow">&#9660;</span></button>
+                        <button class="summary-toggle" type="button">Order summary <span class="arrow">&#9660;</span></button>
                         <strong class="order-total">$0.00</strong>
                     </div>
                     <div class="order-summary-details" style="display:none;">
@@ -374,7 +374,8 @@ function showCheckoutForm(root = document.getElementById('cart-modal')) {
         const toggle = root.querySelector('#toggle-order-summary');
         const arrow = bar.querySelector('.arrow');
         if (toggle && !toggle.dataset.bound) {
-            toggle.addEventListener('click', () => {
+            toggle.addEventListener('click', (e) => {
+                e.preventDefault();
                 const hidden = details.style.display === 'none';
                 details.style.display = hidden ? 'block' : 'none';
                 if (arrow) arrow.textContent = hidden ? '▲' : '▼';
@@ -429,7 +430,8 @@ function populateOrderSummary(section) {
     const toggle = section.querySelector('.summary-toggle');
     const arrow = bar.querySelector('.arrow');
     if (toggle && !toggle.dataset.bound) {
-        toggle.addEventListener('click', () => {
+        toggle.addEventListener('click', (e) => {
+            e.preventDefault();
             const hidden = details.style.display === 'none';
             details.style.display = hidden ? 'block' : 'none';
             if (arrow) arrow.textContent = hidden ? '▲' : '▼';
