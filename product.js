@@ -158,8 +158,8 @@ document.addEventListener('DOMContentLoaded', () => {
     .product-item h1, .product-item p, .product-details { text-align:center; }
     .color-options { margin-top:10px; }
     .color-option { width:20px; height:20px; display:inline-block; cursor:pointer; margin:0 5px; border:1px solid #000; }
-    .color-option.selected, .color-option:hover, .color-option:focus { border:2px solid red; }
-  `;
+      .color-option.selected, .color-option:hover, .color-option:focus, .color-option:active { border:2px solid red; }
+    `;
   document.head.appendChild(style);
 
   window.addEventListener('scroll', function() {
