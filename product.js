@@ -12,10 +12,6 @@ function initSliders() {
       img.style.width = '100%';
       img.style.height = '100%';
       img.style.objectFit = 'contain';
-      // allow tapping or clicking the image to toggle a persistent red highlight
-      img.addEventListener('pointerdown', () => {
-        img.classList.toggle('selected');
-      });
     }
     slider.style.aspectRatio = '1 / 1';
     slider.style.overflow = 'hidden';
@@ -156,13 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .image-slider img {
       width:100%;
       height:100%;
-      object-fit:cover;
-    }
-    .image-slider img:hover,
-    .image-slider img:active,
-    .image-slider img.selected {
-      border:2px solid red;
-      box-sizing:border-box;
+      object-fit:contain;
     }
     .image-slider button { position:absolute; top:50%; transform:translateY(-50%); background:transparent; border:2px solid transparent; font-size:2rem; cursor:pointer; color:red; z-index:1; }
     .image-slider button:hover, .image-slider button:focus, .image-slider button:active { background:white; border:2px solid red; }
