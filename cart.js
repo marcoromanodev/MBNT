@@ -242,10 +242,11 @@ function createCartModal() {
             #cart-modal .payment-icons img{width:80px;height:auto;}
             #cart-modal .payment-methods .pay-option[data-method="paypal"] img{width:60px;}
             #cart-modal .cost-summary div{display:flex;justify-content:space-between;margin:5px 0;}
-            #cart-modal .cart-item{display:flex;align-items:center;justify-content:space-between;margin:5px 0;position:relative;}
+            #cart-modal .cart-item{display:flex;align-items:center;justify-content:space-between;margin:5px 0;position:relative;padding-top:10px;}
+            #cart-modal .cart-item.no-remove{padding-top:0;}
             #cart-modal .cart-item img{width:50px;height:50px;object-fit:cover;margin-right:10px;}
             #cart-modal .cart-item .cart-item-info{text-align:left;flex:1;}
-            #cart-modal .cart-item .remove-item{background:transparent;border:none;position:absolute;top:0;right:0;cursor:pointer;font-size:1rem;}
+            #cart-modal .cart-item .remove-item{background:#000;color:#fff;border:none;position:absolute;top:-10px;right:0;cursor:pointer;font-size:0.8rem;width:20px;height:20px;display:flex;align-items:center;justify-content:center;}
             #cart-modal .or {margin:10px 0;}
             #cart-modal footer a {color:#000;margin:0 5px;font-size:0.8em;text-decoration:none;}
             #cart-modal button:not(.pay-btn):hover,#cart-modal button:not(.pay-btn):focus,#cart-modal button:not(.pay-btn):active,#cart-modal footer a:hover,#cart-modal footer a:focus,#cart-modal footer a:active{border:2px solid red;color:red;background:#fff;}
@@ -294,9 +295,9 @@ function populateCartModal() {
         return;
     }
     let total = 0;
-    cart.forEach((item, index) => {
+    cart.forEach(item => {
         const div = document.createElement('div');
-        div.className = 'cart-item';
+        div.className = 'cart-item no-remove';
         div.innerHTML = `
             <img src="${item.image}" alt="${item.name}">
             <div class="cart-item-info">
@@ -305,13 +306,9 @@ function populateCartModal() {
                 ${item.color ? `<div>Color: ${item.color}</div>` : ''}
                 ${item.size ? `<div>Size: ${item.size}</div>` : ''}
             </div>
-            <span>$${parseFloat(item.price).toFixed(2)}</span>
-            <button class="remove-item" data-index="${index}">&times;</button>`;
+            <span>$${parseFloat(item.price).toFixed(2)}</span>`;
         itemsContainer.appendChild(div);
         total += parseFloat(item.price);
-    });
-    itemsContainer.querySelectorAll('.remove-item').forEach(btn => {
-        btn.addEventListener('click', () => removeFromCart(parseInt(btn.dataset.index)));
     });
     modal.querySelector('.item-count').textContent = `${cart.length} Item(s)`;
     modal.querySelector('.subtotal').textContent = `$${total.toFixed(2)}`;
@@ -403,9 +400,9 @@ function populateOrderSummary(section) {
     if (!itemsContainer || !subtotalEl || !totalEl || !orderTotalEl || !bar || !details) return;
     itemsContainer.innerHTML = '';
     let total = 0;
-    cart.forEach((item, index) => {
+    cart.forEach(item => {
         const div = document.createElement('div');
-        div.className = 'cart-item';
+        div.className = 'cart-item no-remove';
         div.innerHTML = `
             <img src="${item.image}" alt="${item.name}">
             <div class="cart-item-info">
@@ -414,13 +411,9 @@ function populateOrderSummary(section) {
                 ${item.color ? `<div>Color: ${item.color}</div>` : ''}
                 ${item.size ? `<div>Size: ${item.size}</div>` : ''}
             </div>
-            <span>$${parseFloat(item.price).toFixed(2)}</span>
-            <button class="remove-item" data-index="${index}">&times;</button>`;
+            <span>$${parseFloat(item.price).toFixed(2)}</span>`;
         itemsContainer.appendChild(div);
         total += parseFloat(item.price);
-    });
-    itemsContainer.querySelectorAll('.remove-item').forEach(btn => {
-        btn.addEventListener('click', () => removeFromCart(parseInt(btn.dataset.index)));
     });
     subtotalEl.textContent = `$${total.toFixed(2)}`;
     totalEl.textContent = `$${total.toFixed(2)}`;
