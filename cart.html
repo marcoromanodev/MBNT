@@ -23,7 +23,7 @@
             align-items: center;
         }
         .logo-container {
-            position: static;
+            position: relative;
             width: 20vw;
             height: 15vh;
         }
@@ -238,6 +238,27 @@
             font-weight: bold;
             margin: 0;
         }
+
+        .full-site-link {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .full-site-link {
+                display: block;
+                width: 100%;
+                text-align: center;
+                padding: 10px;
+                background-color: #f7f7f7;
+                color: #000;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .full-site-link {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -364,6 +385,9 @@
         <a href="#">terms of service</a> |
         <a href="#">cookies</a>
     </footer>
+    <div class="full-site-link" id="full-site-link">
+        <a href="index.html">full site</a>
+    </div>
 </div>
 <script src="cart.js"></script>
 <script>
@@ -381,6 +405,16 @@
     }
     updateChicagoTime();
     setInterval(updateChicagoTime, 1000);
+
+    window.addEventListener('scroll', function() {
+        var fullSiteLink = document.getElementById('full-site-link');
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight && window.innerWidth <= 768) {
+            fullSiteLink.style.display = 'block';
+        } else {
+            fullSiteLink.style.display = 'none';
+        }
+    });
+
     const logoOverlay = document.querySelector(".logo-overlay");
     if (logoOverlay) {
         let pressTimer;

@@ -37,7 +37,7 @@
         }
 
         .logo-container {
-            position: static;
+            position: relative;
             width: 20vw;
             height: 15vh;
             margin-top: 0;
@@ -115,6 +115,11 @@
             color: white;
         }
 
+        nav.mobile-nav ul li a.active {
+            background-color: red;
+            color: white;
+        }
+
         /* Desktop Navigation */
         .desktop-nav {
             display: none;
@@ -145,6 +150,12 @@
         .desktop-nav ul li a:hover,
         .desktop-nav ul li a:focus,
         .desktop-nav ul li a:active {
+            border: 2px solid red;
+            color: red;
+            background-color: white;
+        }
+
+        .desktop-nav ul li a.active {
             border: 2px solid red;
             color: red;
             background-color: white;
@@ -305,7 +316,7 @@
             align-items: center;
         }
         .logo-container {
-            position: static;
+            position: relative;
             top: auto;
             left: auto;
             transform: none;
@@ -454,6 +465,12 @@
     }
 
     setInterval(updateChicagoTime, 1000);
+
+    document.querySelectorAll('.desktop-nav a, .mobile-nav a').forEach(link => {
+        if (link.getAttribute('href') === window.location.pathname.split('/').pop()) {
+            link.classList.add('active');
+        }
+    });
 
     // Show the full-site link only when the user scrolls to the bottom on mobile
     window.addEventListener('scroll', function() {
