@@ -12,20 +12,29 @@ function initSliders() {
       img.style.width = '100%';
       img.style.height = '100%';
       img.style.objectFit = 'contain';
+      // allow clicking the image to toggle a persistent red highlight
+      img.addEventListener('click', () => {
+        img.classList.toggle('selected');
+      });
     }
     slider.style.aspectRatio = '1 / 1';
     slider.style.overflow = 'hidden';
     const prev = slider.querySelector('.prev');
     const next = slider.querySelector('.next');
 
-    prev.addEventListener('click', () => {
-      index = (index - 1 + images.length) % images.length;
-      img.src = images[index];
-    });
-    next.addEventListener('click', () => {
-      index = (index + 1) % images.length;
-      img.src = images[index];
-    });
+    // safeguard in case navigation buttons are missing
+    if (prev) {
+      prev.addEventListener('click', () => {
+        index = (index - 1 + images.length) % images.length;
+        img.src = images[index];
+      });
+    }
+    if (next) {
+      next.addEventListener('click', () => {
+        index = (index + 1) % images.length;
+        img.src = images[index];
+      });
+    }
 
     // allow color option clicks to update slider index and image
     const product = slider.closest('.product-item');
@@ -149,7 +158,12 @@ document.addEventListener('DOMContentLoaded', () => {
       height:100%;
       object-fit:cover;
     }
-    .image-slider button { position:absolute; top:50%; transform:translateY(-50%); background:transparent; border:none; font-size:2rem; cursor:pointer; color:red; }
+    .image-slider img:hover,
+    .image-slider img.selected {
+      border:2px solid red;
+      box-sizing:border-box;
+    }
+    .image-slider button { position:absolute; top:50%; transform:translateY(-50%); background:transparent; border:2px solid transparent; font-size:2rem; cursor:pointer; color:red; z-index:1; }
     .image-slider button:hover, .image-slider button:focus, .image-slider button:active { background:white; border:2px solid red; }
     .image-slider .prev { left:0; }
     .image-slider .next { right:0; }
