@@ -80,6 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
       productItem.style.flexDirection = 'column';
       productItem.style.alignItems = 'center';
       productItem.style.textAlign = 'center';
+      productItem.style.width = '100%';
     }
 
     document.querySelectorAll('.product-item').forEach(item => {
@@ -161,6 +162,8 @@ document.addEventListener('DOMContentLoaded', () => {
     .product-item button { background:#000; color:#fff; border:2px solid #000; font-family:'Courier New', Courier, monospace; cursor:pointer; margin-top:5px; }
     .product-item button:hover, .product-item button:active, .product-item button:focus { background:#fff; color:red; border-color:red; }
     .product-item h1, .product-item p, .product-details { text-align:center; }
+    .product-details { width:100%; }
+    .product-details p { max-width:90%; margin:0 auto; }
     .color-options { margin-top:10px; }
     .color-option { width:20px; height:20px; display:inline-block; cursor:pointer; margin:0 5px; border:1px solid #000; }
       .color-option.selected, .color-option:hover, .color-option:focus, .color-option:active { border:2px solid red; }
