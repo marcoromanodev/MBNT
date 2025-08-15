@@ -205,15 +205,35 @@
         }
         #final-checkout input {
             display: block;
-            width: 90%;
+            width: 100%;
             margin: 5px auto;
-            padding: 8px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .contact-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #login-btn {
+            background: none;
+            border: none;
+            color: #000;
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 0.9em;
+            padding: 0;
+        }
+        #login-btn:hover {
+            color: red;
         }
         .checkout-domain {
             margin-top: 5px;
         }
         .credit-card input {
-            width: 90%;
+            width: 100%;
         }
         .order-summary-bar {
             display: flex;
@@ -318,8 +338,10 @@
                 <button class="pay-btn" data-method="Venmo"><img src="venmo.png" alt="Venmo"></button>
             </div>
             <div class="or">OR</div>
-            <h3>Contact</h3>
-            <button type="button" id="login-btn">Log in</button>
+            <div class="contact-header">
+                <h3>Contact</h3>
+                <button type="button" id="login-btn">Log in</button>
+            </div>
             <input type="email" name="contact_email" placeholder="Enter an email" required>
             <h3>Delivery</h3>
             <p>This will also be used as your billing address for this order.</p>
