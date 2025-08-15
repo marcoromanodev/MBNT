@@ -1,5 +1,24 @@
 let cart = [];
 
+const paymentHandlers = {
+    'Shop Pay': () => alert('Shop Pay integration pending.'),
+    'Apple Pay': () => alert('Apple Pay integration pending.'),
+    'PayPal': () => alert('PayPal integration pending.'),
+    'Google Pay': () => alert('Google Pay integration pending.'),
+    'Klarna': () => alert('Klarna integration pending.'),
+    'Venmo': () => alert('Venmo integration pending.'),
+    'Stripe': () => alert('Stripe integration pending.')
+};
+
+function handlePayment(method) {
+    const handler = paymentHandlers[method];
+    if (handler) {
+        handler();
+    } else {
+        alert(`${method} payment not implemented.`);
+    }
+}
+
 function initCart() {
     try {
         const stored = JSON.parse(localStorage.getItem('cart') || '[]');
@@ -194,8 +213,10 @@ function createCartModal() {
                         <button class="pay-btn" data-method="Venmo"><img src="venmo.png" alt="Venmo"></button>
                     </div>
                     <div class="or">OR</div>
-                    <h3>Contact</h3>
-                    <button type="button" id="login-btn">Log in</button>
+                    <div class="contact-header">
+                        <h3>Contact</h3>
+                        <button type="button" id="login-btn">Log in</button>
+                    </div>
                     <input type="email" name="contact_email" placeholder="Enter an email" required>
                     <h3>Delivery</h3>
                     <p>This will also be used as your billing address for this order.</p>
@@ -261,14 +282,10 @@ function createCartModal() {
             btn.classList.add('selected');
         });
         btn.addEventListener('click', () => {
-            alert(`${btn.dataset.method} payment not implemented.`);
+            handlePayment(btn.dataset.method);
         });
     });
-    modal.querySelector('#final-form').addEventListener('submit', e => {
-        e.preventDefault();
-        alert('Order submitted!');
-        closeCart();
-    });
+
 
     function updateCartTime() {
         const options = {
@@ -310,12 +327,15 @@ function createCartModal() {
             #cart-modal .or {margin:10px 0;}
             #cart-modal footer a {color:#000;margin:0 5px;font-size:0.8em;text-decoration:none;}
             #cart-modal button:not(.pay-btn):not(.summary-toggle):hover,#cart-modal button:not(.pay-btn):not(.summary-toggle):focus,#cart-modal button:not(.pay-btn):not(.summary-toggle):active,#cart-modal footer a:hover,#cart-modal footer a:focus,#cart-modal footer a:active{border:2px solid red;color:red;background:#fff;}
-            #checkout-form input {display:block;width:90%;margin:5px auto;padding:8px;}
+            #checkout-form input {display:block;width:100%;margin:5px auto;padding:10px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;}
             .consent-text {font-size:0.7rem;margin-top:10px;}
             #final-checkout{text-align:center;}
-            #final-checkout input {display:block;width:90%;margin:5px auto;padding:8px;}
+            #final-checkout input {display:block;width:100%;margin:5px auto;padding:10px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;}
+            .contact-header{display:flex;justify-content:space-between;align-items:center;}
+            #login-btn{background:none;border:none;color:#000;cursor:pointer;text-decoration:underline;font-size:0.9em;padding:0;}
+            #login-btn:hover{color:red;}
             .checkout-domain{margin-top:5px;}
-            .credit-card input{width:90%;}
+            .credit-card input{width:100%;}
             #cart-modal .logo-container{width:80px;height:80px;margin:0 auto;}
             #cart-modal .logo-container iframe{width:100%;height:100%;border:none;}
             #cart-modal .cart-time{text-align:center;font-size:0.7rem;font-weight:600;margin-top:5px;}
@@ -572,6 +592,14 @@ function setupFinalForm(form) {
             if (msg) msg.style.display = show ? 'block' : 'none';
         });
     }
+    form.addEventListener('submit', e => {
+        e.preventDefault();
+        handlePayment('Stripe');
+        const modal = form.closest('#cart-modal');
+        if (modal) {
+            closeCart();
+        }
+    });
 }
 
 function populateCartPage() {
@@ -663,14 +691,14 @@ function setupCartPage() {
             btn.classList.add('selected');
         });
         btn.addEventListener('click', () => {
-            alert(`${btn.dataset.method} payment not implemented.`);
+            handlePayment(btn.dataset.method);
         });
     });
     const finalForm = page.querySelector('#final-form');
     if (finalForm) {
         finalForm.addEventListener('submit', e => {
             e.preventDefault();
-            alert('Order submitted!');
+            handlePayment('Stripe');
         });
     }
     const checkoutForm = page.querySelector('#checkout-form');
@@ -687,6 +715,15 @@ function setupCheckoutPage() {
     if (!finalPage) return;
     populateOrderSummary(finalPage);
     setupFinalForm(finalPage.querySelector('#final-form'));
+    finalPage.querySelectorAll('.pay-btn').forEach(btn => {
+        btn.addEventListener('pointerdown', () => {
+            finalPage.querySelectorAll('.pay-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+        });
+        btn.addEventListener('click', () => {
+            handlePayment(btn.dataset.method);
+        });
+    });
 }
 
 function updateCartCounter() {
