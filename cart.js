@@ -264,7 +264,7 @@ function createCartModal() {
             #cart-modal .logo-container iframe{width:100%;height:100%;border:none;}
             #cart-modal .cart-time{text-align:center;font-size:0.7rem;font-weight:600;margin-top:5px;}
             #cart-modal .order-summary-bar{display:flex;align-items:center;justify-content:space-between;margin:10px 0;width:100%;}
-            #cart-modal .summary-toggle{background:transparent;border:none;font-size:1em;display:flex;align-items:center;cursor:pointer;padding:0;margin:0;}
+            #cart-modal .summary-toggle{background:transparent;border:none;font-size:1em;display:flex;align-items:center;cursor:pointer;padding:0;margin:0;margin-left:-10px;}
             #cart-modal .summary-toggle .arrow{margin-left:5px;}
             #cart-modal .order-total{font-weight:bold;margin:0;}
         `;
