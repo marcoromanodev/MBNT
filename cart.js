@@ -236,7 +236,7 @@ function createCartModal() {
         style.textContent = `
             #cart-modal {position:fixed;top:0;left:0;right:0;bottom:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);z-index:1000;}
             #cart-modal .cart-content {background:#fff;padding:20px;max-width:400px;width:90%;text-align:center;position:relative;font-family:sans-serif;max-height:90vh;overflow-y:auto;}
-            #cart-modal .close-btn {position:absolute;top:10px;left:10px;background:#000;color:#fff;border:none;width:20px;height:20px;display:flex;align-items:center;justify-content:center;padding:0;font-size:14px;line-height:20px;cursor:pointer;}
+            #cart-modal .close-btn {position:absolute;top:10px;left:10px;background:#000;color:#fff;border:none;width:20px;height:20px;display:flex;align-items:center;justify-content:center;padding:0;font-size:14px;font-family:Arial,sans-serif;line-height:1;cursor:pointer;}
             #cart-modal .cart-buttons {display:flex;flex-direction:column;align-items:center;}
             #cart-modal button:not(.pay-btn){background:#000;color:#fff;border:none;padding:10px;margin:5px auto;cursor:pointer;display:block;}
             #cart-modal .pay-btn{background:transparent;border:none;margin:0;padding:0;display:flex;justify-content:center;align-items:center;}
@@ -250,7 +250,7 @@ function createCartModal() {
             #cart-modal .cart-item.no-remove{padding-top:0;}
             #cart-modal .cart-item img{width:50px;height:50px;object-fit:contain;margin-right:10px;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.1));}
             #cart-modal .cart-item .cart-item-info{text-align:left;flex:1;}
-            #cart-modal .cart-item .remove-item{background:#000;color:#fff;border:none;position:absolute;top:0;right:0;cursor:pointer;font-size:14px;width:20px;height:20px;display:flex;align-items:center;justify-content:center;padding:0;line-height:20px;}
+            #cart-modal .cart-item .remove-item{background:#000;color:#fff;border:none;position:absolute;top:0;right:0;cursor:pointer;font-size:14px;width:20px;height:20px;display:flex;align-items:center;justify-content:center;padding:0;font-family:Arial,sans-serif;line-height:1;}
             #cart-modal .or {margin:10px 0;}
             #cart-modal footer a {color:#000;margin:0 5px;font-size:0.8em;text-decoration:none;}
             #cart-modal button:not(.pay-btn):hover,#cart-modal button:not(.pay-btn):focus,#cart-modal button:not(.pay-btn):active,#cart-modal footer a:hover,#cart-modal footer a:focus,#cart-modal footer a:active{border:2px solid red;color:red;background:#fff;}
