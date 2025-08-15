@@ -166,10 +166,10 @@ document.addEventListener('DOMContentLoaded', () => {
     .image-slider button:hover, .image-slider button:focus, .image-slider button:active { background:white; border:2px solid red; }
     .image-slider .prev { left:0; }
     .image-slider .next { right:0; }
-    .product-item button { background:#000; color:#fff; border:2px solid #000; font-family:'Courier New', Courier, monospace; cursor:pointer; margin-top:5px; }
+    .product-item button { background:#000; color:#fff; border:2px solid #000; font-family:'Courier New', Courier, monospace; cursor:pointer; margin-top:10px; }
     .product-item button:hover, .product-item button:active, .product-item button:focus { background:#fff; color:red; border-color:red; }
     .product-item h1, .product-item p, .product-details { text-align:center; }
-    .product-details { width:100%; }
+    .product-details { width:100%; margin-bottom:15px; }
     .product-details p { max-width:90%; margin:0 auto; }
     .color-options { margin-top:10px; }
     .color-option { width:20px; height:20px; display:inline-block; cursor:pointer; margin:0 5px; border:1px solid #000; }
