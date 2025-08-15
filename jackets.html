@@ -196,7 +196,8 @@
             }
 
             .product-item {
-                flex: 1 1 calc(25% - 40px);
+                /* Fix width so items don't expand on sparse categories */
+                flex: 0 0 calc(25% - 40px);
                 max-width: calc(25% - 40px);
                 margin: 10px;
             }
