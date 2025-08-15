@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .product-details p { max-width:90%; margin:0 auto; }
     .color-options { margin-top:10px; }
     .color-option { width:20px; height:20px; display:inline-block; cursor:pointer; margin:0 5px; border:1px solid #000; }
-      .color-option.selected, .color-option:hover, .color-option:focus, .color-option:active { border:2px solid red; }
+    .color-option.selected, .color-option:hover, .color-option:focus, .color-option:active { border:2px solid red !important; }
     .size-select { margin-top:10px; display:flex; justify-content:center; }
     .size-select select { background:#000; color:#fff; border:1px solid #000; padding:5px; }
     .size-select select:hover, .size-select select:focus, .size-select select:active { border:2px solid red; }
