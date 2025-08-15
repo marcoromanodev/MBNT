@@ -190,6 +190,49 @@
             color: red;
             background: #fff;
         }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            background-color: #f7f7f7;
+        }
+
+        .footer-line {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding-bottom: 10px;
+        }
+
+        .footer-line.extra-padding {
+            padding-bottom: 10px;
+        }
+
+        .footer-line.less-padding {
+            padding-bottom: 25px;
+        }
+
+        .footer-links a {
+            color: #000;
+            text-decoration: none;
+            font-size: 0.7rem;
+            transition: all 0.3s ease;
+        }
+
+        .footer-links a:hover,
+        .footer-links a:focus,
+        .footer-links a:active {
+            border: 2px solid red;
+            color: red;
+            background-color: white;
+        }
+
+        .footer-line.desktop-only {
+            display: none;
+        }
         #checkout-form input {
             display: block;
             width: 90%;
@@ -263,6 +306,31 @@
         @media (min-width: 769px) {
             .full-site-link {
                 display: none !important;
+            }
+            footer {
+                position: fixed;
+                bottom: 0;
+                width: 100%;
+                text-align: center;
+                background-color: #f7f7f7;
+                padding: 20px 0;
+            }
+            footer .footer-links {
+                display: flex;
+                justify-content: center;
+            }
+            .footer-line {
+                justify-content: space-between;
+                flex-wrap: wrap;
+                width: 70%;
+                font-size: 0.9rem;
+                letter-spacing: 0.1rem;
+            }
+            .footer-links {
+                padding-bottom: 30px;
+            }
+            .footer-line.desktop-only {
+                display: flex;
             }
         }
     </style>
@@ -384,17 +452,42 @@
             <p id="remember-message" style="display:none;">Your info will be saved to a Shop account. By continuing, you agree to Shop’s Terms of Service and acknowledge the Privacy Policy.</p>
         </form>
     </div>
-    <footer class="cart-footer">
+</div>
+<footer>
+    <div class="footer-links">
+        <div class="footer-line extra-padding">
+            <a href="shop.html">shop</a>
+            <a href="all.html">view all</a>
+            <a href="soon.html">preview</a>
+            <a href="soon.html">lookbook</a>
+            <a href="soon.html">news</a>
+        </div>
+        <div class="footer-line desktop-only">
+            <a href="soon.html">random</a>
+            <a href="soon.html">about</a>
+            <a href="soon.html">stores</a>
+            <a href="soon.html">sizing</a>
+            <a href="soon.html">f.a.q.</a>
+            <a href="soon.html">contact</a>
+        </div>
+        <div class="footer-line less-padding desktop-only">
+            <a href="soon.html">terms</a>
+            <a href="soon.html">privacy</a>
+            <a href="soon.html">accessibility</a>
+            <a href="soon.html">mailing list</a>
+        </div>
+    </div>
+    <div class="cart-footer">
         <a href="#">refund policy</a> |
         <a href="#">shipping</a> |
         <a href="#">privacy policy</a> |
         <a href="#">terms of service</a> |
         <a href="#">cookies</a>
-    </footer>
+    </div>
     <div class="full-site-link" id="full-site-link">
         <a href="index.html">full site</a>
     </div>
-</div>
+</footer>
 <script src="cart.js"></script>
 <script>
     function updateChicagoTime() {
