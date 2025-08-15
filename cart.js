@@ -289,15 +289,15 @@ function createCartModal() {
             #cart-modal .logo-container iframe{width:100%;height:100%;border:none;}
             #cart-modal .cart-time{text-align:center;font-size:0.7rem;font-weight:600;margin-top:5px;}
             #cart-modal .order-summary-bar{display:flex;align-items:center;margin:10px 0;width:100%;}
-            #cart-modal .summary-toggle{background:transparent;border:none;font-size:1em;display:flex;align-items:center;justify-content:flex-start;cursor:pointer;padding:0;margin:0;margin-left:0;}
+            #cart-modal .summary-toggle{background:transparent;border:none;font-size:1em;display:inline-flex;align-items:center;justify-content:flex-start;cursor:pointer;padding:0;margin:0;margin-left:0;}
             #cart-modal .summary-toggle .arrow{margin-left:5px;}
             #cart-modal .order-total{font-weight:bold;margin:0;margin-left:auto;}
-            #cart-modal footer{background:#f7f7f7;padding:10px 0;}
-            #cart-modal .footer-links{display:flex;justify-content:center;flex-wrap:wrap;gap:15px;background:#f7f7f7;}
+            #cart-modal footer{background:#fff;padding:10px 0;}
+            #cart-modal .footer-links{display:flex;justify-content:center;flex-wrap:wrap;gap:15px;background:#fff;}
             #cart-modal .footer-line{display:flex;justify-content:center;flex-wrap:wrap;gap:15px;padding-bottom:10px;}
             #cart-modal .footer-line.extra-padding{padding-bottom:10px;}
             #cart-modal .footer-line.less-padding{padding-bottom:25px;}
-            #cart-modal .footer-links a{color:#000;text-decoration:none;font-size:0.7rem;transition:all 0.3s ease;}
+            #cart-modal .footer-links a{color:#000;text-decoration:none;font-size:0.7rem;transition:all 0.3s ease;background:#fff;}
             #cart-modal .footer-links a:hover,#cart-modal .footer-links a:focus,#cart-modal .footer-links a:active{border:2px solid red;color:red;background:#fff;}
             #cart-modal .footer-line.desktop-only{display:none;}
             @media (min-width:769px){#cart-modal .footer-line.desktop-only{display:flex;}}
