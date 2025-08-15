@@ -186,7 +186,7 @@ function createCartModal() {
             </div>
             <footer>
                 <div class="footer-links">
-                    <div class="footer-line extra-padding desktop-only">
+                    <div class="footer-line extra-padding">
                         <a href="shop.html">shop</a>
                         <a href="all.html">view all</a>
                         <a href="soon.html">preview</a>
@@ -194,7 +194,7 @@ function createCartModal() {
                         <a href="soon.html">news</a>
                     </div>
                 </div>
-                <div class="cart-footer desktop-only">
+                <div class="cart-footer">
                     <a href="#">refund policy</a> |
                     <a href="#">shipping</a> |
                     <a href="#">privacy policy</a> |
@@ -284,8 +284,7 @@ function createCartModal() {
             #cart-modal .footer-line.extra-padding{padding-bottom:10px;}
             #cart-modal .footer-links a{color:#000;text-decoration:none;font-size:0.7rem;transition:all 0.3s ease;background:#fff;}
             #cart-modal .footer-links a:hover,#cart-modal .footer-links a:focus,#cart-modal .footer-links a:active{border:2px solid red;color:red;background:#fff;}
-            #cart-modal .desktop-only{display:none;}
-            @media (min-width:769px){#cart-modal .desktop-only{display:block;}#cart-modal .footer-line.desktop-only{display:flex;}}
+            
         `;
         document.head.appendChild(style);
     }

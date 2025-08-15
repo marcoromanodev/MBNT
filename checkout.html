@@ -193,9 +193,6 @@
             background-color: white;
         }
 
-        .desktop-only {
-            display: none;
-        }
         .consent-text {
             font-size: 0.7rem;
             margin-top: 10px;
@@ -250,23 +247,14 @@
 
         .full-site-link {
             display: none;
-        }
-
-        @media (max-width: 768px) {
-            .full-site-link {
-                display: block;
-                width: 100%;
-                text-align: center;
-                padding: 10px;
-                background-color: #f7f7f7;
-                color: #000;
-            }
+            width: 100%;
+            text-align: center;
+            padding: 10px;
+            background-color: #f7f7f7;
+            color: #000;
         }
 
         @media (min-width: 769px) {
-            .full-site-link {
-                display: none !important;
-            }
             footer {
                 position: fixed;
                 bottom: 0;
@@ -288,12 +276,6 @@
             }
             .footer-links {
                 padding-bottom: 30px;
-            }
-            .desktop-only {
-                display: block;
-            }
-            .footer-line.desktop-only {
-                display: flex;
             }
         }
     </style>
@@ -374,7 +356,7 @@
     </div>
 <footer>
     <div class="footer-links">
-        <div class="footer-line extra-padding desktop-only">
+        <div class="footer-line extra-padding">
             <a href="shop.html">shop</a>
             <a href="all.html">view all</a>
             <a href="soon.html">preview</a>
@@ -382,7 +364,7 @@
             <a href="soon.html">news</a>
         </div>
     </div>
-    <div class="cart-footer desktop-only">
+    <div class="cart-footer">
         <a href="#">refund policy</a> |
         <a href="#">shipping</a> |
         <a href="#">privacy policy</a> |
@@ -410,14 +392,16 @@
         updateChicagoTime();
         setInterval(updateChicagoTime, 1000);
 
-        window.addEventListener('scroll', function() {
+        function toggleFullSiteLink() {
             var fullSiteLink = document.getElementById('full-site-link');
-            if (window.innerHeight + window.scrollY >= document.body.offsetHeight && window.innerWidth <= 768) {
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
                 fullSiteLink.style.display = 'block';
             } else {
                 fullSiteLink.style.display = 'none';
             }
-        });
+        }
+        window.addEventListener('scroll', toggleFullSiteLink);
+        toggleFullSiteLink();
         const logoOverlay = document.querySelector(".logo-overlay");
         if (logoOverlay) {
             let pressTimer;
