@@ -92,6 +92,13 @@ document.addEventListener('DOMContentLoaded', () => {
         viewBtn.addEventListener('click', () => openCart());
         checkoutBtn.insertAdjacentElement('afterend', viewBtn);
       }
+
+      const sizeSelect = item.querySelector('.size-select select');
+      if (sizeSelect) {
+        sizeSelect.addEventListener('change', () => {
+          item.dataset.size = sizeSelect.value;
+        });
+      }
     });
 
   // Inject footer similar to shop.html
@@ -167,6 +174,9 @@ document.addEventListener('DOMContentLoaded', () => {
     .color-options { margin-top:10px; }
     .color-option { width:20px; height:20px; display:inline-block; cursor:pointer; margin:0 5px; border:1px solid #000; }
       .color-option.selected, .color-option:hover, .color-option:focus, .color-option:active { border:2px solid red; }
+    .size-select { margin-top:10px; display:flex; justify-content:center; }
+    .size-select select { background:#000; color:#fff; border:1px solid #000; padding:5px; }
+    .size-select select:hover, .size-select select:focus, .size-select select:active { border:2px solid red; }
     `;
   document.head.appendChild(style);
 
