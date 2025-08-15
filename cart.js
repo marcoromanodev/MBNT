@@ -263,7 +263,7 @@ function createCartModal() {
             #cart-modal .cart-content {background:#fff;padding:20px;max-width:400px;width:90%;text-align:center;position:relative;font-family:sans-serif;max-height:90vh;overflow-y:auto;}
             #cart-modal .close-btn {position:absolute;top:10px;left:10px;background:#000;color:#fff;border:none;width:20px;height:20px;display:flex;align-items:center;justify-content:center;padding:0;font-size:14px;font-family:Arial,sans-serif;line-height:0;cursor:pointer;text-indent:-2px;}
             #cart-modal .cart-buttons {display:flex;flex-direction:column;align-items:center;}
-            #cart-modal button:not(.pay-btn){background:#000;color:#fff;border:none;padding:10px;margin:5px auto;cursor:pointer;display:block;}
+            #cart-modal button:not(.pay-btn):not(.summary-toggle){background:#000;color:#fff;border:none;padding:10px;margin:5px auto;cursor:pointer;display:block;}
             #cart-modal .pay-btn{background:transparent;border:none;margin:0;padding:0;display:flex;justify-content:center;align-items:center;}
             #cart-modal .pay-btn.paypal{background:#ffc439;padding:5px;}
             #cart-modal .pay-btn.paypal img{width:60px;}
@@ -278,7 +278,7 @@ function createCartModal() {
             #cart-modal .cart-item .remove-item{background:#000;color:#fff;border:none;position:absolute;top:0;right:0;cursor:pointer;font-size:14px;width:20px;height:20px;display:flex;align-items:center;justify-content:center;padding:0;font-family:Arial,sans-serif;line-height:0;text-indent:-2px;}
             #cart-modal .or {margin:10px 0;}
             #cart-modal footer a {color:#000;margin:0 5px;font-size:0.8em;text-decoration:none;}
-            #cart-modal button:not(.pay-btn):hover,#cart-modal button:not(.pay-btn):focus,#cart-modal button:not(.pay-btn):active,#cart-modal footer a:hover,#cart-modal footer a:focus,#cart-modal footer a:active{border:2px solid red;color:red;background:#fff;}
+            #cart-modal button:not(.pay-btn):not(.summary-toggle):hover,#cart-modal button:not(.pay-btn):not(.summary-toggle):focus,#cart-modal button:not(.pay-btn):not(.summary-toggle):active,#cart-modal footer a:hover,#cart-modal footer a:focus,#cart-modal footer a:active{border:2px solid red;color:red;background:#fff;}
             #checkout-form input {display:block;width:90%;margin:5px auto;padding:8px;}
             .consent-text {font-size:0.7rem;margin-top:10px;}
             #final-checkout{text-align:center;}
@@ -289,7 +289,7 @@ function createCartModal() {
             #cart-modal .logo-container iframe{width:100%;height:100%;border:none;}
             #cart-modal .cart-time{text-align:center;font-size:0.7rem;font-weight:600;margin-top:5px;}
             #cart-modal .order-summary-bar{display:flex;align-items:center;margin:10px 0;width:100%;}
-            #cart-modal .summary-toggle{background:transparent;border:none;font-size:1em;display:inline-flex;align-items:center;justify-content:flex-start;cursor:pointer;padding:0;margin:0;margin-left:0;}
+            #cart-modal .summary-toggle{background:#000;color:#fff;border:none;font-size:1em;display:inline-flex;align-items:center;justify-content:flex-start;cursor:pointer;padding:10px;margin:0;margin-left:0;}
             #cart-modal .summary-toggle .arrow{margin-left:5px;}
             #cart-modal .order-total{font-weight:bold;margin:0;margin-left:auto;}
             #cart-modal footer{background:#fff;padding:10px 0;}
