@@ -243,7 +243,6 @@
         .payment-option {
             display: flex;
             align-items: center;
-            justify-content: space-between;
             border: 1px solid #ccc;
             padding: 10px;
             margin: 5px 0;
@@ -253,19 +252,50 @@
             margin-right: 10px;
         }
         .payment-option label {
-            flex: 1;
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            width: 100%;
             cursor: pointer;
         }
-        .payment-option img {
-            height: 20px;
-            margin-left: 10px;
+        .payment-label {
+            text-align: left;
+        }
+        .payment-logos {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
         }
         .payment-logos img {
             height: 20px;
             margin-left: 5px;
+        }
+        .more-logos {
+            position: relative;
+            margin-left: 5px;
+            cursor: pointer;
+            color: #000;
+            font-weight: 600;
+        }
+        .more-logos-box {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: #000;
+            padding: 5px;
+            z-index: 10;
+        }
+        .more-logos-box img {
+            height: 20px;
+            margin: 0 2px;
+            filter: invert(1);
+        }
+        .shipping-method {
+            display: flex;
+            justify-content: space-between;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 5px 0;
         }
         .order-summary-bar {
             display: flex;
@@ -383,16 +413,27 @@
             <input type="text" name="city" placeholder="Enter a city" required>
             <input type="text" name="zip" placeholder="Enter a ZIP / postal code" required>
             <h3>Shipping method</h3>
-            <p>Enter your shipping address to view available shipping methods.</p>
+            <div class="shipping-method"><span>Choose a shipping method</span><span>UPS Ground $15.00</span></div>
+            <input type="hidden" name="shipping_method" value="UPS Ground">
             <h3>Payment</h3>
             <p>Your payment method’s billing address must match the shipping address. All transactions are secure and encrypted.</p>
             <div class="payment-option">
                 <input type="radio" name="payment-method" id="pay-credit" value="credit">
-                <label for="pay-credit">Credit card
+                <label for="pay-credit">
+                    <span class="payment-label">Credit card</span>
                     <span class="payment-logos">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png" alt="Visa">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Mastercard-logo.png" alt="Mastercard">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/3/30/American_Express_logo_%282018%29.svg" alt="American Express">
+                        <span class="more-logos" id="more-cards">+5
+                            <div class="more-logos-box" id="more-cards-box">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/5/50/Discover_Card_logo.svg" alt="Discover">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/8/80/Elo_logo.svg" alt="Elo">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/JCB_logo.svg" alt="JCB">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/1/1b/UnionPay_logo.svg" alt="UnionPay">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b3/Stripe_Logo%2C_revised_2016.svg" alt="Stripe">
+                            </div>
+                        </span>
                     </span>
                 </label>
             </div>
@@ -404,19 +445,31 @@
             </div>
             <div class="payment-option">
                 <input type="radio" name="payment-method" id="pay-apple" value="apple">
-                <label for="pay-apple">Apple Pay<img src="applepay.png" alt="Apple Pay"></label>
+                <label for="pay-apple">
+                    <span class="payment-label">Apple Pay</span>
+                    <span class="payment-logos"><img src="applepay.png" alt="Apple Pay"></span>
+                </label>
             </div>
             <div class="payment-option">
                 <input type="radio" name="payment-method" id="pay-paypal" value="paypal">
-                <label for="pay-paypal">PayPal<img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></label>
+                <label for="pay-paypal">
+                    <span class="payment-label">PayPal</span>
+                    <span class="payment-logos"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></span>
+                </label>
             </div>
             <div class="payment-option">
                 <input type="radio" name="payment-method" id="pay-shop" value="shop">
-                <label for="pay-shop">Shop Pay<span style="font-size:0.8em;margin-left:5px;">Pay in full or in installments</span><img src="shoppay.png" alt="Shop Pay"></label>
+                <label for="pay-shop">
+                    <span class="payment-label">Shop Pay<span style="font-size:0.8em;margin-left:5px;">Pay in full or in installments</span></span>
+                    <span class="payment-logos"><img src="shoppay.png" alt="Shop Pay"></span>
+                </label>
             </div>
             <div class="payment-option">
                 <input type="radio" name="payment-method" id="pay-klarna" value="klarna">
-                <label for="pay-klarna">Klarna - Flexible payments<img src="klarna.png" alt="Klarna"></label>
+                <label for="pay-klarna">
+                    <span class="payment-label">Klarna - Flexible payments</span>
+                    <span class="payment-logos"><img src="klarna.png" alt="Klarna"></span>
+                </label>
             </div>
             <div id="payment-message"></div>
             <label><input type="checkbox" name="remember" id="remember-me"> Save my information for a faster checkout with a Shop account</label>
@@ -512,6 +565,30 @@
             };
             logoOverlay.addEventListener("mousedown", startPress);
             logoOverlay.addEventListener("touchstart", startPress);
+        }
+
+        const creditRadio = document.getElementById('pay-credit');
+        const creditFields = document.querySelector('.credit-card-fields');
+        const paymentRadios = document.querySelectorAll('input[name="payment-method"]');
+        paymentRadios.forEach(r => {
+            r.addEventListener('change', () => {
+                if (creditRadio.checked) {
+                    creditFields.style.display = 'block';
+                } else {
+                    creditFields.style.display = 'none';
+                }
+            });
+        });
+        const moreCards = document.getElementById('more-cards');
+        const moreCardsBox = document.getElementById('more-cards-box');
+        if (moreCards && moreCardsBox) {
+            moreCards.addEventListener('click', function(e) {
+                e.stopPropagation();
+                moreCardsBox.style.display = moreCardsBox.style.display === 'flex' ? 'none' : 'flex';
+            });
+            document.addEventListener('click', function() {
+                moreCardsBox.style.display = 'none';
+            });
         }
     </script>
 </body>
