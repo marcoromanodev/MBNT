@@ -88,7 +88,7 @@
         .empty-cart-message {
             text-align: center;
         }
-        button:not(.pay-btn) {
+        button:not(.pay-btn):not(.summary-toggle) {
             background: #000;
             color: #fff;
             border: none;
@@ -266,14 +266,15 @@
             width: 100%;
         }
         .summary-toggle {
-            background: transparent;
+            background: #000;
+            color: #fff;
             border: none;
             font-size: 1em;
             display: inline-flex;
             align-items: center;
             justify-content: flex-start;
             cursor: pointer;
-            padding: 0;
+            padding: 10px;
             margin: 0;
             margin-left: 0;
             text-align: left;
