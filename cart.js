@@ -184,12 +184,37 @@ function createCartModal() {
                     <p id="remember-message" style="display:none;">Your info will be saved to a Shop account. By continuing, you agree to Shop’s Terms of Service and acknowledge the Privacy Policy.</p>
                 </form>
             </div>
-            <footer class="cart-footer">
-                <a href="#">refund policy</a> |
-                <a href="#">shipping</a> |
-                <a href="#">privacy policy</a> |
-                <a href="#">terms of service</a> |
-                <a href="#">cookies</a>
+            <footer>
+                <div class="footer-links">
+                    <div class="footer-line extra-padding">
+                        <a href="shop.html">shop</a>
+                        <a href="all.html">view all</a>
+                        <a href="soon.html">preview</a>
+                        <a href="soon.html">lookbook</a>
+                        <a href="soon.html">news</a>
+                    </div>
+                    <div class="footer-line desktop-only">
+                        <a href="soon.html">random</a>
+                        <a href="soon.html">about</a>
+                        <a href="soon.html">stores</a>
+                        <a href="soon.html">sizing</a>
+                        <a href="soon.html">f.a.q.</a>
+                        <a href="soon.html">contact</a>
+                    </div>
+                    <div class="footer-line less-padding desktop-only">
+                        <a href="soon.html">terms</a>
+                        <a href="soon.html">privacy</a>
+                        <a href="soon.html">accessibility</a>
+                        <a href="soon.html">mailing list</a>
+                    </div>
+                </div>
+                <div class="cart-footer">
+                    <a href="#">refund policy</a> |
+                    <a href="#">shipping</a> |
+                    <a href="#">privacy policy</a> |
+                    <a href="#">terms of service</a> |
+                    <a href="#">cookies</a>
+                </div>
             </footer>
         </div>`;
     document.body.appendChild(modal);
@@ -267,6 +292,15 @@ function createCartModal() {
             #cart-modal .summary-toggle{background:transparent;border:none;font-size:1em;display:flex;align-items:center;justify-content:flex-start;cursor:pointer;padding:0;margin:0;margin-left:0;}
             #cart-modal .summary-toggle .arrow{margin-left:5px;}
             #cart-modal .order-total{font-weight:bold;margin:0;margin-left:auto;}
+            #cart-modal footer{background:#f7f7f7;padding:10px 0;}
+            #cart-modal .footer-links{display:flex;justify-content:center;flex-wrap:wrap;gap:15px;background:#f7f7f7;}
+            #cart-modal .footer-line{display:flex;justify-content:center;flex-wrap:wrap;gap:15px;padding-bottom:10px;}
+            #cart-modal .footer-line.extra-padding{padding-bottom:10px;}
+            #cart-modal .footer-line.less-padding{padding-bottom:25px;}
+            #cart-modal .footer-links a{color:#000;text-decoration:none;font-size:0.7rem;transition:all 0.3s ease;}
+            #cart-modal .footer-links a:hover,#cart-modal .footer-links a:focus,#cart-modal .footer-links a:active{border:2px solid red;color:red;background:#fff;}
+            #cart-modal .footer-line.desktop-only{display:none;}
+            @media (min-width:769px){#cart-modal .footer-line.desktop-only{display:flex;}}
         `;
         document.head.appendChild(style);
     }
@@ -281,7 +315,7 @@ function populateCartModal() {
     if (!itemsContainer) return;
     itemsContainer.innerHTML = '';
     if (cart.length === 0) {
-        const hideSelectors = ['.logo-container', '#cart-current-time', 'h2', '.item-count', '.order-summary-bar', '#order-summary-details', '.cart-buttons', '.or', '.express-checkout', '#checkout-form', '.cart-footer'];
+        const hideSelectors = ['.logo-container', '#cart-current-time', 'h2', '.item-count', '.order-summary-bar', '#order-summary-details', '.cart-buttons', '.or', '.express-checkout', '#checkout-form', '.footer-links', '.cart-footer'];
         hideSelectors.forEach(sel => { const el = modal.querySelector(sel); if (el) el.style.display = 'none'; });
         const content = modal.querySelector('.cart-content');
         content.style.display = 'flex';
@@ -343,6 +377,8 @@ function populateCartModal() {
     modal.querySelector('.express-checkout').style.display = 'block';
     const finalPage = modal.querySelector('#final-checkout');
     if (finalPage) finalPage.style.display = 'none';
+    const footerLinks = modal.querySelector('.footer-links');
+    if (footerLinks) footerLinks.style.display = 'flex';
     const footer = modal.querySelector('.cart-footer');
     if (footer) footer.style.display = 'block';
     const msg = modal.querySelector('.empty-cart-message');
@@ -515,8 +551,11 @@ function populateCartPage() {
     const itemsContainer = page.querySelector('.cart-items');
     itemsContainer.innerHTML = '';
     if (cart.length === 0) {
-        const toHide = ['h2', '.item-count', '.cart-items', '.cost-summary', '.cart-buttons', '.or', '.express-checkout', '#checkout-form', '.cart-footer'];
-        toHide.forEach(sel => { const el = page.querySelector(sel); if (el) el.style.display = 'none'; });
+        const toHide = ['h2', '.item-count', '.cart-items', '.cost-summary', '.cart-buttons', '.or', '.express-checkout', '#checkout-form', '.footer-links', '.cart-footer'];
+        toHide.forEach(sel => {
+            const el = page.querySelector(sel) || document.querySelector(sel);
+            if (el) el.style.display = 'none';
+        });
         const finalPage = page.querySelector('#final-checkout');
         if (finalPage) finalPage.style.display = 'none';
         let msg = page.querySelector('.empty-cart-message');
@@ -572,8 +611,10 @@ function populateCartPage() {
     if (or) or.style.display = 'block';
     const express = page.querySelector('.express-checkout');
     if (express) express.style.display = 'block';
-    const footer = page.querySelector('.cart-footer');
+    const footer = document.querySelector('.cart-footer');
     if (footer) footer.style.display = 'block';
+    const footerLinks = document.querySelector('.footer-links');
+    if (footerLinks) footerLinks.style.display = 'flex';
     const finalPage = page.querySelector('#final-checkout');
     if (finalPage) finalPage.style.display = 'none';
     const msg = page.querySelector('.empty-cart-message');
