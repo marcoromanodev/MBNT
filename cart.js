@@ -262,10 +262,20 @@ function createCartModal() {
                         <label for="cart-pay-klarna">Klarna - Flexible payments<img src="klarna.png" alt="Klarna"></label>
                     </div>
                     <div id="payment-message"></div>
-                    <label><input type="checkbox" name="remember" id="remember-me"> Save my information for a faster checkout with a Shop account</label>
-                    <div id="phone-container" style="display:none;"><input type="tel" name="remember_phone" placeholder="Mobile phone number"></div>
-                    <p class="phone-error" style="display:none;color:red;">The specified phone number does not match the expected pattern.</p>
-                    <p>Secure and encrypted</p>
+                    <div class="remember-section">
+                        <strong class="remember-heading">Remember me</strong>
+                        <label class="remember-label"><input type="checkbox" name="remember" id="remember-me"> Save my information for a faster checkout with a Shop account</label>
+                        <div id="phone-container" class="phone-input" style="display:none;">
+                            <span class="phone-icon">📱</span>
+                            <span class="phone-prefix">+1</span>
+                            <input type="tel" name="remember_phone" placeholder="Mobile phone number">
+                        </div>
+                        <p class="phone-error" style="display:none;color:red;">The specified phone number does not match the expected pattern.</p>
+                        <div class="secure-row">
+                            <span class="secure-text">Secure and encrypted</span>
+                            <div class="shop-logo"><img src="shoppay.png" alt="Shop Pay"></div>
+                        </div>
+                    </div>
                     <button id="final-order-submit" type="submit">Pay now</button>
                     <p id="remember-message" style="display:none;">Your info will be saved to a Shop account. By continuing, you agree to Shop’s Terms of Service and acknowledge the Privacy Policy.</p>
                 </form>
@@ -350,10 +360,21 @@ function createCartModal() {
             .consent-text {font-size:0.7rem;margin-top:10px;}
             #final-checkout{text-align:center;}
             #final-checkout input {display:block;width:100%;margin:5px auto;padding:10px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;}
-            .contact-header{display:flex;align-items:center;}
-            .contact-header h3{flex:1;text-align:center;margin:0;}
-            #login-btn{background:none;border:none;color:#000;cursor:pointer;text-decoration:underline;font-size:0.9em;padding:0;margin-left:auto;}
+            .contact-header{position:relative;width:100%;}
+            .contact-header h3{text-align:center;margin:0;}
+            #login-btn{background:none;border:none;color:#000;cursor:pointer;text-decoration:underline;font-size:0.9em;padding:0;position:absolute;right:0;top:50%;transform:translateY(-50%);}
             #login-btn:hover{color:red;}
+            .remember-section{text-align:left;margin-top:10px;}
+            .remember-heading{display:block;font-weight:700;text-align:left;}
+            .remember-label{display:block;text-align:left;margin-top:5px;}
+            .phone-input{position:relative;margin-top:5px;}
+            .phone-input .phone-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);}
+            .phone-input .phone-prefix{position:absolute;left:35px;top:50%;transform:translateY(-50%);}
+            .phone-input input{padding-left:60px;}
+            .secure-row{display:flex;justify-content:space-between;align-items:center;margin-top:5px;}
+            .secure-text{color:#888;font-size:0.8em;}
+            .shop-logo{overflow:hidden;width:40px;height:20px;}
+            .shop-logo img{width:80px;height:100%;object-fit:cover;object-position:left;}
             .checkout-domain{margin-top:5px;}
             .credit-card-fields input{width:100%;}
             .payment-option{display:flex;align-items:center;justify-content:space-between;border:1px solid #ccc;padding:10px;margin:5px 0;cursor:pointer;}
