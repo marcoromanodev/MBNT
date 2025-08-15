@@ -229,17 +229,37 @@ function createCartModal() {
                     <p>Enter your shipping address to view available shipping methods.</p>
                     <h3>Payment</h3>
                     <p>Your payment method’s billing address must match the shipping address. All transactions are secure and encrypted.</p>
-                    <div class="credit-card">
-                        <input type="text" name="card_number" placeholder="Enter a card number" required>
-                        <input type="text" name="exp_date" placeholder="Enter a valid expiration date" required>
-                        <input type="text" name="cvv" placeholder="Enter the CVV or security code on your card" required>
-                        <input type="text" name="card_name" placeholder="Enter your name exactly as it’s written on your card" required>
+                    <div class="payment-option">
+                        <input type="radio" name="payment-method" id="cart-pay-credit" value="credit">
+                        <label for="cart-pay-credit">Credit card
+                            <span class="payment-logos">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png" alt="Visa">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Mastercard-logo.png" alt="Mastercard">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/3/30/American_Express_logo_%282018%29.svg" alt="American Express">
+                            </span>
+                        </label>
                     </div>
-                    <div class="payment-methods payment-icons">
-                        <button type="button" class="pay-option" data-method="apple"><img src="applepay.png" alt="Apple Pay"></button>
-                        <button type="button" class="pay-option" data-method="paypal"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></button>
-                        <button type="button" class="pay-option shop-pay" data-method="shop"><img src="shoppay.png" alt="Shop Pay"><span>Pay in full or in installments</span></button>
-                        <button type="button" class="pay-option" data-method="klarna"><img src="klarna.png" alt="Klarna"></button>
+                    <div class="credit-card-fields" style="display:none;">
+                        <input type="text" name="card_number" placeholder="Enter a card number">
+                        <input type="text" name="exp_date" placeholder="Enter a valid expiration date">
+                        <input type="text" name="cvv" placeholder="Enter the CVV or security code on your card">
+                        <input type="text" name="card_name" placeholder="Enter your name exactly as it’s written on your card">
+                    </div>
+                    <div class="payment-option">
+                        <input type="radio" name="payment-method" id="cart-pay-apple" value="apple">
+                        <label for="cart-pay-apple">Apple Pay<img src="applepay.png" alt="Apple Pay"></label>
+                    </div>
+                    <div class="payment-option">
+                        <input type="radio" name="payment-method" id="cart-pay-paypal" value="paypal">
+                        <label for="cart-pay-paypal">PayPal<img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></label>
+                    </div>
+                    <div class="payment-option">
+                        <input type="radio" name="payment-method" id="cart-pay-shop" value="shop">
+                        <label for="cart-pay-shop">Shop Pay<span style="font-size:0.8em;margin-left:5px;">Pay in full or in installments</span><img src="shoppay.png" alt="Shop Pay"></label>
+                    </div>
+                    <div class="payment-option">
+                        <input type="radio" name="payment-method" id="cart-pay-klarna" value="klarna">
+                        <label for="cart-pay-klarna">Klarna - Flexible payments<img src="klarna.png" alt="Klarna"></label>
                     </div>
                     <div id="payment-message"></div>
                     <label><input type="checkbox" name="remember" id="remember-me"> Save my information for a faster checkout with a Shop account</label>
@@ -317,7 +337,6 @@ function createCartModal() {
             #cart-modal .pay-btn.paypal img{width:60px;}
             #cart-modal .payment-icons{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin:10px 0;justify-items:center;}
             #cart-modal .payment-icons img{width:80px;height:auto;}
-            #cart-modal .payment-methods .pay-option[data-method="paypal"] img{width:60px;}
             #cart-modal .cost-summary div{display:flex;justify-content:space-between;margin:5px 0;}
             #cart-modal .cart-item{display:flex;align-items:center;justify-content:space-between;margin:5px 0;position:relative;padding-top:10px;}
             #cart-modal .cart-item.no-remove{padding-top:0;}
@@ -331,11 +350,17 @@ function createCartModal() {
             .consent-text {font-size:0.7rem;margin-top:10px;}
             #final-checkout{text-align:center;}
             #final-checkout input {display:block;width:100%;margin:5px auto;padding:10px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;}
-            .contact-header{display:flex;justify-content:space-between;align-items:center;}
-            #login-btn{background:none;border:none;color:#000;cursor:pointer;text-decoration:underline;font-size:0.9em;padding:0;}
+            .contact-header{display:flex;align-items:center;}
+            .contact-header h3{flex:1;text-align:center;margin:0;}
+            #login-btn{background:none;border:none;color:#000;cursor:pointer;text-decoration:underline;font-size:0.9em;padding:0;margin-left:auto;}
             #login-btn:hover{color:red;}
             .checkout-domain{margin-top:5px;}
-            .credit-card input{width:100%;}
+            .credit-card-fields input{width:100%;}
+            .payment-option{display:flex;align-items:center;justify-content:space-between;border:1px solid #ccc;padding:10px;margin:5px 0;cursor:pointer;}
+            .payment-option input{margin-right:10px;}
+            .payment-option label{flex:1;display:flex;align-items:center;justify-content:space-between;cursor:pointer;}
+            .payment-option img{height:20px;margin-left:10px;}
+            .payment-logos img{height:20px;margin-left:5px;}
             #cart-modal .logo-container{width:80px;height:80px;margin:0 auto;}
             #cart-modal .logo-container iframe{width:100%;height:100%;border:none;}
             #cart-modal .cart-time{text-align:center;font-size:0.7rem;font-weight:600;margin-top:5px;}
@@ -557,12 +582,14 @@ function setupFinalForm(form) {
     if (!form) return;
     const payBtn = form.querySelector('#final-order-submit');
     const paymentMsg = form.querySelector('#payment-message');
-    form.querySelectorAll('.pay-option').forEach(opt => {
-        opt.addEventListener('click', () => {
-            form.querySelectorAll('.pay-option').forEach(o => o.classList.remove('selected'));
-            opt.classList.add('selected');
+    const creditFields = form.querySelector('.credit-card-fields');
+    form.querySelectorAll('input[name="payment-method"]').forEach(input => {
+        input.addEventListener('change', () => {
             paymentMsg.innerHTML = '';
-            switch (opt.dataset.method) {
+            if (creditFields) {
+                creditFields.style.display = input.value === 'credit' ? 'block' : 'none';
+            }
+            switch (input.value) {
                 case 'apple':
                     payBtn.textContent = 'Pay with Apple Pay';
                     break;
@@ -770,7 +797,7 @@ function ensureCartCounter() {
     if (!document.getElementById('cart-counter-style')) {
         const style = document.createElement('style');
         style.id = 'cart-counter-style';
-        style.textContent = '.cart-counter{font-size:0.7rem;text-align:center;font-weight:600;cursor:pointer;display:inline-block;outline:2px solid transparent;padding:2px;} .cart-counter:hover,.cart-counter:focus,.cart-counter:active{outline-color:red;} .header-line{border-top:1px solid #000;width:100%;} .product-item{aspect-ratio:1/1;} .product-item img{width:100%;height:100%;object-fit:contain;object-position:center;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.1));} .product-item a:hover img,.product-item a:focus img,.product-item a:active img{outline:4px solid #ff0000;outline-offset:-4px;} .payment-icons{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;justify-items:center;margin:10px 0;} .pay-option{background:transparent;border:2px solid transparent;padding:5px;cursor:pointer;display:flex;align-items:center;justify-content:center;} .pay-option:hover,.pay-option:focus,.pay-option:active,.pay-option.selected{border-color:red;} .pay-option.shop-pay span{margin-left:5px;font-size:0.8em;} .pay-btn{outline:2px solid transparent;} .pay-btn:hover,.pay-btn:focus,.pay-btn:active,.pay-btn.selected{outline-color:red;} .pay-btn.paypal{background:#ffc439;width:80px;height:40px;padding:0;} .pay-btn.paypal img{width:100%;height:100%;object-fit:contain;} .pay-option[data-method="paypal"] img{width:60px;} .redirect-icon{text-align:center;font-size:2rem;} .paypal-inline{height:1em;vertical-align:middle;filter:invert(1);} .empty-cart-message{text-align:center;} a,button{transition:all 0.3s ease;} button:hover,button:focus,button:active,a:hover,a:focus,a:active{border:2px solid red;color:red;background:#fff;} .color-option{border:1px solid #000;} .color-option.selected,.color-option:hover,.color-option:focus,.color-option:active{border:2px solid red !important;}';
+        style.textContent = '.cart-counter{font-size:0.7rem;text-align:center;font-weight:600;cursor:pointer;display:inline-block;outline:2px solid transparent;padding:2px;} .cart-counter:hover,.cart-counter:focus,.cart-counter:active{outline-color:red;} .header-line{border-top:1px solid #000;width:100%;} .product-item{aspect-ratio:1/1;} .product-item img{width:100%;height:100%;object-fit:contain;object-position:center;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.1));} .product-item a:hover img,.product-item a:focus img,.product-item a:active img{outline:4px solid #ff0000;outline-offset:-4px;} .payment-icons{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;justify-items:center;margin:10px 0;} .pay-btn{outline:2px solid transparent;} .pay-btn:hover,.pay-btn:focus,.pay-btn:active,.pay-btn.selected{outline-color:red;} .pay-btn.paypal{background:#ffc439;width:80px;height:40px;padding:0;} .pay-btn.paypal img{width:100%;height:100%;object-fit:contain;} .payment-option{display:flex;align-items:center;justify-content:space-between;border:1px solid #ccc;padding:10px;margin:5px 0;cursor:pointer;} .payment-option input{margin-right:10px;} .payment-option label{flex:1;display:flex;align-items:center;justify-content:space-between;cursor:pointer;} .payment-option img{height:20px;margin-left:10px;} .payment-logos img{height:20px;margin-left:5px;} .redirect-icon{text-align:center;font-size:2rem;} .paypal-inline{height:1em;vertical-align:middle;filter:invert(1);} .empty-cart-message{text-align:center;} a,button{transition:all 0.3s ease;} button:hover,button:focus,button:active,a:hover,a:focus,a:active{border:2px solid red;color:red;background:#fff;} .color-option{border:1px solid #000;} .color-option.selected,.color-option:hover,.color-option:focus,.color-option:active{border:2px solid red !important;}';
         document.head.appendChild(style);
     }
 }

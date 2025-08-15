@@ -257,8 +257,12 @@
         }
         .contact-header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+        }
+        .contact-header h3 {
+            flex: 1;
+            text-align: center;
+            margin: 0;
         }
         #login-btn {
             background: none;
@@ -268,6 +272,7 @@
             text-decoration: underline;
             font-size: 0.9em;
             padding: 0;
+            margin-left: auto;
         }
         #login-btn:hover {
             color: red;
@@ -275,8 +280,35 @@
         .checkout-domain {
             margin-top: 5px;
         }
-        .credit-card input {
+        .credit-card-fields input {
             width: 100%;
+        }
+        .payment-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 5px 0;
+            cursor: pointer;
+        }
+        .payment-option input {
+            margin-right: 10px;
+        }
+        .payment-option label {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+        .payment-option img {
+            height: 20px;
+            margin-left: 10px;
+        }
+        .payment-logos img {
+            height: 20px;
+            margin-left: 5px;
         }
         .order-summary-bar {
             display: flex;
@@ -441,17 +473,37 @@
             <p>Enter your shipping address to view available shipping methods.</p>
             <h3>Payment</h3>
             <p>Your payment method’s billing address must match the shipping address. All transactions are secure and encrypted.</p>
-            <div class="credit-card">
-                <input type="text" name="card_number" placeholder="Enter a card number" required>
-                <input type="text" name="exp_date" placeholder="Enter a valid expiration date" required>
-                <input type="text" name="cvv" placeholder="Enter the CVV or security code on your card" required>
-                <input type="text" name="card_name" placeholder="Enter your name exactly as it’s written on your card" required>
+            <div class="payment-option">
+                <input type="radio" name="payment-method" id="cart2-pay-credit" value="credit">
+                <label for="cart2-pay-credit">Credit card
+                    <span class="payment-logos">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png" alt="Visa">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Mastercard-logo.png" alt="Mastercard">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/3/30/American_Express_logo_%282018%29.svg" alt="American Express">
+                    </span>
+                </label>
             </div>
-            <div class="payment-methods payment-icons">
-                <button type="button" class="pay-option" data-method="apple"><img src="applepay.png" alt="Apple Pay"></button>
-                <button type="button" class="pay-option" data-method="paypal"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></button>
-                <button type="button" class="pay-option shop-pay" data-method="shop"><img src="shoppay.png" alt="Shop Pay"><span>Pay in full or in installments</span></button>
-                <button type="button" class="pay-option" data-method="klarna"><img src="klarna.png" alt="Klarna"></button>
+            <div class="credit-card-fields" style="display:none;">
+                <input type="text" name="card_number" placeholder="Enter a card number">
+                <input type="text" name="exp_date" placeholder="Enter a valid expiration date">
+                <input type="text" name="cvv" placeholder="Enter the CVV or security code on your card">
+                <input type="text" name="card_name" placeholder="Enter your name exactly as it’s written on your card">
+            </div>
+            <div class="payment-option">
+                <input type="radio" name="payment-method" id="cart2-pay-apple" value="apple">
+                <label for="cart2-pay-apple">Apple Pay<img src="applepay.png" alt="Apple Pay"></label>
+            </div>
+            <div class="payment-option">
+                <input type="radio" name="payment-method" id="cart2-pay-paypal" value="paypal">
+                <label for="cart2-pay-paypal">PayPal<img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></label>
+            </div>
+            <div class="payment-option">
+                <input type="radio" name="payment-method" id="cart2-pay-shop" value="shop">
+                <label for="cart2-pay-shop">Shop Pay<span style="font-size:0.8em;margin-left:5px;">Pay in full or in installments</span><img src="shoppay.png" alt="Shop Pay"></label>
+            </div>
+            <div class="payment-option">
+                <input type="radio" name="payment-method" id="cart2-pay-klarna" value="klarna">
+                <label for="cart2-pay-klarna">Klarna - Flexible payments<img src="klarna.png" alt="Klarna"></label>
             </div>
             <div id="payment-message"></div>
             <label><input type="checkbox" name="remember" id="remember-me"> Save my information for a faster checkout with a Shop account</label>
