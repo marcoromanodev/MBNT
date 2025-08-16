@@ -245,7 +245,7 @@
             width: 100%;
             box-sizing: border-box;
         }
-        #final-checkout input {
+        #final-checkout input:not([type="radio"]) {
             display: block;
             width: 100%;
             margin: 5px auto;
@@ -366,6 +366,8 @@
         .payment-option input {
             margin: 0;
             flex-shrink: 0;
+            width: auto;
+            padding: 0;
         }
         .payment-option label {
             display: flex;
