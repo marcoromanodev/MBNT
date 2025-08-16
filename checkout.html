@@ -461,6 +461,13 @@
                 <button id="toggle-order-summary" class="summary-toggle" type="button">Order summary <span class="arrow">▼</span></button>
                 <strong class="order-total">$0.00</strong>
             </div>
+            <div class="order-summary-details top-summary" id="top-order-summary">
+                <div class="cart-items"></div>
+                <div class="cost-summary">
+                    <div><span>Subtotal</span><span class="subtotal">$0.00</span></div>
+                    <div><strong>Total</strong><strong class="total">$0.00</strong></div>
+                </div>
+            </div>
             <h3>Sign up and know first!</h3>
             <input type="email" name="signup_email" placeholder="Enter an email" required>
             <p class="consent-text">By submitting this form, you consent to receive informational (eg, order updates) and/or marketing texts (eg, cart reminders) from maybenot.com including texts sent by autodialer. Consent is not a condition of purchase. Msg & data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available). Privacy Policy & Terms.</p>
@@ -486,9 +493,11 @@
             <input type="text" name="last_name" placeholder="Enter a last name" required>
             <input type="text" name="address" placeholder="Enter an address" required>
             <input type="text" name="city" placeholder="Enter a city" required>
+            <input type="text" name="state" placeholder="Enter a state" required>
             <input type="text" name="zip" placeholder="Enter a ZIP / postal code" required>
             <h3>Shipping method</h3>
-            <div class="shipping-method"><span>Choose a shipping method</span><span>UPS Ground $15.00</span></div>
+            <p class="shipping-placeholder">Enter your shipping address to view available shipping methods.</p>
+            <div class="shipping-method" style="display:none;"><span>UPS Ground</span><span>$15.00</span></div>
             <input type="hidden" name="shipping_method" value="UPS Ground">
             <h3>Payment</h3>
             <p>Your payment method’s billing address must match the shipping address. All transactions are secure and encrypted.</p>
@@ -564,12 +573,12 @@
                     <div class="shop-logo"><img src="shoppay.png" alt="Shop Pay"></div>
                 </div>
             </div>
-            <div class="order-summary-details">
+            <div class="order-summary-details bottom-summary">
                 <div class="cart-items"></div>
                 <div class="cost-summary">
                     <div><span>Subtotal</span><span class="subtotal">$0.00</span></div>
-                    <div><span>Tax</span><span class="tax">Calculated at checkout</span></div>
-                    <div><span>Shipping</span><span class="shipping">Calculated at checkout</span></div>
+                    <div><span>Tax</span><span class="tax">$0.00</span></div>
+                    <div><span>Shipping</span><span class="shipping">$15.00</span></div>
                     <div><strong>Total</strong><strong class="total">$0.00</strong></div>
                 </div>
             </div>
@@ -689,11 +698,9 @@
         }
 
         const summaryToggle = document.getElementById('toggle-order-summary');
-        const summaryDetails = document.querySelector('.order-summary-details');
-        const orderTotal = document.querySelector('.order-summary-bar .order-total');
-        if (summaryToggle && summaryDetails && orderTotal) {
+        const summaryDetails = document.querySelector('.order-summary-details.top-summary');
+        if (summaryToggle && summaryDetails) {
             summaryDetails.style.display = 'none';
-            orderTotal.textContent = summaryDetails.querySelector('.total').textContent;
             const arrow = summaryToggle.querySelector('.arrow');
             summaryToggle.addEventListener('click', () => {
                 const hidden = summaryDetails.style.display === 'none';

@@ -1,5 +1,18 @@
 let cart = [];
 
+const shippingCost = 15;
+const stateTaxRates = {
+    AL: 0.04, AK: 0, AZ: 0.056, AR: 0.065, CA: 0.0725, CO: 0.029,
+    CT: 0.0635, DE: 0, FL: 0.06, GA: 0.04, HI: 0.04, ID: 0.06,
+    IL: 0.0625, IN: 0.07, IA: 0.06, KS: 0.065, KY: 0.06, LA: 0.0445,
+    ME: 0.055, MD: 0.06, MA: 0.0625, MI: 0.06, MN: 0.06875, MS: 0.07,
+    MO: 0.04225, MT: 0, NE: 0.055, NV: 0.0685, NH: 0, NJ: 0.06625,
+    NM: 0.05125, NY: 0.04, NC: 0.0475, ND: 0.05, OH: 0.0575, OK: 0.045,
+    OR: 0, PA: 0.06, RI: 0.07, SC: 0.06, SD: 0.045, TN: 0.07,
+    TX: 0.0625, UT: 0.047, VT: 0.06, VA: 0.043, WA: 0.065,
+    WV: 0.06, WI: 0.05, WY: 0.04, DC: 0.06
+};
+
 const paymentHandlers = {
     'Shop Pay': () => alert('Shop Pay integration pending.'),
     'Apple Pay': () => alert('Apple Pay integration pending.'),
@@ -190,6 +203,13 @@ function createCartModal() {
                         <button id="final-toggle-order-summary" class="summary-toggle" type="button">Order summary <span class="arrow">▼</span></button>
                         <strong class="order-total">$0.00</strong>
                     </div>
+                    <div class="order-summary-details top-summary">
+                        <div class="cart-items"></div>
+                        <div class="cost-summary">
+                            <div><span>Subtotal</span><span class="subtotal">$0.00</span></div>
+                            <div><strong>Total</strong><strong class="total">$0.00</strong></div>
+                        </div>
+                    </div>
                     <h3>Sign up and know first!</h3>
                     <input type="email" name="signup_email" placeholder="Enter an email" required>
                     <p class="consent-text">By submitting this form, you consent to receive informational (eg, order updates) and/or marketing texts (eg, cart reminders) from maybenot.com including texts sent by autodialer. Consent is not a condition of purchase. Msg & data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available). Privacy Policy & Terms.</p>
@@ -215,9 +235,11 @@ function createCartModal() {
                     <input type="text" name="last_name" placeholder="Enter a last name" required>
                     <input type="text" name="address" placeholder="Enter an address" required>
                     <input type="text" name="city" placeholder="Enter a city" required>
+                    <input type="text" name="state" placeholder="Enter a state" required>
                     <input type="text" name="zip" placeholder="Enter a ZIP / postal code" required>
                     <h3>Shipping method</h3>
-                    <p>Enter your shipping address to view available shipping methods.</p>
+                    <p class="shipping-placeholder">Enter your shipping address to view available shipping methods.</p>
+                    <div class="shipping-method" style="display:none;"><span>UPS Ground</span><span>$15.00</span></div>
                     <h3>Payment</h3>
                     <p>Your payment method’s billing address must match the shipping address. All transactions are secure and encrypted.</p>
                     <div class="payment-option">
@@ -292,12 +314,12 @@ function createCartModal() {
                             <div class="shop-logo"><img src="shoppay.png" alt="Shop Pay"></div>
                         </div>
                     </div>
-                    <div class="order-summary-details">
+                    <div class="order-summary-details bottom-summary">
                         <div class="cart-items"></div>
                         <div class="cost-summary">
                             <div><span>Subtotal</span><span class="subtotal">$0.00</span></div>
-                            <div><span>Tax</span><span class="tax">Calculated at checkout</span></div>
-                            <div><span>Shipping</span><span class="shipping">Calculated at checkout</span></div>
+                            <div><span>Tax</span><span class="tax">$0.00</span></div>
+                            <div><span>Shipping</span><span class="shipping">$15.00</span></div>
                             <div><strong>Total</strong><strong class="total">$0.00</strong></div>
                         </div>
                     </div>
@@ -416,6 +438,7 @@ function createCartModal() {
             .more-logos{position:relative;margin-left:5px;cursor:pointer;color:#000;font-weight:600;}
             .more-logos-box{display:none;position:absolute;bottom:100%;right:0;background:#000;padding:5px;z-index:10;}
             .more-logos-box img{height:20px;margin:0 2px;filter:invert(1);}
+            .shipping-method{display:flex;justify-content:space-between;border:1px solid #ccc;padding:10px;margin:5px 0;}
             #cart-modal .logo-container{width:80px;height:80px;margin:0 auto;}
             #cart-modal .logo-container iframe{width:100%;height:100%;border:none;}
             #cart-modal .cart-time{text-align:center;font-size:0.7rem;font-weight:600;margin-top:5px;}
@@ -565,31 +588,59 @@ function showCheckoutForm(root = document.getElementById('cart-modal')) {
     root.querySelector('#checkout-form').style.display = 'block';
 }
 
-function populateOrderSummary(section) {
+function populateOrderSummary(section, state = '') {
     if (!section) return;
-    const itemsContainer = section.querySelector('.order-summary-details .cart-items');
-    const subtotalEl = section.querySelector('.order-summary-details .subtotal');
-    const totalEl = section.querySelector('.order-summary-details .total');
-    if (!itemsContainer || !subtotalEl || !totalEl) return;
-    itemsContainer.innerHTML = '';
-    let total = 0;
-    cart.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'cart-item no-remove';
-        div.innerHTML = `
-            <img src="${item.image}" alt="${item.name}">
-            <div class="cart-item-info">
-                <span>${item.name}</span>
-                ${item.style ? `<div>Style: ${item.style}</div>` : ''}
-                ${item.color ? `<div>Color: ${item.color}</div>` : ''}
-                ${item.size ? `<div>Size: ${item.size}</div>` : ''}
-            </div>
-            <span>$${parseFloat(item.price).toFixed(2)}</span>`;
-        itemsContainer.appendChild(div);
-        total += parseFloat(item.price);
+    const subtotal = cart.reduce((sum, item) => sum + parseFloat(item.price), 0);
+    const rate = stateTaxRates[state] || 0;
+    const tax = subtotal * rate;
+    const total = subtotal + tax + shippingCost;
+
+    section.querySelectorAll('.order-summary-details').forEach(details => {
+        const itemsContainer = details.querySelector('.cart-items');
+        const subtotalEl = details.querySelector('.subtotal');
+        const taxEl = details.querySelector('.tax');
+        const shippingEl = details.querySelector('.shipping');
+        const totalEl = details.querySelector('.total');
+        if (!itemsContainer || !subtotalEl || !totalEl) return;
+        itemsContainer.innerHTML = '';
+        cart.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'cart-item no-remove';
+            div.innerHTML = `
+                <img src="${item.image}" alt="${item.name}">
+                <div class="cart-item-info">
+                    <span>${item.name}</span>
+                    ${item.style ? `<div>Style: ${item.style}</div>` : ''}
+                    ${item.color ? `<div>Color: ${item.color}</div>` : ''}
+                    ${item.size ? `<div>Size: ${item.size}</div>` : ''}
+                </div>
+                <span>$${parseFloat(item.price).toFixed(2)}</span>`;
+            itemsContainer.appendChild(div);
+        });
+        subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
+        if (taxEl) taxEl.textContent = `$${tax.toFixed(2)}`;
+        if (shippingEl) shippingEl.textContent = `$${shippingCost.toFixed(2)}`;
+        totalEl.textContent = `$${total.toFixed(2)}`;
     });
-    subtotalEl.textContent = `$${total.toFixed(2)}`;
-    totalEl.textContent = `$${total.toFixed(2)}`;
+
+    const barTotal = section.querySelector('.order-summary-bar .order-total');
+    if (barTotal) barTotal.textContent = `$${total.toFixed(2)}`;
+}
+
+function updateShippingAndTax(form) {
+    if (!form) return;
+    const checkout = form.closest('#final-checkout');
+    if (!checkout) return;
+    const addressFilled = ['address', 'city', 'state', 'zip'].every(name => {
+        const input = form.querySelector(`input[name="${name}"]`);
+        return input && input.value.trim();
+    });
+    const placeholder = checkout.querySelector('.shipping-placeholder');
+    const method = checkout.querySelector('.shipping-method');
+    if (placeholder) placeholder.style.display = addressFilled ? 'none' : 'block';
+    if (method) method.style.display = addressFilled ? 'flex' : 'none';
+    const state = form.querySelector('input[name="state"]')?.value.trim().toUpperCase() || '';
+    populateOrderSummary(checkout, state);
 }
 
 function showFinalPage(root = document.getElementById('cart-modal')) {
@@ -613,15 +664,10 @@ function showFinalPage(root = document.getElementById('cart-modal')) {
         finalPage.style.display = 'block';
         populateOrderSummary(finalPage);
         const bar = finalPage.querySelector('.order-summary-bar');
-        const details = finalPage.querySelector('.order-summary-details');
+        const details = finalPage.querySelector('.order-summary-details.top-summary');
         if (bar && details) {
             bar.style.display = 'flex';
             details.style.display = 'none';
-            const totalEl = bar.querySelector('.order-total');
-            if (totalEl) {
-                const total = cart.reduce((sum, item) => sum + parseFloat(item.price), 0);
-                totalEl.textContent = `$${total.toFixed(2)}`;
-            }
             const toggle = finalPage.querySelector('#final-toggle-order-summary');
             const arrow = bar.querySelector('.arrow');
             if (toggle && !toggle.dataset.bound) {
@@ -680,6 +726,10 @@ function setupFinalForm(form) {
             moreCardsBox.style.display = 'none';
         });
     }
+    const addressFields = form.querySelectorAll('input[name="address"], input[name="city"], input[name="state"], input[name="zip"]');
+    addressFields.forEach(f => f.addEventListener('input', () => updateShippingAndTax(form)));
+    updateShippingAndTax(form);
+
     const remember = form.querySelector('#remember-me');
     const phone = form.querySelector('#phone-container');
     const msg = form.querySelector('#remember-message');
@@ -812,6 +862,22 @@ function setupCheckoutPage() {
     const finalPage = document.getElementById('final-checkout');
     if (!finalPage) return;
     populateOrderSummary(finalPage);
+    const bar = finalPage.querySelector('.order-summary-bar');
+    const details = finalPage.querySelector('.order-summary-details.top-summary');
+    if (bar && details) {
+        bar.style.display = 'flex';
+        details.style.display = 'none';
+        const toggle = finalPage.querySelector('#toggle-order-summary');
+        const arrow = bar.querySelector('.arrow');
+        if (toggle) {
+            toggle.addEventListener('click', e => {
+                e.preventDefault();
+                const hidden = details.style.display === 'none';
+                details.style.display = hidden ? 'block' : 'none';
+                if (arrow) arrow.textContent = hidden ? '▲' : '▼';
+            });
+        }
+    }
     setupFinalForm(finalPage.querySelector('#final-form'));
     finalPage.querySelectorAll('.pay-btn').forEach(btn => {
         btn.addEventListener('pointerdown', () => {
