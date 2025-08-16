@@ -50,7 +50,7 @@
         }
         .payment-icons {
             display: grid;
-            grid-template-columns: repeat(3, auto);
+            grid-template-columns: repeat(3, 1fr);
             gap: 5px;
             margin: 10px auto;
             justify-content: center;
@@ -375,6 +375,7 @@
             flex-wrap: wrap;
             box-sizing: border-box;
             overflow: hidden;
+            width: 100%;
         }
         .payment-label {
             flex: 1;
@@ -413,8 +414,14 @@
         }
 
         @media (max-width: 480px) {
+            .payment-option label {
+                flex-direction: column;
+                align-items: flex-start;
+            }
             .payment-logos {
-                margin-left: 5px;
+                width: 100%;
+                margin-left: 0;
+                justify-content: flex-start;
             }
         }
 
