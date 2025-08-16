@@ -372,12 +372,13 @@
         }
         .payment-option input {
             margin: 0;
+            flex-shrink: 0;
         }
         .payment-option label {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            width: 100%;
+            flex: 1;
             cursor: pointer;
             gap: 10px;
         }
@@ -415,12 +416,16 @@
         }
 
         @media (max-width: 480px) {
+            .payment-option {
+                flex-wrap: wrap;
+            }
             .payment-option label {
                 flex-direction: row;
                 align-items: center;
                 justify-content: flex-start;
                 gap: 5px;
                 flex-wrap: wrap;
+                width: 100%;
             }
             .payment-logos {
                 margin-left: 5px;
@@ -428,7 +433,7 @@
                 flex-wrap: wrap;
                 flex-shrink: 1;
                 max-width: 100%;
-            }
+        }
         }
 
         .more-logos {
