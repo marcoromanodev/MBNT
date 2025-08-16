@@ -108,6 +108,9 @@
             width: 80px;
             height: auto;
         }
+        .payment-icons img.klarna-logo {
+            width: 100px;
+        }
         .pay-btn.paypal img {
             width: 100%;
             height: 100%;
@@ -275,14 +278,15 @@
             justify-content: center;
             align-items: center;
             margin-top: 5px;
-            gap: 5px;
         }
         .remember-check input {
             width: 20px;
             height: 20px;
         }
         .remember-text {
-            margin: 0;
+            display: block;
+            margin-top: 5px;
+            text-align: center;
         }
         .phone-input {
             position: relative;
@@ -307,7 +311,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 5px;
+            margin: 5px auto 0;
             width: 100%;
             max-width: 200px;
         }
@@ -317,8 +321,9 @@
         }
         .shop-logo {
             overflow: hidden;
-            width: 40px;
+            width: 50px;
             height: 20px;
+            margin-left: auto;
         }
         .shop-logo img {
             width: 80px;
@@ -326,6 +331,7 @@
             object-fit: cover;
             object-position: right;
             filter: grayscale(100%);
+            transform: translateX(-5px);
         }
         .checkout-domain {
             margin-top: 5px;
@@ -338,12 +344,11 @@
             align-items: center;
             border: 1px solid #ccc;
             padding: 10px;
-            padding-left: 0;
             margin: 5px 0;
             cursor: pointer;
             width: 100%;
             box-sizing: border-box;
-            overflow: hidden;
+            overflow: visible;
         }
         .payment-option input {
             margin: 0 10px 0 0;
@@ -353,15 +358,15 @@
             align-items: center;
             width: 100%;
             cursor: pointer;
-            flex-wrap: nowrap;
+            justify-content: flex-start;
         }
         .payment-label {
-            flex: 1;
             text-align: left;
-            overflow-wrap: anywhere;
+            white-space: nowrap;
         }
         .payment-label .subtext {
             font-size: 0.8em;
+            white-space: normal;
         }
         .payment-logos {
             margin-left: auto;
@@ -372,6 +377,9 @@
         }
         .payment-logos img {
             height: 20px;
+        }
+        .payment-logos img.klarna-logo {
+            height: 30px;
         }
         .more-logos {
             position: relative;
@@ -466,7 +474,7 @@
                 <button class="pay-btn" data-method="Apple Pay"><img src="applepay.png" alt="Apple Pay"></button>
                 <button class="pay-btn paypal" data-method="PayPal"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></button>
                 <button class="pay-btn" data-method="Google Pay"><img src="googlepay.png" alt="Google Pay"></button>
-                <button class="pay-btn" data-method="Klarna"><img src="klarna.png" alt="Klarna"></button>
+                <button class="pay-btn" data-method="Klarna"><img src="klarna.png" alt="Klarna" class="klarna-logo"></button>
                 <button class="pay-btn" data-method="Venmo"><img src="venmo.png" alt="Venmo"></button>
             </div>
             <div class="or">OR</div>
@@ -538,7 +546,7 @@
                 <input type="radio" name="payment-method" id="pay-klarna" value="klarna">
                 <label for="pay-klarna">
                     <span class="payment-label">Klarna - Flexible payments</span>
-                    <span class="payment-logos"><img src="klarna.png" alt="Klarna"></span>
+                    <span class="payment-logos"><img src="klarna.png" alt="Klarna" class="klarna-logo"></span>
                 </label>
             </div>
             <div id="payment-message"></div>
@@ -546,8 +554,8 @@
                 <strong class="remember-heading">Remember me</strong>
                 <div class="remember-check">
                     <input type="checkbox" name="remember" id="remember-me">
-                    <label for="remember-me" class="remember-text">Save my information for a faster checkout with a Shop account</label>
                 </div>
+                <label for="remember-me" class="remember-text">Save my information for a faster checkout with a Shop account</label>
                 <div id="phone-container" class="phone-input" style="display:none;">
                     <span class="phone-icon">📱</span>
                     <span class="phone-prefix">+1</span>

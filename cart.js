@@ -164,7 +164,7 @@ function createCartModal() {
                     <button class="pay-btn" data-method="Apple Pay"><img src="applepay.png" alt="Apple Pay"></button>
                     <button class="pay-btn paypal" data-method="PayPal"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></button>
                     <button class="pay-btn" data-method="Google Pay"><img src="googlepay.png" alt="Google Pay"></button>
-                    <button class="pay-btn" data-method="Klarna"><img src="klarna.png" alt="Klarna"></button>
+                    <button class="pay-btn" data-method="Klarna"><img src="klarna.png" alt="Klarna" class="klarna-logo"></button>
                     <button class="pay-btn" data-method="Venmo"><img src="venmo.png" alt="Venmo"></button>
                 </div>
             </div>
@@ -179,7 +179,7 @@ function createCartModal() {
                     <button class="pay-btn" data-method="Apple Pay"><img src="applepay.png" alt="Apple Pay"></button>
                     <button class="pay-btn paypal" data-method="PayPal"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></button>
                     <button class="pay-btn" data-method="Google Pay"><img src="googlepay.png" alt="Google Pay"></button>
-                    <button class="pay-btn" data-method="Klarna"><img src="klarna.png" alt="Klarna"></button>
+                    <button class="pay-btn" data-method="Klarna"><img src="klarna.png" alt="Klarna" class="klarna-logo"></button>
                     <button class="pay-btn" data-method="Venmo"><img src="venmo.png" alt="Venmo"></button>
                 </div>
             </form>
@@ -200,7 +200,7 @@ function createCartModal() {
                         <button class="pay-btn" data-method="Apple Pay"><img src="applepay.png" alt="Apple Pay"></button>
                         <button class="pay-btn paypal" data-method="PayPal"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></button>
                         <button class="pay-btn" data-method="Google Pay"><img src="googlepay.png" alt="Google Pay"></button>
-                        <button class="pay-btn" data-method="Klarna"><img src="klarna.png" alt="Klarna"></button>
+                        <button class="pay-btn" data-method="Klarna"><img src="klarna.png" alt="Klarna" class="klarna-logo"></button>
                         <button class="pay-btn" data-method="Venmo"><img src="venmo.png" alt="Venmo"></button>
                     </div>
                     <div class="or">OR</div>
@@ -271,7 +271,7 @@ function createCartModal() {
                         <input type="radio" name="payment-method" id="cart-pay-klarna" value="klarna">
                         <label for="cart-pay-klarna">
                             <span class="payment-label">Klarna - Flexible payments</span>
-                            <span class="payment-logos"><img src="klarna.png" alt="Klarna"></span>
+                            <span class="payment-logos"><img src="klarna.png" alt="Klarna" class="klarna-logo"></span>
                         </label>
                     </div>
                     <div id="payment-message"></div>
@@ -279,8 +279,8 @@ function createCartModal() {
                         <strong class="remember-heading">Remember me</strong>
                         <div class="remember-check">
                             <input type="checkbox" name="remember" id="remember-me">
-                            <label for="remember-me" class="remember-text">Save my information for a faster checkout with a Shop account</label>
                         </div>
+                        <label for="remember-me" class="remember-text">Save my information for a faster checkout with a Shop account</label>
                         <div id="phone-container" class="phone-input" style="display:none;">
                             <span class="phone-icon">📱</span>
                             <span class="phone-prefix">+1</span>
@@ -372,6 +372,7 @@ function createCartModal() {
             #cart-modal .pay-btn.paypal img{width:60px;}
             #cart-modal .payment-icons{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin:10px 0;justify-items:center;}
             #cart-modal .payment-icons img{width:80px;height:auto;}
+            #cart-modal .payment-icons img.klarna-logo{width:100px;}
             #cart-modal .cost-summary div{display:flex;justify-content:space-between;margin:5px 0;}
             #cart-modal .cart-item{display:flex;align-items:center;justify-content:space-between;margin:5px 0;position:relative;padding-top:10px;}
             #cart-modal .cart-item.no-remove{padding-top:0;}
@@ -391,26 +392,27 @@ function createCartModal() {
             #login-btn:hover{color:red;}
             .remember-section{text-align:center;margin-top:10px;}
             .remember-heading{display:block;font-weight:700;text-align:center;}
-            .remember-check{display:flex;justify-content:center;align-items:center;margin-top:5px;gap:5px;}
+            .remember-check{display:flex;justify-content:center;align-items:center;margin-top:5px;}
             .remember-check input{width:20px;height:20px;}
-            .remember-text{margin:0;}
+            .remember-text{display:block;margin-top:5px;text-align:center;}
             .phone-input{position:relative;margin-top:5px;}
             .phone-input .phone-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);}
             .phone-input .phone-prefix{position:absolute;left:35px;top:50%;transform:translateY(-50%);}
             .phone-input input{padding-left:60px;}
-            .secure-row{display:flex;justify-content:space-between;align-items:center;margin-top:5px;width:100%;max-width:200px;}
+            .secure-row{display:flex;justify-content:space-between;align-items:center;margin:5px auto 0;width:100%;max-width:200px;}
             .secure-text{color:#888;font-size:0.8em;}
-            .shop-logo{overflow:hidden;width:40px;height:20px;}
-            .shop-logo img{width:80px;height:100%;object-fit:cover;object-position:right;filter:grayscale(100%);}
+            .shop-logo{overflow:hidden;width:50px;height:20px;margin-left:auto;}
+            .shop-logo img{width:80px;height:100%;object-fit:cover;object-position:right;filter:grayscale(100%);transform:translateX(-5px);}
             .checkout-domain{margin-top:5px;}
             .credit-card-fields input{width:100%;}
-            .payment-option{display:flex;align-items:center;border:1px solid #ccc;padding:10px;padding-left:0;margin:5px 0;cursor:pointer;width:100%;box-sizing:border-box;overflow:hidden;}
+            .payment-option{display:flex;align-items:center;border:1px solid #ccc;padding:10px;margin:5px 0;cursor:pointer;width:100%;box-sizing:border-box;overflow:visible;}
             .payment-option input{margin:0 10px 0 0;}
-            .payment-option label{display:flex;align-items:center;width:100%;cursor:pointer;flex-wrap:nowrap;}
-            .payment-label{flex:1;text-align:left;overflow-wrap:anywhere;}
-            .payment-label .subtext{font-size:0.8em;}
+            .payment-option label{display:flex;align-items:center;width:100%;cursor:pointer;justify-content:flex-start;}
+            .payment-label{text-align:left;white-space:nowrap;}
+            .payment-label .subtext{font-size:0.8em;white-space:normal;}
             .payment-logos{margin-left:auto;display:flex;align-items:center;gap:5px;flex-shrink:0;}
             .payment-logos img{height:20px;}
+            .payment-logos img.klarna-logo{height:30px;}
             .more-logos{position:relative;margin-left:5px;cursor:pointer;color:#000;font-weight:600;}
             .more-logos-box{display:none;position:absolute;bottom:100%;right:0;background:#000;padding:5px;z-index:10;}
             .more-logos-box img{height:20px;margin:0 2px;filter:invert(1);}
@@ -866,7 +868,7 @@ function ensureCartCounter() {
     if (!document.getElementById('cart-counter-style')) {
         const style = document.createElement('style');
         style.id = 'cart-counter-style';
-        style.textContent = '.cart-counter{font-size:0.7rem;text-align:center;font-weight:600;cursor:pointer;display:inline-block;outline:2px solid transparent;padding:2px;} .cart-counter:hover,.cart-counter:focus,.cart-counter:active{outline-color:red;} .header-line{border-top:1px solid #000;width:100%;} .product-item{aspect-ratio:1/1;} .product-item img{width:100%;height:100%;object-fit:contain;object-position:center;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.1));} .product-item a:hover img,.product-item a:focus img,.product-item a:active img{outline:4px solid #ff0000;outline-offset:-4px;} .payment-icons{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;justify-items:center;margin:10px 0;} .pay-btn{outline:2px solid transparent;} .pay-btn:hover,.pay-btn:focus,.pay-btn:active,.pay-btn.selected{outline-color:red;} .pay-btn.paypal{background:#ffc439;width:80px;height:40px;padding:0;} .pay-btn.paypal img{width:100%;height:100%;object-fit:contain;} .payment-option{display:flex;align-items:center;border:1px solid #ccc;padding:10px;padding-left:0;margin:5px 0;cursor:pointer;width:100%;box-sizing:border-box;overflow:hidden;} .payment-option input{margin:0 10px 0 0;} .payment-option label{display:flex;align-items:center;width:100%;cursor:pointer;flex-wrap:nowrap;} .payment-label{flex:1;text-align:left;overflow-wrap:anywhere;} .payment-label .subtext{font-size:0.8em;} .payment-logos{margin-left:auto;display:flex;align-items:center;gap:5px;flex-shrink:0;} .payment-logos img{height:20px;} .more-logos{position:relative;margin-left:5px;cursor:pointer;color:#000;font-weight:600;} .more-logos-box{display:none;position:absolute;top:100%;right:0;background:#000;padding:5px;z-index:10;} .more-logos-box img{height:20px;margin:0 2px;filter:invert(1);} .redirect-icon{text-align:center;font-size:2rem;} .paypal-inline{height:1em;vertical-align:middle;filter:invert(1);} .empty-cart-message{text-align:center;} a,button{transition:all 0.3s ease;} button:hover,button:focus,button:active,a:hover,a:focus,a:active{border:2px solid red;color:red;background:#fff;} .color-option{border:1px solid #000;} .color-option.selected,.color-option:hover,.color-option:focus,.color-option:active{border:2px solid red !important;}';
+        style.textContent = '.cart-counter{font-size:0.7rem;text-align:center;font-weight:600;cursor:pointer;display:inline-block;outline:2px solid transparent;padding:2px;} .cart-counter:hover,.cart-counter:focus,.cart-counter:active{outline-color:red;} .header-line{border-top:1px solid #000;width:100%;} .product-item{aspect-ratio:1/1;} .product-item img{width:100%;height:100%;object-fit:contain;object-position:center;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.1));} .product-item a:hover img,.product-item a:focus img,.product-item a:active img{outline:4px solid #ff0000;outline-offset:-4px;} .payment-icons{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;justify-items:center;margin:10px 0;} .pay-btn{outline:2px solid transparent;} .pay-btn:hover,.pay-btn:focus,.pay-btn:active,.pay-btn.selected{outline-color:red;} .pay-btn.paypal{background:#ffc439;width:80px;height:40px;padding:0;} .pay-btn.paypal img{width:100%;height:100%;object-fit:contain;} .payment-icons img.klarna-logo{width:100px;} .payment-option{display:flex;align-items:center;border:1px solid #ccc;padding:10px;margin:5px 0;cursor:pointer;width:100%;box-sizing:border-box;overflow:visible;} .payment-option input{margin:0 10px 0 0;} .payment-option label{display:flex;align-items:center;width:100%;cursor:pointer;justify-content:flex-start;} .payment-label{text-align:left;white-space:nowrap;} .payment-label .subtext{font-size:0.8em;white-space:normal;} .payment-logos{margin-left:auto;display:flex;align-items:center;gap:5px;flex-shrink:0;} .payment-logos img{height:20px;} .payment-logos img.klarna-logo{height:30px;} .more-logos{position:relative;margin-left:5px;cursor:pointer;color:#000;font-weight:600;} .more-logos-box{display:none;position:absolute;top:100%;right:0;background:#000;padding:5px;z-index:10;} .more-logos-box img{height:20px;margin:0 2px;filter:invert(1);} .redirect-icon{text-align:center;font-size:2rem;} .paypal-inline{height:1em;vertical-align:middle;filter:invert(1);} .empty-cart-message{text-align:center;} a,button{transition:all 0.3s ease;} button:hover,button:focus,button:active,a:hover,a:focus,a:active{border:2px solid red;color:red;background:#fff;} .color-option{border:1px solid #000;} .color-option.selected,.color-option:hover,.color-option:focus,.color-option:active{border:2px solid red !important;}';
         document.head.appendChild(style);
     }
 }
