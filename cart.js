@@ -421,7 +421,7 @@ function createCartModal() {
             .remember-section{text-align:center;margin-top:10px;}
             .remember-heading{display:block;font-weight:700;text-align:center;}
             .remember-check{width:100%;text-align:center;margin-top:5px;}
-            .remember-check input{width:20px;height:20px;display:inline-block;}
+            .remember-check input{width:20px;height:20px;display:block;margin:0 auto;}
             .remember-text{display:block;margin-top:5px;text-align:center;}
             .phone-input{position:relative;margin-top:5px;}
             .phone-input .phone-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);}
