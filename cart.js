@@ -422,15 +422,15 @@ function createCartModal() {
             .contact-header h3{text-align:center;margin:0;}
             #login-btn{background:none;border:none;color:#000;cursor:pointer;text-decoration:underline;font-size:0.9em;padding:0;position:absolute;right:0;top:50%;transform:translateY(-50%);}
             #login-btn:hover{color:red;}
-            .remember-section{text-align:center;margin-top:10px;}
+            .remember-section{text-align:center;margin-top:10px;display:flex;flex-direction:column;align-items:center;}
             .remember-heading{display:block;font-weight:700;text-align:center;}
-            .remember-check{margin-top:5px;text-align:center;}
-            .remember-check input{width:20px;height:20px;display:block;margin:0 auto;}
+            .remember-check{margin-top:5px;width:100%;display:flex;justify-content:center;}
+            .remember-check input{width:20px;height:20px;}
             .remember-text{display:block;margin-top:5px;text-align:center;}
-            .phone-input{position:relative;margin-top:5px;}
-            .phone-input .phone-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);}
-            .phone-input .phone-prefix{position:absolute;left:35px;top:50%;transform:translateY(-50%);}
-            .phone-input input{padding-left:75px;}
+            .phone-input{margin-top:5px;display:flex;align-items:center;width:100%;}
+            .phone-input .phone-icon{margin-right:5px;}
+            .phone-input .phone-prefix{margin-right:5px;}
+            .phone-input input{flex:1;padding-left:0;}
             .secure-row{display:flex;justify-content:space-between;align-items:center;margin-top:5px;width:100%;}
             .secure-text{color:#888;font-size:0.8em;}
             .shop-logo{overflow:hidden;width:50px;height:20px;}
@@ -758,15 +758,24 @@ function setupFinalForm(form) {
     const remember = form.querySelector('#remember-me');
     const phone = form.querySelector('#phone-container');
     const msg = form.querySelector('#remember-message');
+    const phoneInput = phone ? phone.querySelector('input[name="remember_phone"]') : null;
     if (remember) {
         remember.addEventListener('change', () => {
             const show = remember.checked;
-            if (phone) phone.style.display = show ? 'block' : 'none';
+            if (phone) phone.style.display = show ? 'flex' : 'none';
             if (msg) msg.style.display = show ? 'block' : 'none';
+        });
+    }
+    if (phoneInput) {
+        phoneInput.addEventListener('input', () => {
+            phoneInput.value = phoneInput.value.replace(/[^0-9]/g, '');
         });
     }
     form.addEventListener('submit', e => {
         e.preventDefault();
+        if (phoneInput && phoneInput.value.trim() && !phoneInput.value.startsWith('+1')) {
+            phoneInput.value = '+1' + phoneInput.value;
+        }
         handlePayment('Stripe');
         const modal = form.closest('#cart-modal');
         if (modal) {
