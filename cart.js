@@ -160,7 +160,7 @@ function createCartModal() {
                 <div class="cart-items"></div>
                 <div class="cost-summary">
                     <div><span>Subtotal</span><span class="subtotal">$0.00</span></div>
-                    <div><span>Tax</span><span class="tax">Calculated at checkout</span></div>
+                    <div><span>Tax</span><span class="tax">$0.00</span></div>
                     <div><span>Shipping</span><span class="shipping">Calculated at checkout</span></div>
                     <div><strong>Total</strong><strong class="total">$0.00</strong></div>
                 </div>
@@ -420,8 +420,8 @@ function createCartModal() {
             #login-btn:hover{color:red;}
             .remember-section{text-align:center;margin-top:10px;}
             .remember-heading{display:block;font-weight:700;text-align:center;}
-            .remember-check{width:100%;text-align:center;margin-top:5px;}
-            .remember-check input{width:20px;height:20px;display:block;margin:0 auto;}
+            .remember-check{width:100%;display:flex;justify-content:center;margin-top:5px;}
+            .remember-check input{width:20px;height:20px;}
             .remember-text{display:block;margin-top:5px;text-align:center;}
             .phone-input{position:relative;margin-top:5px;}
             .phone-input .phone-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);}
