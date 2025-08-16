@@ -137,6 +137,15 @@
         .summary-toggle .arrow {
             margin-left: 5px;
         }
+        .summary-label {
+            background: #000;
+            color: #fff;
+            font-size: 1em;
+            display: inline-block;
+            padding: 10px;
+            margin: 0;
+            margin-left: 0;
+        }
         .order-total {
             font-weight: bold;
             margin-left: auto;
@@ -328,9 +337,8 @@
             width: 80px;
             height: 100%;
             object-fit: cover;
-            object-position: right;
+            object-position: left;
             filter: grayscale(100%);
-            transform: translateX(-5px);
         }
         .checkout-domain {
             margin-top: 5px;
@@ -601,6 +609,9 @@
                     <span class="secure-text">Secure and encrypted</span>
                     <div class="shop-logo"><img src="shoppay.png" alt="Shop Pay"></div>
                 </div>
+            </div>
+            <div class="order-summary-bar">
+                <div class="summary-label">Order summary</div>
             </div>
             <div class="order-summary-details bottom-summary">
                 <div class="cart-items"></div>
