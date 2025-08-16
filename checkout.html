@@ -281,7 +281,8 @@
         .remember-check input {
             width: 20px;
             height: 20px;
-            display: inline-block;
+            display: block;
+            margin: 0 auto;
         }
         .remember-text {
             display: block;
@@ -391,6 +392,20 @@
         }
         .payment-logos img.klarna-logo {
             height: 30px;
+        }
+        @media (max-width: 480px) {
+            .payment-option label {
+                flex-wrap: wrap;
+            }
+            .payment-logos {
+                margin-left: 0;
+                flex-basis: 100%;
+                justify-content: flex-start;
+                margin-top: 5px;
+            }
+            .payment-logos img {
+                height: 18px;
+            }
         }
         .more-logos {
             position: relative;
