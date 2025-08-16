@@ -389,26 +389,26 @@ function createCartModal() {
             .contact-header h3{text-align:center;margin:0;}
             #login-btn{background:none;border:none;color:#000;cursor:pointer;text-decoration:underline;font-size:0.9em;padding:0;position:absolute;right:0;top:50%;transform:translateY(-50%);}
             #login-btn:hover{color:red;}
-            .remember-section{text-align:center;margin-top:10px;display:flex;flex-direction:column;align-items:center;}
+            .remember-section{text-align:center;margin-top:10px;}
             .remember-heading{display:block;font-weight:700;text-align:center;}
             .remember-check{display:flex;justify-content:center;margin-top:5px;}
             .remember-check input{width:20px;height:20px;}
-            .remember-text{display:block;text-align:center;margin:5px auto 0;}
-            .phone-input{position:relative;margin:5px auto 0;width:fit-content;}
+            .remember-text{display:block;text-align:center;margin-top:5px;}
+            .phone-input{position:relative;margin-top:5px;}
             .phone-input .phone-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);}
             .phone-input .phone-prefix{position:absolute;left:35px;top:50%;transform:translateY(-50%);}
             .phone-input input{padding-left:60px;}
-            .secure-row{display:flex;justify-content:flex-start;align-items:center;gap:5px;margin-top:5px;width:100%;max-width:200px;margin-left:auto;margin-right:auto;}
+            .secure-row{display:flex;justify-content:space-between;align-items:center;margin-top:5px;width:100%;max-width:200px;}
             .secure-text{color:#888;font-size:0.8em;}
             .shop-logo{overflow:hidden;width:40px;height:20px;}
-            .shop-logo img{width:80px;height:100%;object-fit:cover;object-position:-20px 0;filter:grayscale(100%);}
+            .shop-logo img{width:80px;height:100%;object-fit:cover;object-position:-15px 0;filter:grayscale(100%);}
             .checkout-domain{margin-top:5px;}
             .credit-card-fields input{width:100%;}
-            .payment-option{display:flex;align-items:center;border:1px solid #ccc;padding:10px;padding-left:0;margin:5px 0;cursor:pointer;width:100%;box-sizing:border-box;}
+            .payment-option{display:flex;align-items:center;border:1px solid #ccc;padding:10px;padding-left:0;margin:5px 0;cursor:pointer;width:100%;box-sizing:border-box;overflow:hidden;}
             .payment-option input{margin:0 10px 0 0;}
-            .payment-option label{display:flex;align-items:center;flex-direction:row;justify-content:space-between;width:100%;cursor:pointer;flex-wrap:nowrap;}
-            .payment-label{flex:1;text-align:left;display:flex;flex-direction:column;white-space:nowrap;}
-            .payment-label .subtext{display:block;font-size:0.8em;white-space:normal;}
+            .payment-option label{display:flex;align-items:center;width:100%;cursor:pointer;flex-wrap:nowrap;}
+            .payment-label{flex:1;text-align:left;overflow-wrap:anywhere;}
+            .payment-label .subtext{display:block;font-size:0.8em;}
             .payment-logos{margin-left:auto;display:flex;align-items:center;gap:5px;flex-shrink:0;}
             .payment-logos img{height:20px;}
             .more-logos{position:relative;margin-left:5px;cursor:pointer;color:#000;font-weight:600;}
@@ -866,7 +866,7 @@ function ensureCartCounter() {
     if (!document.getElementById('cart-counter-style')) {
         const style = document.createElement('style');
         style.id = 'cart-counter-style';
-        style.textContent = '.cart-counter{font-size:0.7rem;text-align:center;font-weight:600;cursor:pointer;display:inline-block;outline:2px solid transparent;padding:2px;} .cart-counter:hover,.cart-counter:focus,.cart-counter:active{outline-color:red;} .header-line{border-top:1px solid #000;width:100%;} .product-item{aspect-ratio:1/1;} .product-item img{width:100%;height:100%;object-fit:contain;object-position:center;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.1));} .product-item a:hover img,.product-item a:focus img,.product-item a:active img{outline:4px solid #ff0000;outline-offset:-4px;} .payment-icons{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;justify-items:center;margin:10px 0;} .pay-btn{outline:2px solid transparent;} .pay-btn:hover,.pay-btn:focus,.pay-btn:active,.pay-btn.selected{outline-color:red;} .pay-btn.paypal{background:#ffc439;width:80px;height:40px;padding:0;} .pay-btn.paypal img{width:100%;height:100%;object-fit:contain;} .payment-option{display:flex;align-items:center;border:1px solid #ccc;padding:10px;padding-left:0;margin:5px 0;cursor:pointer;width:100%;box-sizing:border-box;} .payment-option input{margin:0 10px 0 0;} .payment-option label{display:flex;align-items:center;justify-content:space-between;width:100%;cursor:pointer;flex-wrap:nowrap;} .payment-label{flex:1;text-align:left;display:flex;flex-direction:column;overflow-wrap:anywhere;} .payment-label .subtext{font-size:0.8em;} .payment-logos{margin-left:auto;display:flex;align-items:center;gap:5px;flex-shrink:0;} .payment-logos img{height:20px;} .more-logos{position:relative;margin-left:5px;cursor:pointer;color:#000;font-weight:600;} .more-logos-box{display:none;position:absolute;top:100%;right:0;background:#000;padding:5px;z-index:10;} .more-logos-box img{height:20px;margin:0 2px;filter:invert(1);} .redirect-icon{text-align:center;font-size:2rem;} .paypal-inline{height:1em;vertical-align:middle;filter:invert(1);} .empty-cart-message{text-align:center;} a,button{transition:all 0.3s ease;} button:hover,button:focus,button:active,a:hover,a:focus,a:active{border:2px solid red;color:red;background:#fff;} .color-option{border:1px solid #000;} .color-option.selected,.color-option:hover,.color-option:focus,.color-option:active{border:2px solid red !important;}';
+        style.textContent = '.cart-counter{font-size:0.7rem;text-align:center;font-weight:600;cursor:pointer;display:inline-block;outline:2px solid transparent;padding:2px;} .cart-counter:hover,.cart-counter:focus,.cart-counter:active{outline-color:red;} .header-line{border-top:1px solid #000;width:100%;} .product-item{aspect-ratio:1/1;} .product-item img{width:100%;height:100%;object-fit:contain;object-position:center;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.1));} .product-item a:hover img,.product-item a:focus img,.product-item a:active img{outline:4px solid #ff0000;outline-offset:-4px;} .payment-icons{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;justify-items:center;margin:10px 0;} .pay-btn{outline:2px solid transparent;} .pay-btn:hover,.pay-btn:focus,.pay-btn:active,.pay-btn.selected{outline-color:red;} .pay-btn.paypal{background:#ffc439;width:80px;height:40px;padding:0;} .pay-btn.paypal img{width:100%;height:100%;object-fit:contain;} .payment-option{display:flex;align-items:center;border:1px solid #ccc;padding:10px;padding-left:0;margin:5px 0;cursor:pointer;width:100%;box-sizing:border-box;overflow:hidden;} .payment-option input{margin:0 10px 0 0;} .payment-option label{display:flex;align-items:center;width:100%;cursor:pointer;flex-wrap:nowrap;} .payment-label{flex:1;text-align:left;overflow-wrap:anywhere;} .payment-label .subtext{font-size:0.8em;} .payment-logos{margin-left:auto;display:flex;align-items:center;gap:5px;flex-shrink:0;} .payment-logos img{height:20px;} .more-logos{position:relative;margin-left:5px;cursor:pointer;color:#000;font-weight:600;} .more-logos-box{display:none;position:absolute;top:100%;right:0;background:#000;padding:5px;z-index:10;} .more-logos-box img{height:20px;margin:0 2px;filter:invert(1);} .redirect-icon{text-align:center;font-size:2rem;} .paypal-inline{height:1em;vertical-align:middle;filter:invert(1);} .empty-cart-message{text-align:center;} a,button{transition:all 0.3s ease;} button:hover,button:focus,button:active,a:hover,a:focus,a:active{border:2px solid red;color:red;background:#fff;} .color-option{border:1px solid #000;} .color-option.selected,.color-option:hover,.color-option:focus,.color-option:active{border:2px solid red !important;}';
         document.head.appendChild(style);
     }
 }
