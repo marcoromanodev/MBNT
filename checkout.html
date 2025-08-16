@@ -50,11 +50,12 @@
         }
         .payment-icons {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(3, auto);
             gap: 5px;
             margin: 10px auto;
             justify-content: center;
             justify-items: center;
+            max-width: 260px;
             width: 100%;
         }
         .pay-option {
@@ -359,6 +360,7 @@
             cursor: pointer;
             width: 100%;
             box-sizing: border-box;
+            overflow: hidden;
         }
         .payment-option input {
             margin: 0 5px 0 0;
@@ -367,11 +369,12 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            width: 100%;
+            flex: 1;
             cursor: pointer;
             gap: 10px;
             flex-wrap: wrap;
             box-sizing: border-box;
+            overflow: hidden;
         }
         .payment-label {
             flex: 1;
@@ -392,13 +395,14 @@
             margin-top: 2px;
         }
         .payment-logos {
-            flex-shrink: 1;
+            flex-shrink: 0;
             margin-left: 10px;
             display: flex;
             align-items: center;
             gap: 5px;
             flex-wrap: wrap;
             max-width: 100%;
+            overflow: hidden;
         }
         .payment-logos img {
             height: 20px;
