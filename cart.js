@@ -279,8 +279,8 @@ function createCartModal() {
                         <strong class="remember-heading">Remember me</strong>
                         <div class="remember-check">
                             <input type="checkbox" name="remember" id="remember-me">
+                            <label for="remember-me" class="remember-text">Save my information for a faster checkout with a Shop account</label>
                         </div>
-                        <label for="remember-me" class="remember-text">Save my information for a faster checkout with a Shop account</label>
                         <div id="phone-container" class="phone-input" style="display:none;">
                             <span class="phone-icon">📱</span>
                             <span class="phone-prefix">+1</span>
@@ -391,9 +391,9 @@ function createCartModal() {
             #login-btn:hover{color:red;}
             .remember-section{text-align:center;margin-top:10px;}
             .remember-heading{display:block;font-weight:700;text-align:center;}
-            .remember-check{display:flex;justify-content:center;margin-top:5px;}
+            .remember-check{display:flex;justify-content:center;align-items:center;margin-top:5px;gap:5px;}
             .remember-check input{width:20px;height:20px;}
-            .remember-text{display:block;text-align:center;margin-top:5px;}
+            .remember-text{margin:0;}
             .phone-input{position:relative;margin-top:5px;}
             .phone-input .phone-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);}
             .phone-input .phone-prefix{position:absolute;left:35px;top:50%;transform:translateY(-50%);}
@@ -401,14 +401,14 @@ function createCartModal() {
             .secure-row{display:flex;justify-content:space-between;align-items:center;margin-top:5px;width:100%;max-width:200px;}
             .secure-text{color:#888;font-size:0.8em;}
             .shop-logo{overflow:hidden;width:40px;height:20px;}
-            .shop-logo img{width:80px;height:100%;object-fit:cover;object-position:-15px 0;filter:grayscale(100%);}
+            .shop-logo img{width:80px;height:100%;object-fit:cover;object-position:right;filter:grayscale(100%);}
             .checkout-domain{margin-top:5px;}
             .credit-card-fields input{width:100%;}
             .payment-option{display:flex;align-items:center;border:1px solid #ccc;padding:10px;padding-left:0;margin:5px 0;cursor:pointer;width:100%;box-sizing:border-box;overflow:hidden;}
             .payment-option input{margin:0 10px 0 0;}
             .payment-option label{display:flex;align-items:center;width:100%;cursor:pointer;flex-wrap:nowrap;}
             .payment-label{flex:1;text-align:left;overflow-wrap:anywhere;}
-            .payment-label .subtext{display:block;font-size:0.8em;}
+            .payment-label .subtext{font-size:0.8em;}
             .payment-logos{margin-left:auto;display:flex;align-items:center;gap:5px;flex-shrink:0;}
             .payment-logos img{height:20px;}
             .more-logos{position:relative;margin-left:5px;cursor:pointer;color:#000;font-weight:600;}
