@@ -291,6 +291,9 @@
         .remember-section {
             text-align: center;
             margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         .remember-heading {
             display: block;
@@ -299,13 +302,13 @@
         }
         .remember-check {
             margin-top: 5px;
-            text-align: center;
+            width: 100%;
+            display: flex;
+            justify-content: center;
         }
         .remember-check input {
             width: 20px;
             height: 20px;
-            display: block;
-            margin: 0 auto;
         }
         .remember-text {
             display: block;
@@ -313,23 +316,20 @@
             text-align: center;
         }
         .phone-input {
-            position: relative;
             margin-top: 5px;
+            display: flex;
+            align-items: center;
+            width: 100%;
         }
         .phone-input .phone-icon {
-            position: absolute;
-            left: 10px;
-            top: 50%;
-            transform: translateY(-50%);
+            margin-right: 5px;
         }
         .phone-input .phone-prefix {
-            position: absolute;
-            left: 35px;
-            top: 50%;
-            transform: translateY(-50%);
+            margin-right: 5px;
         }
         .phone-input input {
-            padding-left: 60px;
+            flex: 1;
+            padding-left: 0;
         }
         .secure-row {
             display: flex;

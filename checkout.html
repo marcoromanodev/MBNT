@@ -284,6 +284,9 @@
         .remember-section {
             text-align: center;
             margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         .remember-heading {
             display: block;
@@ -292,13 +295,13 @@
         }
         .remember-check {
             margin-top: 5px;
-            text-align: center;
+            width: 100%;
+            display: flex;
+            justify-content: center;
         }
         .remember-check input {
             width: 20px;
             height: 20px;
-            display: block;
-            margin: 0 auto;
         }
         .remember-text {
             display: block;
@@ -306,23 +309,20 @@
             text-align: center;
         }
         .phone-input {
-            position: relative;
             margin-top: 5px;
+            display: flex;
+            align-items: center;
+            width: 100%;
         }
         .phone-input .phone-icon {
-            position: absolute;
-            left: 10px;
-            top: 50%;
-            transform: translateY(-50%);
+            margin-right: 5px;
         }
         .phone-input .phone-prefix {
-            position: absolute;
-            left: 35px;
-            top: 50%;
-            transform: translateY(-50%);
+            margin-right: 5px;
         }
         .phone-input input {
-            padding-left: 75px;
+            flex: 1;
+            padding-left: 0;
         }
         .secure-row {
             display: flex;
@@ -772,12 +772,26 @@
         const remember = document.getElementById('remember-me');
         const phone = document.getElementById('phone-container');
         const rememberMsg = document.getElementById('remember-message');
+        const phoneInput = phone ? phone.querySelector('input[name="remember_phone"]') : null;
         if (remember) {
             remember.addEventListener('change', () => {
                 const show = remember.checked;
-                if (phone) phone.style.display = show ? 'block' : 'none';
+                if (phone) phone.style.display = show ? 'flex' : 'none';
                 if (rememberMsg) rememberMsg.style.display = show ? 'block' : 'none';
             });
+        }
+        if (phoneInput) {
+            phoneInput.addEventListener('input', () => {
+                phoneInput.value = phoneInput.value.replace(/[^0-9]/g, '');
+            });
+            const finalForm = document.getElementById('final-form');
+            if (finalForm) {
+                finalForm.addEventListener('submit', () => {
+                    if (phoneInput.value.trim() && !phoneInput.value.startsWith('+1')) {
+                        phoneInput.value = '+1' + phoneInput.value;
+                    }
+                });
+            }
         }
     </script>
 </body>
