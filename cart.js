@@ -392,25 +392,25 @@ function createCartModal() {
             #login-btn:hover{color:red;}
             .remember-section{text-align:center;margin-top:10px;}
             .remember-heading{display:block;font-weight:700;text-align:center;}
-            .remember-check{display:flex;justify-content:center;align-items:center;margin-top:5px;}
-            .remember-check input{width:20px;height:20px;}
+            .remember-check{width:100%;text-align:center;margin-top:5px;}
+            .remember-check input{width:20px;height:20px;display:inline-block;}
             .remember-text{display:block;margin-top:5px;text-align:center;}
             .phone-input{position:relative;margin-top:5px;}
             .phone-input .phone-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);}
             .phone-input .phone-prefix{position:absolute;left:35px;top:50%;transform:translateY(-50%);}
             .phone-input input{padding-left:60px;}
-            .secure-row{display:flex;justify-content:space-between;align-items:center;margin:5px auto 0;width:100%;max-width:200px;}
+            .secure-row{display:flex;justify-content:space-between;align-items:center;margin-top:5px;width:100%;}
             .secure-text{color:#888;font-size:0.8em;}
-            .shop-logo{overflow:hidden;width:50px;height:20px;margin-left:auto;}
+            .shop-logo{overflow:hidden;width:50px;height:20px;}
             .shop-logo img{width:80px;height:100%;object-fit:cover;object-position:right;filter:grayscale(100%);transform:translateX(-5px);}
             .checkout-domain{margin-top:5px;}
             .credit-card-fields input{width:100%;}
-            .payment-option{display:flex;align-items:center;border:1px solid #ccc;padding:10px;margin:5px 0;cursor:pointer;width:100%;box-sizing:border-box;overflow:visible;}
+            .payment-option{display:flex;align-items:center;border:1px solid #ccc;padding:10px;margin:5px 0;cursor:pointer;width:100%;box-sizing:border-box;overflow:hidden;}
             .payment-option input{margin:0 10px 0 0;}
             .payment-option label{display:flex;align-items:center;width:100%;cursor:pointer;justify-content:flex-start;}
             .payment-label{text-align:left;white-space:nowrap;}
             .payment-label .subtext{font-size:0.8em;white-space:normal;}
-            .payment-logos{margin-left:auto;display:flex;align-items:center;gap:5px;flex-shrink:0;}
+            .payment-logos{margin-left:10px;display:flex;align-items:center;gap:5px;}
             .payment-logos img{height:20px;}
             .payment-logos img.klarna-logo{height:30px;}
             .more-logos{position:relative;margin-left:5px;cursor:pointer;color:#000;font-weight:600;}

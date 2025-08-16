@@ -274,14 +274,14 @@
             text-align: center;
         }
         .remember-check {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            width: 100%;
+            text-align: center;
             margin-top: 5px;
         }
         .remember-check input {
             width: 20px;
             height: 20px;
+            display: inline-block;
         }
         .remember-text {
             display: block;
@@ -311,9 +311,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin: 5px auto 0;
+            margin-top: 5px;
             width: 100%;
-            max-width: 200px;
         }
         .secure-text {
             color: #888;
@@ -323,7 +322,6 @@
             overflow: hidden;
             width: 50px;
             height: 20px;
-            margin-left: auto;
         }
         .shop-logo img {
             width: 80px;
@@ -348,7 +346,7 @@
             cursor: pointer;
             width: 100%;
             box-sizing: border-box;
-            overflow: visible;
+            overflow: hidden;
         }
         .payment-option input {
             margin: 0 10px 0 0;
@@ -369,11 +367,10 @@
             white-space: normal;
         }
         .payment-logos {
-            margin-left: auto;
+            margin-left: 10px;
             display: flex;
             align-items: center;
             gap: 5px;
-            flex-shrink: 0;
         }
         .payment-logos img {
             height: 20px;
