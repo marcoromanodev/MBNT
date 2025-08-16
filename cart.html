@@ -365,7 +365,6 @@
             cursor: pointer;
             width: 100%;
             box-sizing: border-box;
-            overflow: hidden;
         }
         .payment-option input {
             margin: 0 10px 0 0;
@@ -382,9 +381,6 @@
             flex: 1;
             min-width: 0;
             text-align: left;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
         }
         .payment-option.shop-pay .payment-label {
             white-space: normal;
@@ -394,8 +390,6 @@
         .payment-option.shop-pay .payment-label .subtext {
             font-size: 0.8em;
             white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
             margin-top: 2px;
         }
         .payment-logos {
@@ -411,20 +405,7 @@
         .payment-logos img.klarna-logo {
             height: 30px;
         }
-        @media (max-width: 480px) {
-            .payment-option label {
-                flex-wrap: wrap;
-            }
-            .payment-logos {
-                margin-left: 0;
-                flex-basis: 100%;
-                justify-content: flex-start;
-                margin-top: 5px;
-            }
-            .payment-logos img {
-                height: 18px;
-            }
-        }
+
         .more-logos {
             position: relative;
             margin-left: 5px;
