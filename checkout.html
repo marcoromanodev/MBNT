@@ -355,20 +355,21 @@
             display: flex;
             align-items: center;
             border: 1px solid #ccc;
-            padding: 10px 10px 10px 5px;
+            padding: 10px;
             margin: 5px 0;
             cursor: pointer;
             width: 100%;
             box-sizing: border-box;
+            gap: 10px;
             flex-wrap: wrap;
         }
         .payment-option input {
-            margin: 0 5px 0 0;
+            margin: 0;
         }
         .payment-option label {
             display: flex;
             align-items: center;
-            justify-content: flex-start;
+            justify-content: space-between;
             flex: 1;
             cursor: pointer;
             gap: 10px;
@@ -388,6 +389,7 @@
             white-space: normal;
             display: flex;
             flex-direction: column;
+            align-items: flex-start;
         }
         .payment-option.shop-pay .payment-label .subtext {
             font-size: 0.8em;
@@ -587,7 +589,10 @@
             <div class="payment-option shop-pay">
                 <input type="radio" name="payment-method" id="pay-shop" value="shop">
                 <label for="pay-shop">
-                    <span class="payment-label">Shop Pay<span class="subtext">Pay in full or in installments</span></span>
+                    <span class="payment-label">
+                        <span>Shop Pay</span>
+                        <span class="subtext">Pay in full or in installments</span>
+                    </span>
                     <span class="payment-logos"><img src="shoppay.png" alt="Shop Pay"></span>
                 </label>
             </div>
