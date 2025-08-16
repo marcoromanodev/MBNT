@@ -231,11 +231,21 @@ function createCartModal() {
                     <p>Your payment method’s billing address must match the shipping address. All transactions are secure and encrypted.</p>
                     <div class="payment-option">
                         <input type="radio" name="payment-method" id="cart-pay-credit" value="credit">
-                        <label for="cart-pay-credit">Credit card
+                        <label for="cart-pay-credit">
+                            <span class="payment-label">Credit card</span>
                             <span class="payment-logos">
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png" alt="Visa">
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Mastercard-logo.png" alt="Mastercard">
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/3/30/American_Express_logo_%282018%29.svg" alt="American Express">
+                                <span class="more-logos" id="more-cards">+5
+                                    <div class="more-logos-box" id="more-cards-box">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/5/50/Discover_Card_logo.svg" alt="Discover">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/8/80/Elo_logo.svg" alt="Elo">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/JCB_logo.svg" alt="JCB">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/1/1b/UnionPay_logo.svg" alt="UnionPay">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/b/b3/Stripe_Logo%2C_revised_2016.svg" alt="Stripe">
+                                    </div>
+                                </span>
                             </span>
                         </label>
                     </div>
@@ -247,19 +257,31 @@ function createCartModal() {
                     </div>
                     <div class="payment-option">
                         <input type="radio" name="payment-method" id="cart-pay-apple" value="apple">
-                        <label for="cart-pay-apple">Apple Pay<img src="applepay.png" alt="Apple Pay"></label>
+                        <label for="cart-pay-apple">
+                            <span class="payment-label">Apple Pay</span>
+                            <span class="payment-logos"><img src="applepay.png" alt="Apple Pay"></span>
+                        </label>
                     </div>
                     <div class="payment-option">
                         <input type="radio" name="payment-method" id="cart-pay-paypal" value="paypal">
-                        <label for="cart-pay-paypal">PayPal<img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></label>
+                        <label for="cart-pay-paypal">
+                            <span class="payment-label">PayPal</span>
+                            <span class="payment-logos"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></span>
+                        </label>
                     </div>
                     <div class="payment-option">
                         <input type="radio" name="payment-method" id="cart-pay-shop" value="shop">
-                        <label for="cart-pay-shop">Shop Pay<span style="font-size:0.8em;margin-left:5px;">Pay in full or in installments</span><img src="shoppay.png" alt="Shop Pay"></label>
+                        <label for="cart-pay-shop">
+                            <span class="payment-label">Shop Pay<span class="subtext">Pay in full or in installments</span></span>
+                            <span class="payment-logos"><img src="shoppay.png" alt="Shop Pay"></span>
+                        </label>
                     </div>
                     <div class="payment-option">
                         <input type="radio" name="payment-method" id="cart-pay-klarna" value="klarna">
-                        <label for="cart-pay-klarna">Klarna - Flexible payments<img src="klarna.png" alt="Klarna"></label>
+                        <label for="cart-pay-klarna">
+                            <span class="payment-label">Klarna - Flexible payments</span>
+                            <span class="payment-logos"><img src="klarna.png" alt="Klarna"></span>
+                        </label>
                     </div>
                     <div id="payment-message"></div>
                     <div class="remember-section">
@@ -364,24 +386,29 @@ function createCartModal() {
             .contact-header h3{text-align:center;margin:0;}
             #login-btn{background:none;border:none;color:#000;cursor:pointer;text-decoration:underline;font-size:0.9em;padding:0;position:absolute;right:0;top:50%;transform:translateY(-50%);}
             #login-btn:hover{color:red;}
-            .remember-section{text-align:left;margin-top:10px;}
-            .remember-heading{display:block;font-weight:700;text-align:left;}
-            .remember-label{display:block;text-align:left;margin-top:5px;}
+            .remember-section{text-align:center;margin-top:10px;}
+            .remember-heading{display:block;font-weight:700;text-align:center;}
+            .remember-label{display:flex;align-items:center;justify-content:center;gap:5px;margin-top:5px;}
             .phone-input{position:relative;margin-top:5px;}
             .phone-input .phone-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);}
             .phone-input .phone-prefix{position:absolute;left:35px;top:50%;transform:translateY(-50%);}
             .phone-input input{padding-left:60px;}
-            .secure-row{display:flex;justify-content:space-between;align-items:center;margin-top:5px;}
+            .secure-row{display:flex;justify-content:center;align-items:center;gap:5px;margin-top:5px;}
             .secure-text{color:#888;font-size:0.8em;}
             .shop-logo{overflow:hidden;width:40px;height:20px;}
-            .shop-logo img{width:80px;height:100%;object-fit:cover;object-position:left;}
+            .shop-logo img{width:80px;height:100%;object-fit:cover;object-position:-15px 0;filter:grayscale(100%);}
             .checkout-domain{margin-top:5px;}
             .credit-card-fields input{width:100%;}
-            .payment-option{display:flex;align-items:center;justify-content:space-between;border:1px solid #ccc;padding:10px;margin:5px 0;cursor:pointer;}
+            .payment-option{display:flex;align-items:center;border:1px solid #ccc;padding:10px;margin:5px 0;cursor:pointer;width:100%;box-sizing:border-box;overflow:hidden;}
             .payment-option input{margin-right:10px;}
-            .payment-option label{flex:1;display:flex;align-items:center;justify-content:space-between;cursor:pointer;}
-            .payment-option img{height:20px;margin-left:10px;}
+            .payment-option label{display:flex;align-items:center;width:100%;cursor:pointer;flex-wrap:nowrap;}
+            .payment-label{flex:1;text-align:left;display:flex;flex-direction:column;overflow-wrap:anywhere;}
+            .payment-label .subtext{font-size:0.8em;}
+            .payment-logos{margin-left:auto;display:flex;align-items:center;flex-shrink:0;}
             .payment-logos img{height:20px;margin-left:5px;}
+            .more-logos{position:relative;margin-left:5px;cursor:pointer;color:#000;font-weight:600;}
+            .more-logos-box{display:none;position:absolute;top:100%;right:0;background:#000;padding:5px;z-index:10;}
+            .more-logos-box img{height:20px;margin:0 2px;filter:invert(1);}
             #cart-modal .logo-container{width:80px;height:80px;margin:0 auto;}
             #cart-modal .logo-container iframe{width:100%;height:100%;border:none;}
             #cart-modal .cart-time{text-align:center;font-size:0.7rem;font-weight:600;margin-top:5px;}
@@ -630,6 +657,17 @@ function setupFinalForm(form) {
             }
         });
     });
+    const moreCards = form.querySelector('#more-cards');
+    const moreCardsBox = form.querySelector('#more-cards-box');
+    if (moreCards && moreCardsBox) {
+        moreCards.addEventListener('click', e => {
+            e.stopPropagation();
+            moreCardsBox.style.display = moreCardsBox.style.display === 'flex' ? 'none' : 'flex';
+        });
+        document.addEventListener('click', () => {
+            moreCardsBox.style.display = 'none';
+        });
+    }
     const remember = form.querySelector('#remember-me');
     const phone = form.querySelector('#phone-container');
     const msg = form.querySelector('#remember-message');
@@ -818,7 +856,7 @@ function ensureCartCounter() {
     if (!document.getElementById('cart-counter-style')) {
         const style = document.createElement('style');
         style.id = 'cart-counter-style';
-        style.textContent = '.cart-counter{font-size:0.7rem;text-align:center;font-weight:600;cursor:pointer;display:inline-block;outline:2px solid transparent;padding:2px;} .cart-counter:hover,.cart-counter:focus,.cart-counter:active{outline-color:red;} .header-line{border-top:1px solid #000;width:100%;} .product-item{aspect-ratio:1/1;} .product-item img{width:100%;height:100%;object-fit:contain;object-position:center;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.1));} .product-item a:hover img,.product-item a:focus img,.product-item a:active img{outline:4px solid #ff0000;outline-offset:-4px;} .payment-icons{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;justify-items:center;margin:10px 0;} .pay-btn{outline:2px solid transparent;} .pay-btn:hover,.pay-btn:focus,.pay-btn:active,.pay-btn.selected{outline-color:red;} .pay-btn.paypal{background:#ffc439;width:80px;height:40px;padding:0;} .pay-btn.paypal img{width:100%;height:100%;object-fit:contain;} .payment-option{display:flex;align-items:center;justify-content:space-between;border:1px solid #ccc;padding:10px;margin:5px 0;cursor:pointer;} .payment-option input{margin-right:10px;} .payment-option label{flex:1;display:flex;align-items:center;justify-content:space-between;cursor:pointer;} .payment-option img{height:20px;margin-left:10px;} .payment-logos img{height:20px;margin-left:5px;} .redirect-icon{text-align:center;font-size:2rem;} .paypal-inline{height:1em;vertical-align:middle;filter:invert(1);} .empty-cart-message{text-align:center;} a,button{transition:all 0.3s ease;} button:hover,button:focus,button:active,a:hover,a:focus,a:active{border:2px solid red;color:red;background:#fff;} .color-option{border:1px solid #000;} .color-option.selected,.color-option:hover,.color-option:focus,.color-option:active{border:2px solid red !important;}';
+        style.textContent = '.cart-counter{font-size:0.7rem;text-align:center;font-weight:600;cursor:pointer;display:inline-block;outline:2px solid transparent;padding:2px;} .cart-counter:hover,.cart-counter:focus,.cart-counter:active{outline-color:red;} .header-line{border-top:1px solid #000;width:100%;} .product-item{aspect-ratio:1/1;} .product-item img{width:100%;height:100%;object-fit:contain;object-position:center;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.1));} .product-item a:hover img,.product-item a:focus img,.product-item a:active img{outline:4px solid #ff0000;outline-offset:-4px;} .payment-icons{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;justify-items:center;margin:10px 0;} .pay-btn{outline:2px solid transparent;} .pay-btn:hover,.pay-btn:focus,.pay-btn:active,.pay-btn.selected{outline-color:red;} .pay-btn.paypal{background:#ffc439;width:80px;height:40px;padding:0;} .pay-btn.paypal img{width:100%;height:100%;object-fit:contain;} .payment-option{display:flex;align-items:center;border:1px solid #ccc;padding:10px;margin:5px 0;cursor:pointer;width:100%;box-sizing:border-box;overflow:hidden;} .payment-option input{margin-right:10px;} .payment-option label{display:flex;align-items:center;width:100%;cursor:pointer;flex-wrap:nowrap;} .payment-label{flex:1;text-align:left;display:flex;flex-direction:column;overflow-wrap:anywhere;} .payment-label .subtext{font-size:0.8em;} .payment-logos{margin-left:auto;display:flex;align-items:center;flex-shrink:0;} .payment-logos img{height:20px;margin-left:5px;} .more-logos{position:relative;margin-left:5px;cursor:pointer;color:#000;font-weight:600;} .more-logos-box{display:none;position:absolute;top:100%;right:0;background:#000;padding:5px;z-index:10;} .more-logos-box img{height:20px;margin:0 2px;filter:invert(1);} .redirect-icon{text-align:center;font-size:2rem;} .paypal-inline{height:1em;vertical-align:middle;filter:invert(1);} .empty-cart-message{text-align:center;} a,button{transition:all 0.3s ease;} button:hover,button:focus,button:active,a:hover,a:focus,a:active{border:2px solid red;color:red;background:#fff;} .color-option{border:1px solid #000;} .color-option.selected,.color-option:hover,.color-option:focus,.color-option:active{border:2px solid red !important;}';
         document.head.appendChild(style);
     }
 }
