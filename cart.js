@@ -186,9 +186,13 @@ function createCartModal() {
             </div>
             <form id="checkout-form" style="display:none;">
                 <h3>Sign up and know first!</h3>
-                <input type="email" name="email" placeholder="Email" required>
+                <div class="phone-input">
+                    <span class="phone-icon">📱</span>
+                    <span class="phone-prefix">+1</span>
+                    <input type="tel" name="signup_phone" placeholder="Mobile phone number" required>
+                </div>
                 <p class="consent-text">By submitting this form, you consent to receive informational (eg, order updates) and/or marketing texts (eg, cart reminders) from maybenot.com including texts sent by autodialer. Consent is not a condition of purchase. Msg & data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available). Privacy Policy & Terms.</p>
-                <button type="submit">Submit</button>
+                <button type="submit">Sign Up</button>
                 <h3>Express checkout</h3>
                 <div class="payment-icons">
                     <button class="pay-btn" data-method="Shop Pay"><img src="shoppay.png" alt="Shop Pay"></button>
@@ -214,9 +218,13 @@ function createCartModal() {
                         </div>
                     </div>
                     <h3>Sign up and know first!</h3>
-                    <input type="email" name="signup_email" placeholder="Enter an email" required>
+                    <div class="phone-input">
+                        <span class="phone-icon">📱</span>
+                        <span class="phone-prefix">+1</span>
+                        <input type="tel" name="signup_phone" placeholder="Mobile phone number" required>
+                    </div>
                     <p class="consent-text">By submitting this form, you consent to receive informational (eg, order updates) and/or marketing texts (eg, cart reminders) from maybenot.com including texts sent by autodialer. Consent is not a condition of purchase. Msg & data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available). Privacy Policy & Terms.</p>
-                    <button type="submit">Submit</button>
+                    <button type="submit">Sign Up</button>
                     <h3>Express checkout</h3>
                     <div class="payment-icons">
                         <button class="pay-btn" data-method="Shop Pay"><img src="shoppay.png" alt="Shop Pay"></button>
@@ -424,8 +432,8 @@ function createCartModal() {
             #login-btn:hover{color:red;}
             .remember-section{text-align:center;margin-top:10px;display:flex;flex-direction:column;align-items:center;}
             .remember-heading{display:block;font-weight:700;text-align:center;}
-            .remember-check{margin-top:5px;width:100%;display:flex;justify-content:center;}
-            .remember-check input{width:20px;height:20px;}
+            .remember-check{margin-top:5px;display:flex;justify-content:center;align-items:center;width:auto;margin-left:auto;margin-right:auto;}
+            .remember-check input{width:20px;height:20px;margin:0;}
             .remember-text{display:block;margin-top:5px;text-align:center;}
             .phone-input{margin-top:5px;display:flex;align-items:center;width:100%;}
             .phone-input .phone-icon{margin-right:5px;}
