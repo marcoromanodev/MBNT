@@ -372,23 +372,37 @@
         .payment-option label {
             display: flex;
             align-items: center;
+            justify-content: space-between;
             width: 100%;
             cursor: pointer;
-            justify-content: flex-start;
+            gap: 10px;
         }
         .payment-label {
+            flex: 1;
+            min-width: 0;
             text-align: left;
+            overflow: hidden;
+            text-overflow: ellipsis;
             white-space: nowrap;
         }
-        .payment-label .subtext {
-            font-size: 0.8em;
+        .payment-option.shop-pay .payment-label {
             white-space: normal;
+            display: flex;
+            flex-direction: column;
+        }
+        .payment-option.shop-pay .payment-label .subtext {
+            font-size: 0.8em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 2px;
         }
         .payment-logos {
             margin-left: 10px;
             display: flex;
             align-items: center;
             gap: 5px;
+            flex-shrink: 0;
         }
         .payment-logos img {
             height: 20px;
