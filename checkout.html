@@ -354,19 +354,31 @@
         .payment-option label {
             display: flex;
             align-items: center;
+            justify-content: space-between;
             width: 100%;
             cursor: pointer;
-            justify-content: flex-start;
+            gap: 10px;
         }
         .payment-label {
+            flex: 1;
+            min-width: 0;
             text-align: left;
+            overflow: hidden;
+            text-overflow: ellipsis;
             white-space: nowrap;
+        }
+        .payment-option.shop-pay .payment-label {
+            white-space: normal;
+            display: flex;
+            flex-direction: column;
         }
         .payment-label .subtext {
             font-size: 0.8em;
             white-space: normal;
+            margin-top: 2px;
         }
         .payment-logos {
+            flex-shrink: 0;
             margin-left: 10px;
             display: flex;
             align-items: center;
@@ -458,10 +470,10 @@
         <form id="final-form">
             <h2 class="checkout-domain">maybenot.com</h2>
             <div class="order-summary-bar">
-                <button id="toggle-order-summary" class="summary-toggle" type="button">Order summary <span class="arrow">▼</span></button>
+                <button id="toggle-order-summary" class="summary-toggle" type="button" aria-expanded="false" aria-controls="top-order-summary">Order summary <span class="arrow">▼</span></button>
                 <strong class="order-total">$0.00</strong>
             </div>
-            <div class="order-summary-details top-summary" id="top-order-summary">
+            <div class="order-summary-details top-summary" id="top-order-summary" hidden>
                 <div class="cart-items"></div>
                 <div class="cost-summary">
                     <div><span>Subtotal</span><span class="subtotal">$0.00</span></div>
@@ -541,7 +553,7 @@
                     <span class="payment-logos"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></span>
                 </label>
             </div>
-            <div class="payment-option">
+            <div class="payment-option shop-pay">
                 <input type="radio" name="payment-method" id="pay-shop" value="shop">
                 <label for="pay-shop">
                     <span class="payment-label">Shop Pay<span class="subtext">Pay in full or in installments</span></span>
@@ -698,14 +710,16 @@
         }
 
         const summaryToggle = document.getElementById('toggle-order-summary');
-        const summaryDetails = document.querySelector('.order-summary-details.top-summary');
+        const summaryDetails = document.getElementById('top-order-summary');
         if (summaryToggle && summaryDetails) {
-            summaryDetails.style.display = 'none';
+            summaryDetails.hidden = true;
             const arrow = summaryToggle.querySelector('.arrow');
-            summaryToggle.addEventListener('click', () => {
-                const hidden = summaryDetails.style.display === 'none';
-                summaryDetails.style.display = hidden ? 'block' : 'none';
-                if (arrow) arrow.textContent = hidden ? '▲' : '▼';
+            summaryToggle.addEventListener('click', e => {
+                e.preventDefault();
+                const expanded = summaryToggle.getAttribute('aria-expanded') === 'true';
+                summaryToggle.setAttribute('aria-expanded', String(!expanded));
+                summaryDetails.hidden = expanded;
+                if (arrow) arrow.textContent = expanded ? '▼' : '▲';
             });
         }
 
