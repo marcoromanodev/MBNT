@@ -314,6 +314,9 @@ function createCartModal() {
                             <div class="shop-logo"><img src="shoppay.png" alt="Shop Pay"></div>
                         </div>
                     </div>
+                    <div class="order-summary-bar">
+                        <div class="summary-label">Order summary</div>
+                    </div>
                     <div class="order-summary-details bottom-summary">
                         <div class="cart-items"></div>
                         <div class="cost-summary">
@@ -436,7 +439,7 @@ function createCartModal() {
             .payment-logos img{height:20px;}
             .payment-logos img.klarna-logo{height:30px;}
             .more-logos{position:relative;margin-left:5px;cursor:pointer;color:#000;font-weight:600;}
-            .more-logos-box{display:none;position:absolute;bottom:100%;right:0;background:#000;padding:5px;z-index:10;}
+            .more-logos-box{display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#000;padding:5px;z-index:10;}
             .more-logos-box img{height:20px;margin:0 2px;filter:invert(1);}
             .shipping-method{display:flex;justify-content:space-between;border:1px solid #ccc;padding:10px;margin:5px 0;}
             #cart-modal .logo-container{width:80px;height:80px;margin:0 auto;}
@@ -445,6 +448,7 @@ function createCartModal() {
             #cart-modal .order-summary-bar{display:flex;align-items:center;margin:10px 0;width:100%;justify-content:space-between;}
             #cart-modal .summary-toggle{background:#000;color:#fff;border:none;font-size:1em;display:inline-flex;align-items:center;justify-content:flex-start;cursor:pointer;padding:10px;margin:0;margin-left:0;}
             #cart-modal .summary-toggle .arrow{margin-left:5px;}
+            .summary-label{background:#000;color:#fff;font-size:1em;display:inline-block;padding:10px;margin:0;margin-left:0;}
             #cart-modal .order-total{font-weight:bold;margin:0;margin-left:auto;}
             #cart-modal footer{background:#fff;padding:10px 0;position:static;}
             #cart-modal .footer-links{display:flex;justify-content:center;flex-wrap:wrap;gap:15px;background:#fff;}
@@ -452,6 +456,7 @@ function createCartModal() {
             #cart-modal .footer-line.extra-padding{padding-bottom:10px;}
             #cart-modal .footer-links a{color:#000;text-decoration:none;font-size:0.7rem;transition:all 0.3s ease;background:#fff;}
             #cart-modal .footer-links a:hover,#cart-modal .footer-links a:focus,#cart-modal .footer-links a:active{border:2px solid red;color:red;background:#fff;}
+            @media (max-width:480px){.payment-option label{flex-wrap:wrap;}.payment-logos{margin-left:0;flex-basis:100%;justify-content:flex-start;margin-top:5px;}.payment-logos img{height:18px;}}
             
         `;
         document.head.appendChild(style);
@@ -718,13 +723,19 @@ function setupFinalForm(form) {
     const moreCards = form.querySelector('#more-cards');
     const moreCardsBox = form.querySelector('#more-cards-box');
     if (moreCards && moreCardsBox) {
+        const showBox = () => { moreCardsBox.style.display = 'flex'; };
+        const hideBox = () => { moreCardsBox.style.display = 'none'; };
+        moreCards.addEventListener('mouseenter', showBox);
+        moreCards.addEventListener('mouseleave', hideBox);
         moreCards.addEventListener('click', e => {
             e.stopPropagation();
-            moreCardsBox.style.display = moreCardsBox.style.display === 'flex' ? 'none' : 'flex';
+            if (moreCardsBox.style.display === 'flex') {
+                hideBox();
+            } else {
+                showBox();
+            }
         });
-        document.addEventListener('click', () => {
-            moreCardsBox.style.display = 'none';
-        });
+        document.addEventListener('click', hideBox);
     }
     const addressFields = form.querySelectorAll('input[name="address"], input[name="city"], input[name="state"], input[name="zip"]');
     addressFields.forEach(f => f.addEventListener('input', () => updateShippingAndTax(form)));
@@ -934,7 +945,7 @@ function ensureCartCounter() {
     if (!document.getElementById('cart-counter-style')) {
         const style = document.createElement('style');
         style.id = 'cart-counter-style';
-        style.textContent = '.cart-counter{font-size:0.7rem;text-align:center;font-weight:600;cursor:pointer;display:inline-block;outline:2px solid transparent;padding:2px;} .cart-counter:hover,.cart-counter:focus,.cart-counter:active{outline-color:red;} .header-line{border-top:1px solid #000;width:100%;} .product-item{aspect-ratio:1/1;} .product-item img{width:100%;height:100%;object-fit:contain;object-position:center;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.1));} .product-item a:hover img,.product-item a:focus img,.product-item a:active img{outline:4px solid #ff0000;outline-offset:-4px;} .payment-icons{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;justify-items:center;margin:10px 0;} .pay-btn{outline:2px solid transparent;} .pay-btn:hover,.pay-btn:focus,.pay-btn:active,.pay-btn.selected{outline-color:red;} .pay-btn.paypal{background:#ffc439;width:80px;height:40px;padding:0;} .pay-btn.paypal img{width:100%;height:100%;object-fit:contain;} .payment-icons img.klarna-logo{width:100px;} .payment-option{display:flex;align-items:center;border:1px solid #ccc;padding:10px;margin:5px 0;cursor:pointer;width:100%;box-sizing:border-box;overflow:hidden;} .payment-option input{margin:0 10px 0 0;} .payment-option label{display:flex;align-items:center;justify-content:space-between;width:100%;cursor:pointer;gap:10px;} .payment-label{flex:1;min-width:0;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;} .payment-option.shop-pay .payment-label{white-space:normal;display:flex;flex-direction:column;} .payment-option.shop-pay .payment-label .subtext{font-size:0.8em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;} .payment-logos{margin-left:10px;display:flex;align-items:center;gap:5px;flex-shrink:0;} .payment-logos img{height:20px;} .payment-logos img.klarna-logo{height:30px;} .more-logos{position:relative;margin-left:5px;cursor:pointer;color:#000;font-weight:600;} .more-logos-box{display:none;position:absolute;top:100%;right:0;background:#000;padding:5px;z-index:10;} .more-logos-box img{height:20px;margin:0 2px;filter:invert(1);} .redirect-icon{text-align:center;font-size:2rem;} .paypal-inline{height:1em;vertical-align:middle;filter:invert(1);} .empty-cart-message{text-align:center;} a,button{transition:all 0.3s ease;} button:hover,button:focus,button:active,a:hover,a:focus,a:active{border:2px solid red;color:red;background:#fff;} .color-option{border:1px solid #000;} .color-option.selected,.color-option:hover,.color-option:focus,.color-option:active{border:2px solid red !important;}';
+        style.textContent = '.cart-counter{font-size:0.7rem;text-align:center;font-weight:600;cursor:pointer;display:inline-block;outline:2px solid transparent;padding:2px;} .cart-counter:hover,.cart-counter:focus,.cart-counter:active{outline-color:red;} .header-line{border-top:1px solid #000;width:100%;} .product-item{aspect-ratio:1/1;} .product-item img{width:100%;height:100%;object-fit:contain;object-position:center;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.1));} .product-item a:hover img,.product-item a:focus img,.product-item a:active img{outline:4px solid #ff0000;outline-offset:-4px;} .payment-icons{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;justify-items:center;margin:10px 0;} .pay-btn{outline:2px solid transparent;} .pay-btn:hover,.pay-btn:focus,.pay-btn:active,.pay-btn.selected{outline-color:red;} .pay-btn.paypal{background:#ffc439;width:80px;height:40px;padding:0;} .pay-btn.paypal img{width:100%;height:100%;object-fit:contain;} .payment-icons img.klarna-logo{width:100px;} .payment-option{display:flex;align-items:center;border:1px solid #ccc;padding:10px;margin:5px 0;cursor:pointer;width:100%;box-sizing:border-box;overflow:hidden;} .payment-option input{margin:0 10px 0 0;} .payment-option label{display:flex;align-items:center;justify-content:space-between;width:100%;cursor:pointer;gap:10px;} .payment-label{flex:1;min-width:0;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;} .payment-option.shop-pay .payment-label{white-space:normal;display:flex;flex-direction:column;} .payment-option.shop-pay .payment-label .subtext{font-size:0.8em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;} .payment-logos{margin-left:10px;display:flex;align-items:center;gap:5px;flex-shrink:0;} .payment-logos img{height:20px;} .payment-logos img.klarna-logo{height:30px;} .more-logos{position:relative;margin-left:5px;cursor:pointer;color:#000;font-weight:600;} .more-logos-box{display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#000;padding:5px;z-index:10;} .more-logos-box img{height:20px;margin:0 2px;filter:invert(1);} .summary-label{background:#000;color:#fff;font-size:1em;display:inline-block;padding:10px;margin:0;margin-left:0;} .redirect-icon{text-align:center;font-size:2rem;} .paypal-inline{height:1em;vertical-align:middle;filter:invert(1);} .empty-cart-message{text-align:center;} a,button{transition:all 0.3s ease;} button:hover,button:focus,button:active,a:hover,a:focus,a:active{border:2px solid red;color:red;background:#fff;} .color-option{border:1px solid #000;} .color-option.selected,.color-option:hover,.color-option:focus,.color-option:active{border:2px solid red !important;} @media (max-width:480px){.payment-option label{flex-wrap:wrap;}.payment-logos{margin-left:0;flex-basis:100%;justify-content:flex-start;margin-top:5px;}.payment-logos img{height:18px;}}';
         document.head.appendChild(style);
     }
 }
