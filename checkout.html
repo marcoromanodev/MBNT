@@ -273,16 +273,16 @@
         .remember-check {
             display: flex;
             justify-content: center;
+            align-items: center;
             margin-top: 5px;
+            gap: 5px;
         }
         .remember-check input {
             width: 20px;
             height: 20px;
         }
         .remember-text {
-            display: block;
-            text-align: center;
-            margin-top: 5px;
+            margin: 0;
         }
         .phone-input {
             position: relative;
@@ -324,7 +324,7 @@
             width: 80px;
             height: 100%;
             object-fit: cover;
-            object-position: -15px 0;
+            object-position: right;
             filter: grayscale(100%);
         }
         .checkout-domain {
@@ -361,7 +361,6 @@
             overflow-wrap: anywhere;
         }
         .payment-label .subtext {
-            display: block;
             font-size: 0.8em;
         }
         .payment-logos {
@@ -547,8 +546,8 @@
                 <strong class="remember-heading">Remember me</strong>
                 <div class="remember-check">
                     <input type="checkbox" name="remember" id="remember-me">
+                    <label for="remember-me" class="remember-text">Save my information for a faster checkout with a Shop account</label>
                 </div>
-                <label for="remember-me" class="remember-text">Save my information for a faster checkout with a Shop account</label>
                 <div id="phone-container" class="phone-input" style="display:none;">
                     <span class="phone-icon">📱</span>
                     <span class="phone-prefix">+1</span>
