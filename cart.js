@@ -389,26 +389,26 @@ function createCartModal() {
             .contact-header h3{text-align:center;margin:0;}
             #login-btn{background:none;border:none;color:#000;cursor:pointer;text-decoration:underline;font-size:0.9em;padding:0;position:absolute;right:0;top:50%;transform:translateY(-50%);}
             #login-btn:hover{color:red;}
-            .remember-section{text-align:center;margin-top:10px;}
+            .remember-section{text-align:center;margin-top:10px;display:flex;flex-direction:column;align-items:center;}
             .remember-heading{display:block;font-weight:700;text-align:center;}
             .remember-check{display:flex;justify-content:center;margin-top:5px;}
             .remember-check input{width:20px;height:20px;}
-            .remember-text{display:block;text-align:center;margin-top:5px;}
-            .phone-input{position:relative;margin-top:5px;}
+            .remember-text{display:block;text-align:center;margin:5px auto 0;}
+            .phone-input{position:relative;margin:5px auto 0;width:fit-content;}
             .phone-input .phone-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);}
             .phone-input .phone-prefix{position:absolute;left:35px;top:50%;transform:translateY(-50%);}
             .phone-input input{padding-left:60px;}
-            .secure-row{display:flex;justify-content:space-between;align-items:center;margin-top:5px;width:100%;max-width:200px;margin-left:auto;margin-right:auto;}
+            .secure-row{display:flex;justify-content:flex-start;align-items:center;gap:5px;margin-top:5px;width:100%;max-width:200px;margin-left:auto;margin-right:auto;}
             .secure-text{color:#888;font-size:0.8em;}
             .shop-logo{overflow:hidden;width:40px;height:20px;}
-            .shop-logo img{width:80px;height:100%;object-fit:cover;object-position:-15px 0;filter:grayscale(100%);}
+            .shop-logo img{width:80px;height:100%;object-fit:cover;object-position:-20px 0;filter:grayscale(100%);}
             .checkout-domain{margin-top:5px;}
             .credit-card-fields input{width:100%;}
             .payment-option{display:flex;align-items:center;border:1px solid #ccc;padding:10px;padding-left:0;margin:5px 0;cursor:pointer;width:100%;box-sizing:border-box;}
             .payment-option input{margin:0 10px 0 0;}
-            .payment-option label{display:flex;align-items:center;justify-content:space-between;width:100%;cursor:pointer;flex-wrap:nowrap;}
-            .payment-label{flex:1;text-align:left;}
-            .payment-label .subtext{display:block;font-size:0.8em;}
+            .payment-option label{display:flex;align-items:center;flex-direction:row;justify-content:space-between;width:100%;cursor:pointer;flex-wrap:nowrap;}
+            .payment-label{flex:1;text-align:left;display:flex;flex-direction:column;white-space:nowrap;}
+            .payment-label .subtext{display:block;font-size:0.8em;white-space:normal;}
             .payment-logos{margin-left:auto;display:flex;align-items:center;gap:5px;flex-shrink:0;}
             .payment-logos img{height:20px;}
             .more-logos{position:relative;margin-left:5px;cursor:pointer;color:#000;font-weight:600;}
