@@ -13,6 +13,9 @@ const stateTaxRates = {
     WV: 0.06, WI: 0.05, WY: 0.04, DC: 0.06
 };
 
+// Default tax rate when the customer's state is unknown (store based in IL)
+const defaultTaxRate = stateTaxRates['IL'];
+
 const paymentHandlers = {
     'Shop Pay': () => alert('Shop Pay integration pending.'),
     'Apple Pay': () => alert('Apple Pay integration pending.'),
@@ -161,7 +164,7 @@ function createCartModal() {
                 <div class="cost-summary">
                     <div><span>Subtotal</span><span class="subtotal">$0.00</span></div>
                     <div><span>Tax</span><span class="tax">$0.00</span></div>
-                    <div><span>Shipping</span><span class="shipping">Calculated at checkout</span></div>
+                    <div><span>Shipping</span><span class="shipping">$15.00</span></div>
                     <div><strong>Total</strong><strong class="total">$0.00</strong></div>
                 </div>
             </div>
@@ -494,7 +497,7 @@ function populateCartModal() {
         msg.style.display = 'block';
         return;
     }
-    let total = 0;
+    let subtotal = 0;
     cart.forEach((item, index) => {
         const div = document.createElement('div');
         div.className = 'cart-item';
@@ -509,14 +512,20 @@ function populateCartModal() {
             <span>$${parseFloat(item.price).toFixed(2)}</span>
             <button class="remove-item" data-index="${index}">&times;</button>`;
         itemsContainer.appendChild(div);
-        total += parseFloat(item.price);
+        subtotal += parseFloat(item.price);
     });
     itemsContainer.querySelectorAll('.remove-item').forEach(btn => {
         btn.addEventListener('click', () => removeFromCart(parseInt(btn.dataset.index)));
     });
     modal.querySelector('.item-count').textContent = `${cart.length} Item(s)`;
-    modal.querySelector('.subtotal').textContent = `$${total.toFixed(2)}`;
+    const tax = subtotal * defaultTaxRate;
+    const total = subtotal + tax + shippingCost;
+    modal.querySelector('.subtotal').textContent = `$${subtotal.toFixed(2)}`;
+    modal.querySelector('.tax').textContent = `$${tax.toFixed(2)}`;
+    modal.querySelector('.shipping').textContent = `$${shippingCost.toFixed(2)}`;
     modal.querySelector('.total').textContent = `$${total.toFixed(2)}`;
+    const orderTotal = modal.querySelector('.order-summary-bar .order-total');
+    if (orderTotal) orderTotal.textContent = `$${total.toFixed(2)}`;
     modal.querySelector('#checkout-form').style.display = 'none';
     const content = modal.querySelector('.cart-content');
     content.style.display = 'block';
@@ -599,7 +608,7 @@ function showCheckoutForm(root = document.getElementById('cart-modal')) {
 function populateOrderSummary(section, state = '') {
     if (!section) return;
     const subtotal = cart.reduce((sum, item) => sum + parseFloat(item.price), 0);
-    const rate = stateTaxRates[state] || 0;
+    const rate = state && stateTaxRates[state] !== undefined ? stateTaxRates[state] : defaultTaxRate;
     const tax = subtotal * rate;
     const total = subtotal + tax + shippingCost;
 
@@ -787,7 +796,7 @@ function populateCartPage() {
         msg.style.display = 'block';
         return;
     }
-    let total = 0;
+    let subtotal = 0;
     cart.forEach((item, index) => {
         const div = document.createElement('div');
         div.className = 'cart-item';
@@ -802,15 +811,21 @@ function populateCartPage() {
             <span>$${parseFloat(item.price).toFixed(2)}</span>
             <button class="remove-item" data-index="${index}">&times;</button>`;
         itemsContainer.appendChild(div);
-        total += parseFloat(item.price);
+        subtotal += parseFloat(item.price);
     });
     itemsContainer.querySelectorAll('.remove-item').forEach(btn => {
         btn.addEventListener('click', () => removeFromCart(parseInt(btn.dataset.index)));
     });
     const itemCountEl = page.querySelector('.item-count');
     if (itemCountEl) itemCountEl.textContent = `${cart.length} Item(s)`;
+    const tax = subtotal * defaultTaxRate;
+    const total = subtotal + tax + shippingCost;
     const subtotalEl = page.querySelector('.subtotal');
-    if (subtotalEl) subtotalEl.textContent = `$${total.toFixed(2)}`;
+    if (subtotalEl) subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
+    const taxEl = page.querySelector('.tax');
+    if (taxEl) taxEl.textContent = `$${tax.toFixed(2)}`;
+    const shippingEl = page.querySelector('.shipping');
+    if (shippingEl) shippingEl.textContent = `$${shippingCost.toFixed(2)}`;
     const totalEl = page.querySelector('.total');
     if (totalEl) totalEl.textContent = `$${total.toFixed(2)}`;
     const orderTotal = page.querySelector('.order-summary-bar .order-total');
