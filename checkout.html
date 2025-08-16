@@ -397,10 +397,12 @@
             display: flex;
             flex-direction: column;
             align-items: flex-start;
+            overflow: visible;
+            text-overflow: unset;
         }
         .payment-option.shop-pay .payment-label .subtext {
             font-size: 0.8em;
-            white-space: nowrap;
+            white-space: normal;
             margin-top: 2px;
         }
         .payment-logos {
@@ -430,6 +432,9 @@
             .payment-logos {
                 margin-left: 10px;
                 justify-content: flex-start;
+            }
+            .payment-option.shop-pay .payment-label .subtext {
+                font-size: 0.7em;
             }
         }
 
