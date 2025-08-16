@@ -237,7 +237,7 @@ function createCartModal() {
                     <div class="or">OR</div>
                     <div class="contact-header">
                         <h3>Contact</h3>
-                        <button type="button" id="login-btn">Log in</button>
+                        <button type="button" id="login-btn" onclick="window.location.href='/account/login';">Log in</button>
                     </div>
                     <input type="email" name="contact_email" placeholder="Enter an email" required>
                     <h3>Delivery</h3>
