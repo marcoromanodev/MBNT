@@ -186,19 +186,6 @@ function createCartModal() {
             <div id="final-checkout" style="display:none;">
                 <form id="final-form">
                     <h2 class="checkout-domain">maybenot.com</h2>
-                    <div class="order-summary-bar">
-                        <button class="summary-toggle" type="button">Order summary <span class="arrow">&#9660;</span></button>
-                        <strong class="order-total">$0.00</strong>
-                    </div>
-                    <div class="order-summary-details" style="display:none;">
-                        <div class="cart-items"></div>
-                        <div class="cost-summary">
-                            <div><span>Subtotal</span><span class="subtotal">$0.00</span></div>
-                            <div><span>Tax</span><span class="tax">Calculated at checkout</span></div>
-                            <div><span>Shipping</span><span class="shipping">Calculated at checkout</span></div>
-                            <div><strong>Total</strong><strong class="total">$0.00</strong></div>
-                        </div>
-                    </div>
                     <h3>Sign up and know first!</h3>
                     <input type="email" name="signup_email" placeholder="Enter an email" required>
                     <p class="consent-text">By submitting this form, you consent to receive informational (eg, order updates) and/or marketing texts (eg, cart reminders) from maybenot.com including texts sent by autodialer. Consent is not a condition of purchase. Msg & data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available). Privacy Policy & Terms.</p>
@@ -286,7 +273,10 @@ function createCartModal() {
                     <div id="payment-message"></div>
                     <div class="remember-section">
                         <strong class="remember-heading">Remember me</strong>
-                        <label class="remember-label"><input type="checkbox" name="remember" id="remember-me"> Save my information for a faster checkout with a Shop account</label>
+                        <div class="remember-check">
+                            <input type="checkbox" name="remember" id="remember-me">
+                        </div>
+                        <label for="remember-me" class="remember-text">Save my information for a faster checkout with a Shop account</label>
                         <div id="phone-container" class="phone-input" style="display:none;">
                             <span class="phone-icon">📱</span>
                             <span class="phone-prefix">+1</span>
@@ -296,6 +286,15 @@ function createCartModal() {
                         <div class="secure-row">
                             <span class="secure-text">Secure and encrypted</span>
                             <div class="shop-logo"><img src="shoppay.png" alt="Shop Pay"></div>
+                        </div>
+                    </div>
+                    <div class="order-summary-details">
+                        <div class="cart-items"></div>
+                        <div class="cost-summary">
+                            <div><span>Subtotal</span><span class="subtotal">$0.00</span></div>
+                            <div><span>Tax</span><span class="tax">Calculated at checkout</span></div>
+                            <div><span>Shipping</span><span class="shipping">Calculated at checkout</span></div>
+                            <div><strong>Total</strong><strong class="total">$0.00</strong></div>
                         </div>
                     </div>
                     <button id="final-order-submit" type="submit">Pay now</button>
@@ -388,26 +387,27 @@ function createCartModal() {
             #login-btn:hover{color:red;}
             .remember-section{text-align:center;margin-top:10px;}
             .remember-heading{display:block;font-weight:700;text-align:center;}
-            .remember-label{display:flex;align-items:center;justify-content:center;gap:5px;margin-top:5px;}
+            .remember-check{display:flex;justify-content:center;margin-top:5px;}
+            .remember-text{display:block;text-align:center;margin-top:5px;}
             .phone-input{position:relative;margin-top:5px;}
             .phone-input .phone-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);}
             .phone-input .phone-prefix{position:absolute;left:35px;top:50%;transform:translateY(-50%);}
             .phone-input input{padding-left:60px;}
-            .secure-row{display:flex;justify-content:center;align-items:center;gap:5px;margin-top:5px;}
+            .secure-row{display:flex;justify-content:space-between;align-items:center;margin-top:5px;width:100%;max-width:200px;margin-left:auto;margin-right:auto;}
             .secure-text{color:#888;font-size:0.8em;}
             .shop-logo{overflow:hidden;width:40px;height:20px;}
             .shop-logo img{width:80px;height:100%;object-fit:cover;object-position:-15px 0;filter:grayscale(100%);}
             .checkout-domain{margin-top:5px;}
             .credit-card-fields input{width:100%;}
-            .payment-option{display:flex;align-items:center;border:1px solid #ccc;padding:10px;margin:5px 0;cursor:pointer;width:100%;box-sizing:border-box;overflow:hidden;}
-            .payment-option input{margin-right:10px;}
+            .payment-option{display:flex;align-items:center;border:1px solid #ccc;padding:10px;padding-left:0;margin:5px 0;cursor:pointer;width:100%;box-sizing:border-box;overflow:hidden;}
+            .payment-option input{margin:0 10px 0 0;}
             .payment-option label{display:flex;align-items:center;width:100%;cursor:pointer;flex-wrap:nowrap;}
-            .payment-label{flex:1;text-align:left;display:flex;flex-direction:column;overflow-wrap:anywhere;}
-            .payment-label .subtext{font-size:0.8em;}
+            .payment-label{flex:1;text-align:left;}
+            .payment-label .subtext{display:block;font-size:0.8em;}
             .payment-logos{margin-left:auto;display:flex;align-items:center;flex-shrink:0;}
             .payment-logos img{height:20px;margin-left:5px;}
             .more-logos{position:relative;margin-left:5px;cursor:pointer;color:#000;font-weight:600;}
-            .more-logos-box{display:none;position:absolute;top:100%;right:0;background:#000;padding:5px;z-index:10;}
+            .more-logos-box{display:none;position:absolute;bottom:100%;right:0;background:#000;padding:5px;z-index:10;}
             .more-logos-box img{height:20px;margin:0 2px;filter:invert(1);}
             #cart-modal .logo-container{width:80px;height:80px;margin:0 auto;}
             #cart-modal .logo-container iframe{width:100%;height:100%;border:none;}
@@ -563,10 +563,7 @@ function populateOrderSummary(section) {
     const itemsContainer = section.querySelector('.order-summary-details .cart-items');
     const subtotalEl = section.querySelector('.order-summary-details .subtotal');
     const totalEl = section.querySelector('.order-summary-details .total');
-    const orderTotalEl = section.querySelector('.order-summary-bar .order-total');
-    const bar = section.querySelector('.order-summary-bar');
-    const details = section.querySelector('.order-summary-details');
-    if (!itemsContainer || !subtotalEl || !totalEl || !orderTotalEl || !bar || !details) return;
+    if (!itemsContainer || !subtotalEl || !totalEl) return;
     itemsContainer.innerHTML = '';
     let total = 0;
     cart.forEach(item => {
@@ -586,20 +583,6 @@ function populateOrderSummary(section) {
     });
     subtotalEl.textContent = `$${total.toFixed(2)}`;
     totalEl.textContent = `$${total.toFixed(2)}`;
-    orderTotalEl.textContent = `$${total.toFixed(2)}`;
-    bar.style.display = 'flex';
-    details.style.display = 'none';
-    const toggle = section.querySelector('.summary-toggle');
-    const arrow = bar.querySelector('.arrow');
-    if (toggle && !toggle.dataset.bound) {
-        toggle.addEventListener('click', (e) => {
-            e.preventDefault();
-            const hidden = details.style.display === 'none';
-            details.style.display = hidden ? 'block' : 'none';
-            if (arrow) arrow.textContent = hidden ? '▲' : '▼';
-        });
-        toggle.dataset.bound = 'true';
-    }
 }
 
 function showFinalPage(root = document.getElementById('cart-modal')) {

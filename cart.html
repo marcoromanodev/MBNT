@@ -288,11 +288,14 @@
             font-weight: 700;
             text-align: center;
         }
-        .remember-label {
+        .remember-check {
             display: flex;
-            align-items: center;
             justify-content: center;
-            gap: 5px;
+            margin-top: 5px;
+        }
+        .remember-text {
+            display: block;
+            text-align: center;
             margin-top: 5px;
         }
         .phone-input {
@@ -316,10 +319,13 @@
         }
         .secure-row {
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            gap: 5px;
             margin-top: 5px;
+            width: 100%;
+            max-width: 200px;
+            margin-left: auto;
+            margin-right: auto;
         }
         .secure-text {
             color: #888;
@@ -348,6 +354,7 @@
             align-items: center;
             border: 1px solid #ccc;
             padding: 10px;
+            padding-left: 0;
             margin: 5px 0;
             cursor: pointer;
             width: 100%;
@@ -355,7 +362,7 @@
             overflow: hidden;
         }
         .payment-option input {
-            margin-right: 10px;
+            margin: 0 10px 0 0;
         }
         .payment-option label {
             display: flex;
@@ -367,11 +374,9 @@
         .payment-label {
             flex: 1;
             text-align: left;
-            display: flex;
-            flex-direction: column;
-            overflow-wrap: anywhere;
         }
         .payment-label .subtext {
+            display: block;
             font-size: 0.8em;
         }
         .payment-logos {
@@ -394,7 +399,7 @@
         .more-logos-box {
             display: none;
             position: absolute;
-            top: 100%;
+            bottom: 100%;
             right: 0;
             background: #000;
             padding: 5px;
@@ -405,34 +410,9 @@
             margin: 0 2px;
             filter: invert(1);
         }
-        .order-summary-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+        .order-summary-details {
             margin: 10px 0;
-            width: 100%;
-        }
-        .summary-toggle {
-            background: #000;
-            color: #fff;
-            border: none;
-            font-size: 1em;
-            display: inline-flex;
-            align-items: center;
-            justify-content: flex-start;
-            cursor: pointer;
-            padding: 10px;
-            margin: 0;
-            margin-left: 0;
-            text-align: left;
-        }
-        .summary-toggle .arrow {
-            margin-left: 5px;
-        }
-        .order-total {
-            font-weight: bold;
-            margin: 0;
-            margin-left: auto;
+            text-align: center;
         }
 
         .full-site-link {
@@ -525,19 +505,6 @@
     <div id="final-checkout" style="display:none;">
         <form id="final-form">
             <h2 class="checkout-domain">maybenot.com</h2>
-            <div class="order-summary-bar">
-                <button class="summary-toggle" type="button">Order summary <span class="arrow">&#9660;</span></button>
-                <strong class="order-total">$0.00</strong>
-            </div>
-            <div class="order-summary-details" style="display:none;">
-                <div class="cart-items"></div>
-                <div class="cost-summary">
-                    <div><span>Subtotal</span><span class="subtotal">$0.00</span></div>
-                    <div><span>Tax</span><span class="tax">Calculated at checkout</span></div>
-                    <div><span>Shipping</span><span class="shipping">Calculated at checkout</span></div>
-                    <div><strong>Total</strong><strong class="total">$0.00</strong></div>
-                </div>
-            </div>
             <h3>Sign up and know first!</h3>
             <input type="email" name="signup_email" placeholder="Enter an email" required>
             <p class="consent-text">By submitting this form, you consent to receive informational (eg, order updates) and/or marketing texts (eg, cart reminders) from maybenot.com including texts sent by autodialer. Consent is not a condition of purchase. Msg & data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available). Privacy Policy & Terms.</p>
@@ -625,7 +592,10 @@
             <div id="payment-message"></div>
             <div class="remember-section">
                 <strong class="remember-heading">Remember me</strong>
-                <label class="remember-label"><input type="checkbox" name="remember" id="remember-me"> Save my information for a faster checkout with a Shop account</label>
+                <div class="remember-check">
+                    <input type="checkbox" name="remember" id="remember-me">
+                </div>
+                <label for="remember-me" class="remember-text">Save my information for a faster checkout with a Shop account</label>
                 <div id="phone-container" class="phone-input" style="display:none;">
                     <span class="phone-icon">📱</span>
                     <span class="phone-prefix">+1</span>
@@ -635,6 +605,15 @@
                 <div class="secure-row">
                     <span class="secure-text">Secure and encrypted</span>
                     <div class="shop-logo"><img src="shoppay.png" alt="Shop Pay"></div>
+                </div>
+            </div>
+            <div class="order-summary-details">
+                <div class="cart-items"></div>
+                <div class="cost-summary">
+                    <div><span>Subtotal</span><span class="subtotal">$0.00</span></div>
+                    <div><span>Tax</span><span class="tax">Calculated at checkout</span></div>
+                    <div><span>Shipping</span><span class="shipping">Calculated at checkout</span></div>
+                    <div><strong>Total</strong><strong class="total">$0.00</strong></div>
                 </div>
             </div>
             <button id="final-order-submit" type="submit">Pay now</button>
