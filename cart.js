@@ -186,6 +186,10 @@ function createCartModal() {
             <div id="final-checkout" style="display:none;">
                 <form id="final-form">
                     <h2 class="checkout-domain">maybenot.com</h2>
+                    <div class="order-summary-bar">
+                        <button id="final-toggle-order-summary" class="summary-toggle" type="button">Order summary <span class="arrow">▼</span></button>
+                        <strong class="order-total">$0.00</strong>
+                    </div>
                     <h3>Sign up and know first!</h3>
                     <input type="email" name="signup_email" placeholder="Enter an email" required>
                     <p class="consent-text">By submitting this form, you consent to receive informational (eg, order updates) and/or marketing texts (eg, cart reminders) from maybenot.com including texts sent by autodialer. Consent is not a condition of purchase. Msg & data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available). Privacy Policy & Terms.</p>
@@ -388,6 +392,7 @@ function createCartModal() {
             .remember-section{text-align:center;margin-top:10px;}
             .remember-heading{display:block;font-weight:700;text-align:center;}
             .remember-check{display:flex;justify-content:center;margin-top:5px;}
+            .remember-check input{width:20px;height:20px;}
             .remember-text{display:block;text-align:center;margin-top:5px;}
             .phone-input{position:relative;margin-top:5px;}
             .phone-input .phone-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);}
@@ -399,20 +404,20 @@ function createCartModal() {
             .shop-logo img{width:80px;height:100%;object-fit:cover;object-position:-15px 0;filter:grayscale(100%);}
             .checkout-domain{margin-top:5px;}
             .credit-card-fields input{width:100%;}
-            .payment-option{display:flex;align-items:center;border:1px solid #ccc;padding:10px;padding-left:0;margin:5px 0;cursor:pointer;width:100%;box-sizing:border-box;overflow:hidden;}
+            .payment-option{display:flex;align-items:center;border:1px solid #ccc;padding:10px;padding-left:0;margin:5px 0;cursor:pointer;width:100%;box-sizing:border-box;}
             .payment-option input{margin:0 10px 0 0;}
-            .payment-option label{display:flex;align-items:center;width:100%;cursor:pointer;flex-wrap:nowrap;}
+            .payment-option label{display:flex;align-items:center;justify-content:space-between;width:100%;cursor:pointer;flex-wrap:nowrap;}
             .payment-label{flex:1;text-align:left;}
             .payment-label .subtext{display:block;font-size:0.8em;}
-            .payment-logos{margin-left:auto;display:flex;align-items:center;flex-shrink:0;}
-            .payment-logos img{height:20px;margin-left:5px;}
+            .payment-logos{margin-left:auto;display:flex;align-items:center;gap:5px;flex-shrink:0;}
+            .payment-logos img{height:20px;}
             .more-logos{position:relative;margin-left:5px;cursor:pointer;color:#000;font-weight:600;}
             .more-logos-box{display:none;position:absolute;bottom:100%;right:0;background:#000;padding:5px;z-index:10;}
             .more-logos-box img{height:20px;margin:0 2px;filter:invert(1);}
             #cart-modal .logo-container{width:80px;height:80px;margin:0 auto;}
             #cart-modal .logo-container iframe{width:100%;height:100%;border:none;}
             #cart-modal .cart-time{text-align:center;font-size:0.7rem;font-weight:600;margin-top:5px;}
-            #cart-modal .order-summary-bar{display:flex;align-items:center;margin:10px 0;width:100%;}
+            #cart-modal .order-summary-bar{display:flex;align-items:center;margin:10px 0;width:100%;justify-content:space-between;}
             #cart-modal .summary-toggle{background:#000;color:#fff;border:none;font-size:1em;display:inline-flex;align-items:center;justify-content:flex-start;cursor:pointer;padding:10px;margin:0;margin-left:0;}
             #cart-modal .summary-toggle .arrow{margin-left:5px;}
             #cart-modal .order-total{font-weight:bold;margin:0;margin-left:auto;}
@@ -587,10 +592,10 @@ function populateOrderSummary(section) {
 
 function showFinalPage(root = document.getElementById('cart-modal')) {
     root.querySelector('#checkout-form').style.display = 'none';
-    const bar = root.querySelector('.order-summary-bar');
-    if (bar) bar.style.display = 'none';
-    const details = root.querySelector('#order-summary-details');
-    if (details) details.style.display = 'none';
+    const mainBar = [...root.querySelectorAll('.order-summary-bar')].find(el => !el.closest('#final-checkout'));
+    if (mainBar) mainBar.style.display = 'none';
+    const mainDetails = [...root.querySelectorAll('#order-summary-details')].find(el => !el.closest('#final-checkout'));
+    if (mainDetails) mainDetails.style.display = 'none';
     root.querySelector('.cart-items').style.display = 'none';
     root.querySelector('.cost-summary').style.display = 'none';
     const cartButtons = root.querySelector('.cart-buttons');
@@ -605,6 +610,28 @@ function showFinalPage(root = document.getElementById('cart-modal')) {
     if (finalPage) {
         finalPage.style.display = 'block';
         populateOrderSummary(finalPage);
+        const bar = finalPage.querySelector('.order-summary-bar');
+        const details = finalPage.querySelector('.order-summary-details');
+        if (bar && details) {
+            bar.style.display = 'flex';
+            details.style.display = 'none';
+            const totalEl = bar.querySelector('.order-total');
+            if (totalEl) {
+                const total = cart.reduce((sum, item) => sum + parseFloat(item.price), 0);
+                totalEl.textContent = `$${total.toFixed(2)}`;
+            }
+            const toggle = finalPage.querySelector('#final-toggle-order-summary');
+            const arrow = bar.querySelector('.arrow');
+            if (toggle && !toggle.dataset.bound) {
+                toggle.addEventListener('click', e => {
+                    e.preventDefault();
+                    const hidden = details.style.display === 'none';
+                    details.style.display = hidden ? 'block' : 'none';
+                    if (arrow) arrow.textContent = hidden ? '▲' : '▼';
+                });
+                toggle.dataset.bound = 'true';
+            }
+        }
         setupFinalForm(finalPage.querySelector('#final-form'));
     }
 }
@@ -839,7 +866,7 @@ function ensureCartCounter() {
     if (!document.getElementById('cart-counter-style')) {
         const style = document.createElement('style');
         style.id = 'cart-counter-style';
-        style.textContent = '.cart-counter{font-size:0.7rem;text-align:center;font-weight:600;cursor:pointer;display:inline-block;outline:2px solid transparent;padding:2px;} .cart-counter:hover,.cart-counter:focus,.cart-counter:active{outline-color:red;} .header-line{border-top:1px solid #000;width:100%;} .product-item{aspect-ratio:1/1;} .product-item img{width:100%;height:100%;object-fit:contain;object-position:center;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.1));} .product-item a:hover img,.product-item a:focus img,.product-item a:active img{outline:4px solid #ff0000;outline-offset:-4px;} .payment-icons{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;justify-items:center;margin:10px 0;} .pay-btn{outline:2px solid transparent;} .pay-btn:hover,.pay-btn:focus,.pay-btn:active,.pay-btn.selected{outline-color:red;} .pay-btn.paypal{background:#ffc439;width:80px;height:40px;padding:0;} .pay-btn.paypal img{width:100%;height:100%;object-fit:contain;} .payment-option{display:flex;align-items:center;border:1px solid #ccc;padding:10px;margin:5px 0;cursor:pointer;width:100%;box-sizing:border-box;overflow:hidden;} .payment-option input{margin-right:10px;} .payment-option label{display:flex;align-items:center;width:100%;cursor:pointer;flex-wrap:nowrap;} .payment-label{flex:1;text-align:left;display:flex;flex-direction:column;overflow-wrap:anywhere;} .payment-label .subtext{font-size:0.8em;} .payment-logos{margin-left:auto;display:flex;align-items:center;flex-shrink:0;} .payment-logos img{height:20px;margin-left:5px;} .more-logos{position:relative;margin-left:5px;cursor:pointer;color:#000;font-weight:600;} .more-logos-box{display:none;position:absolute;top:100%;right:0;background:#000;padding:5px;z-index:10;} .more-logos-box img{height:20px;margin:0 2px;filter:invert(1);} .redirect-icon{text-align:center;font-size:2rem;} .paypal-inline{height:1em;vertical-align:middle;filter:invert(1);} .empty-cart-message{text-align:center;} a,button{transition:all 0.3s ease;} button:hover,button:focus,button:active,a:hover,a:focus,a:active{border:2px solid red;color:red;background:#fff;} .color-option{border:1px solid #000;} .color-option.selected,.color-option:hover,.color-option:focus,.color-option:active{border:2px solid red !important;}';
+        style.textContent = '.cart-counter{font-size:0.7rem;text-align:center;font-weight:600;cursor:pointer;display:inline-block;outline:2px solid transparent;padding:2px;} .cart-counter:hover,.cart-counter:focus,.cart-counter:active{outline-color:red;} .header-line{border-top:1px solid #000;width:100%;} .product-item{aspect-ratio:1/1;} .product-item img{width:100%;height:100%;object-fit:contain;object-position:center;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.1));} .product-item a:hover img,.product-item a:focus img,.product-item a:active img{outline:4px solid #ff0000;outline-offset:-4px;} .payment-icons{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;justify-items:center;margin:10px 0;} .pay-btn{outline:2px solid transparent;} .pay-btn:hover,.pay-btn:focus,.pay-btn:active,.pay-btn.selected{outline-color:red;} .pay-btn.paypal{background:#ffc439;width:80px;height:40px;padding:0;} .pay-btn.paypal img{width:100%;height:100%;object-fit:contain;} .payment-option{display:flex;align-items:center;border:1px solid #ccc;padding:10px;padding-left:0;margin:5px 0;cursor:pointer;width:100%;box-sizing:border-box;} .payment-option input{margin:0 10px 0 0;} .payment-option label{display:flex;align-items:center;justify-content:space-between;width:100%;cursor:pointer;flex-wrap:nowrap;} .payment-label{flex:1;text-align:left;display:flex;flex-direction:column;overflow-wrap:anywhere;} .payment-label .subtext{font-size:0.8em;} .payment-logos{margin-left:auto;display:flex;align-items:center;gap:5px;flex-shrink:0;} .payment-logos img{height:20px;} .more-logos{position:relative;margin-left:5px;cursor:pointer;color:#000;font-weight:600;} .more-logos-box{display:none;position:absolute;top:100%;right:0;background:#000;padding:5px;z-index:10;} .more-logos-box img{height:20px;margin:0 2px;filter:invert(1);} .redirect-icon{text-align:center;font-size:2rem;} .paypal-inline{height:1em;vertical-align:middle;filter:invert(1);} .empty-cart-message{text-align:center;} a,button{transition:all 0.3s ease;} button:hover,button:focus,button:active,a:hover,a:focus,a:active{border:2px solid red;color:red;background:#fff;} .color-option{border:1px solid #000;} .color-option.selected,.color-option:hover,.color-option:focus,.color-option:active{border:2px solid red !important;}';
         document.head.appendChild(style);
     }
 }

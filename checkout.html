@@ -113,6 +113,31 @@
             height: 100%;
             object-fit: contain;
         }
+        .order-summary-bar {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            width: 100%;
+        }
+        .summary-toggle {
+            background: #000;
+            color: #fff;
+            border: none;
+            font-size: 1em;
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 10px;
+            margin: 0;
+            margin-left: 0;
+        }
+        .summary-toggle .arrow {
+            margin-left: 5px;
+        }
+        .order-total {
+            font-weight: bold;
+            margin-left: auto;
+        }
         .cart-item {
             display: flex;
             align-items: center;
@@ -250,6 +275,10 @@
             justify-content: center;
             margin-top: 5px;
         }
+        .remember-check input {
+            width: 20px;
+            height: 20px;
+        }
         .remember-text {
             display: block;
             text-align: center;
@@ -316,7 +345,6 @@
             cursor: pointer;
             width: 100%;
             box-sizing: border-box;
-            overflow: hidden;
         }
         .payment-option input {
             margin: 0 10px 0 0;
@@ -324,6 +352,7 @@
         .payment-option label {
             display: flex;
             align-items: center;
+            justify-content: space-between;
             width: 100%;
             cursor: pointer;
             flex-wrap: nowrap;
@@ -340,11 +369,11 @@
             margin-left: auto;
             display: flex;
             align-items: center;
+            gap: 5px;
             flex-shrink: 0;
         }
         .payment-logos img {
             height: 20px;
-            margin-left: 5px;
         }
         .more-logos {
             position: relative;
@@ -425,6 +454,10 @@
     <div id="final-checkout">
         <form id="final-form">
             <h2 class="checkout-domain">maybenot.com</h2>
+            <div class="order-summary-bar">
+                <button id="toggle-order-summary" class="summary-toggle" type="button">Order summary <span class="arrow">▼</span></button>
+                <strong class="order-total">$0.00</strong>
+            </div>
             <h3>Sign up and know first!</h3>
             <input type="email" name="signup_email" placeholder="Enter an email" required>
             <p class="consent-text">By submitting this form, you consent to receive informational (eg, order updates) and/or marketing texts (eg, cart reminders) from maybenot.com including texts sent by autodialer. Consent is not a condition of purchase. Msg & data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available). Privacy Policy & Terms.</p>
@@ -649,6 +682,31 @@
             });
             document.addEventListener('click', function() {
                 moreCardsBox.style.display = 'none';
+            });
+        }
+
+        const summaryToggle = document.getElementById('toggle-order-summary');
+        const summaryDetails = document.querySelector('.order-summary-details');
+        const orderTotal = document.querySelector('.order-summary-bar .order-total');
+        if (summaryToggle && summaryDetails && orderTotal) {
+            summaryDetails.style.display = 'none';
+            orderTotal.textContent = summaryDetails.querySelector('.total').textContent;
+            const arrow = summaryToggle.querySelector('.arrow');
+            summaryToggle.addEventListener('click', () => {
+                const hidden = summaryDetails.style.display === 'none';
+                summaryDetails.style.display = hidden ? 'block' : 'none';
+                if (arrow) arrow.textContent = hidden ? '▲' : '▼';
+            });
+        }
+
+        const remember = document.getElementById('remember-me');
+        const phone = document.getElementById('phone-container');
+        const rememberMsg = document.getElementById('remember-message');
+        if (remember) {
+            remember.addEventListener('change', () => {
+                const show = remember.checked;
+                if (phone) phone.style.display = show ? 'block' : 'none';
+                if (rememberMsg) rememberMsg.style.display = show ? 'block' : 'none';
             });
         }
     </script>
