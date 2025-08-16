@@ -243,7 +243,7 @@
         .remember-heading {
             display: block;
             font-weight: 700;
-            text-align: left;
+            text-align: center;
         }
         .remember-label {
             display: block;
@@ -262,12 +262,12 @@
         }
         .phone-input .phone-prefix {
             position: absolute;
-            left: 35px;
+            left: 45px;
             top: 50%;
             transform: translateY(-50%);
         }
         .phone-input input {
-            padding-left: 60px;
+            padding-left: 90px;
         }
         .secure-row {
             display: flex;
@@ -288,7 +288,8 @@
             width: 80px;
             height: 100%;
             object-fit: cover;
-            object-position: left;
+            object-position: -10px 0;
+            filter: grayscale(100%);
         }
         .checkout-domain {
             margin-top: 5px;
@@ -303,6 +304,9 @@
             padding: 10px;
             margin: 5px 0;
             cursor: pointer;
+            width: 100%;
+            box-sizing: border-box;
+            overflow: hidden;
         }
         .payment-option input {
             margin-right: 10px;
@@ -312,14 +316,18 @@
             align-items: center;
             width: 100%;
             cursor: pointer;
+            flex-wrap: wrap;
         }
         .payment-label {
             text-align: left;
+            flex: 1;
+            overflow-wrap: anywhere;
         }
         .payment-logos {
             margin-left: auto;
             display: flex;
             align-items: center;
+            flex-shrink: 0;
         }
         .payment-logos img {
             height: 20px;
