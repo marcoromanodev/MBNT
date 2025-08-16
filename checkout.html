@@ -237,7 +237,7 @@
             color: red;
         }
         .remember-section {
-            text-align: left;
+            text-align: center;
             margin-top: 10px;
         }
         .remember-heading {
@@ -246,8 +246,10 @@
             text-align: center;
         }
         .remember-label {
-            display: block;
-            text-align: left;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
             margin-top: 5px;
         }
         .phone-input {
@@ -271,8 +273,9 @@
         }
         .secure-row {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
+            gap: 5px;
             margin-top: 5px;
         }
         .secure-text {
@@ -288,7 +291,7 @@
             width: 80px;
             height: 100%;
             object-fit: cover;
-            object-position: -10px 0;
+            object-position: -15px 0;
             filter: grayscale(100%);
         }
         .checkout-domain {
@@ -316,12 +319,17 @@
             align-items: center;
             width: 100%;
             cursor: pointer;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
         }
         .payment-label {
             text-align: left;
             flex: 1;
             overflow-wrap: anywhere;
+            display: flex;
+            flex-direction: column;
+        }
+        .payment-label .subtext {
+            font-size: 0.8em;
         }
         .payment-logos {
             margin-left: auto;
@@ -524,7 +532,7 @@
             <div class="payment-option">
                 <input type="radio" name="payment-method" id="pay-shop" value="shop">
                 <label for="pay-shop">
-                    <span class="payment-label">Shop Pay<span style="font-size:0.8em;margin-left:5px;">Pay in full or in installments</span></span>
+                    <span class="payment-label">Shop Pay<span class="subtext">Pay in full or in installments</span></span>
                     <span class="payment-logos"><img src="shoppay.png" alt="Shop Pay"></span>
                 </label>
             </div>

@@ -280,17 +280,19 @@
             color: red;
         }
         .remember-section {
-            text-align: left;
+            text-align: center;
             margin-top: 10px;
         }
         .remember-heading {
             display: block;
             font-weight: 700;
-            text-align: left;
+            text-align: center;
         }
         .remember-label {
-            display: block;
-            text-align: left;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
             margin-top: 5px;
         }
         .phone-input {
@@ -314,8 +316,9 @@
         }
         .secure-row {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
+            gap: 5px;
             margin-top: 5px;
         }
         .secure-text {
@@ -331,7 +334,8 @@
             width: 80px;
             height: 100%;
             object-fit: cover;
-            object-position: left;
+            object-position: -15px 0;
+            filter: grayscale(100%);
         }
         .checkout-domain {
             margin-top: 5px;
@@ -342,29 +346,64 @@
         .payment-option {
             display: flex;
             align-items: center;
-            justify-content: space-between;
             border: 1px solid #ccc;
             padding: 10px;
             margin: 5px 0;
             cursor: pointer;
+            width: 100%;
+            box-sizing: border-box;
+            overflow: hidden;
         }
         .payment-option input {
             margin-right: 10px;
         }
         .payment-option label {
-            flex: 1;
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            width: 100%;
             cursor: pointer;
+            flex-wrap: nowrap;
         }
-        .payment-option img {
-            height: 20px;
-            margin-left: 10px;
+        .payment-label {
+            flex: 1;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            overflow-wrap: anywhere;
+        }
+        .payment-label .subtext {
+            font-size: 0.8em;
+        }
+        .payment-logos {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
         }
         .payment-logos img {
             height: 20px;
             margin-left: 5px;
+        }
+        .more-logos {
+            position: relative;
+            margin-left: 5px;
+            cursor: pointer;
+            color: #000;
+            font-weight: 600;
+        }
+        .more-logos-box {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: #000;
+            padding: 5px;
+            z-index: 10;
+        }
+        .more-logos-box img {
+            height: 20px;
+            margin: 0 2px;
+            filter: invert(1);
         }
         .order-summary-bar {
             display: flex;
@@ -531,11 +570,21 @@
             <p>Your payment method’s billing address must match the shipping address. All transactions are secure and encrypted.</p>
             <div class="payment-option">
                 <input type="radio" name="payment-method" id="cart2-pay-credit" value="credit">
-                <label for="cart2-pay-credit">Credit card
+                <label for="cart2-pay-credit">
+                    <span class="payment-label">Credit card</span>
                     <span class="payment-logos">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png" alt="Visa">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Mastercard-logo.png" alt="Mastercard">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/3/30/American_Express_logo_%282018%29.svg" alt="American Express">
+                        <span class="more-logos" id="more-cards">+5
+                            <div class="more-logos-box" id="more-cards-box">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/5/50/Discover_Card_logo.svg" alt="Discover">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/8/80/Elo_logo.svg" alt="Elo">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/JCB_logo.svg" alt="JCB">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/1/1b/UnionPay_logo.svg" alt="UnionPay">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b3/Stripe_Logo%2C_revised_2016.svg" alt="Stripe">
+                            </div>
+                        </span>
                     </span>
                 </label>
             </div>
@@ -547,19 +596,31 @@
             </div>
             <div class="payment-option">
                 <input type="radio" name="payment-method" id="cart2-pay-apple" value="apple">
-                <label for="cart2-pay-apple">Apple Pay<img src="applepay.png" alt="Apple Pay"></label>
+                <label for="cart2-pay-apple">
+                    <span class="payment-label">Apple Pay</span>
+                    <span class="payment-logos"><img src="applepay.png" alt="Apple Pay"></span>
+                </label>
             </div>
             <div class="payment-option">
                 <input type="radio" name="payment-method" id="cart2-pay-paypal" value="paypal">
-                <label for="cart2-pay-paypal">PayPal<img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></label>
+                <label for="cart2-pay-paypal">
+                    <span class="payment-label">PayPal</span>
+                    <span class="payment-logos"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></span>
+                </label>
             </div>
             <div class="payment-option">
                 <input type="radio" name="payment-method" id="cart2-pay-shop" value="shop">
-                <label for="cart2-pay-shop">Shop Pay<span style="font-size:0.8em;margin-left:5px;">Pay in full or in installments</span><img src="shoppay.png" alt="Shop Pay"></label>
+                <label for="cart2-pay-shop">
+                    <span class="payment-label">Shop Pay<span class="subtext">Pay in full or in installments</span></span>
+                    <span class="payment-logos"><img src="shoppay.png" alt="Shop Pay"></span>
+                </label>
             </div>
             <div class="payment-option">
                 <input type="radio" name="payment-method" id="cart2-pay-klarna" value="klarna">
-                <label for="cart2-pay-klarna">Klarna - Flexible payments<img src="klarna.png" alt="Klarna"></label>
+                <label for="cart2-pay-klarna">
+                    <span class="payment-label">Klarna - Flexible payments</span>
+                    <span class="payment-logos"><img src="klarna.png" alt="Klarna"></span>
+                </label>
             </div>
             <div id="payment-message"></div>
             <div class="remember-section">
