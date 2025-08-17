@@ -139,7 +139,7 @@ function showSelectionError(message) {
         modal = createCartModal();
     }
     const content = modal.querySelector('.cart-content');
-    const hideSelectors = ['.logo-container', '#cart-current-time', 'h2', '.item-count', '.order-summary-bar', '#order-summary-details', '.cart-buttons', '.or', '.express-checkout', '#checkout-form', '.footer-links', '.cart-footer', '.cart-empty-message'];
+    const hideSelectors = ['.logo-container', '#cart-current-time', 'h2', '.item-count', '.order-summary-bar', '#order-summary-details', '.cart-buttons', '.or', '.express-checkout', '#checkout-form', '.cart-footer', '.cart-empty-message'];
     hideSelectors.forEach(sel => {
         const el = content.querySelector(sel);
         if (el) el.style.display = 'none';
@@ -390,31 +390,6 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
                 </form>
             </div>
             <footer>
-                <div class="footer-links">
-                    <div class="footer-line extra-padding">
-                        <a href="shop.html">shop</a>
-                        <a href="all.html">view all</a>
-                        <a href="soon.html">preview</a>
-                        <a href="soon.html">lookbook</a>
-                        <a href="news.html">news</a>
-                    </div>
-                    <br>
-                    <br>
-                    <div class="footer-line">
-                        <a href="random.html">random</a>
-                        <a href="about.html">about</a>
-                        <a href="stores.html">stores</a>
-                        <a href="soon.html">sizing</a>
-                        <a href="faq.html">f.a.q.</a>
-                        <a href="contact.html">contact</a>
-                    </div>
-                    <div class="footer-line less-padding">
-                        <a href="terms.html">terms</a>
-                        <a href="privacy.html">privacy</a>
-                        <a href="accessibility.html">accessibility</a>
-                        <a href="mailinglist.html">mailing list</a>
-                    </div>
-                </div>
                 <div class="cart-footer">
                     <a href="#">refund policy</a> |
                     <a href="#">shipping</a> |
@@ -528,12 +503,7 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
             #cart-modal .summary-toggle .arrow{margin-left:5px;}
             .summary-label{background:#000;color:#fff;font-size:1em;display:inline-block;padding:10px;margin:0;margin-left:0;}
             #cart-modal .order-total{font-weight:bold;margin:0;margin-left:auto;}
-            #cart-modal footer{background:#fff;padding:10px 0;position:static;}
-            #cart-modal .footer-links{display:flex;justify-content:center;flex-wrap:wrap;gap:15px;background:#fff;}
-            #cart-modal .footer-line{display:flex;justify-content:center;flex-wrap:wrap;gap:15px;padding-bottom:10px;}
-            #cart-modal .footer-line.extra-padding{padding-bottom:10px;}
-            #cart-modal .footer-links a{color:#000;text-decoration:none;font-size:0.7rem;transition:all 0.3s ease;background:#fff;}
-            #cart-modal .footer-links a:hover,#cart-modal .footer-links a:focus,#cart-modal .footer-links a:active{border:2px solid red;color:red;background:#fff;}
+            #cart-modal footer{background:#fff;padding:10px 0;position:static;text-align:center;}
             
             @media (max-width:480px){#cart-modal .payment-option{flex-wrap:wrap;}#cart-modal .payment-option label{flex-direction:row;align-items:center;flex-wrap:wrap;width:100%;}#cart-modal .payment-logos{margin-left:10px;justify-content:flex-start;position:relative;}#cart-modal .payment-option.shop-pay .payment-label .subtext{font-size:0.6em;}}
         `;
@@ -550,7 +520,7 @@ function populateCartModal() {
     if (!itemsContainer) return;
     itemsContainer.innerHTML = '';
     if (cart.length === 0) {
-        const hideSelectors = ['.logo-container', '#cart-current-time', 'h2', '.item-count', '.order-summary-bar', '#order-summary-details', '.cart-buttons', '.or', '.express-checkout', '#checkout-form', '.footer-links', '.cart-footer'];
+        const hideSelectors = ['.logo-container', '#cart-current-time', 'h2', '.item-count', '.order-summary-bar', '#order-summary-details', '.cart-buttons', '.or', '.express-checkout', '#checkout-form', '.cart-footer'];
         hideSelectors.forEach(sel => { const el = modal.querySelector(sel); if (el) el.style.display = 'none'; });
         const content = modal.querySelector('.cart-content');
         content.style.display = 'flex';
@@ -618,8 +588,6 @@ function populateCartModal() {
     modal.querySelector('.express-checkout').style.display = 'block';
     const finalPage = modal.querySelector('#final-checkout');
     if (finalPage) finalPage.style.display = 'none';
-    const footerLinks = modal.querySelector('.footer-links');
-    if (footerLinks) footerLinks.style.display = 'flex';
     const footer = modal.querySelector('.cart-footer');
     if (footer) footer.style.display = 'block';
     const msg = modal.querySelector('.cart-empty-message');
@@ -1010,7 +978,7 @@ function populateCartPage() {
     const itemsContainer = page.querySelector('.cart-items');
     itemsContainer.innerHTML = '';
     if (cart.length === 0) {
-        const toHide = ['h2', '.item-count', '.cart-items', '.cost-summary', '.cart-buttons', '.or', '.express-checkout', '#checkout-form', '.footer-links', '.cart-footer'];
+        const toHide = ['h2', '.item-count', '.cart-items', '.cost-summary', '.cart-buttons', '.or', '.express-checkout', '#checkout-form', '.cart-footer'];
         toHide.forEach(sel => {
             const el = page.querySelector(sel) || document.querySelector(sel);
             if (el) el.style.display = 'none';
