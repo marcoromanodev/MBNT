@@ -54,6 +54,24 @@ function initSliders() {
 document.addEventListener('DOMContentLoaded', () => {
   initSliders();
 
+  const categoryMap = {
+    'shirt.html': 'shirts.html',
+    'hat.html': 'hats.html',
+    'joggers.html': 'pants.html',
+    'shorts.html': 'pants.html',
+    'americandenim.html': 'pants.html',
+    'hoodie.html': 'sweatshirts.html'
+  };
+  const currentPage = window.location.pathname.split('/').pop();
+  const category = categoryMap[currentPage];
+  if (category) {
+    document.querySelectorAll('.desktop-nav a, .mobile-nav a').forEach(link => {
+      if (link.getAttribute('href') === category) {
+        link.style.fontWeight = 'bold';
+      }
+    });
+  }
+
   // Ensure the header line sits directly below the clock
   const header = document.querySelector('.header-container');
   const headerLine = document.querySelector('.header-line');
