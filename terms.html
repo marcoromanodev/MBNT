@@ -13,6 +13,10 @@
         iframe { width:100%; height:100%; border:none; }
         .time { font-size:0.7rem; text-align:center; margin-top:-15px; font-weight:600; }
         .header-line { border-top:1px solid #000; margin-top:5px; width:100%; }
+        .translate-container { text-align:center; position:sticky; top:0; background:#f7f7f7; z-index:1000; }
+        .translate-button { margin-top:10px; padding:0; border:none; background:transparent; cursor:pointer; }
+        .translate-button img { width:24px; height:auto; }
+        #google_translate_element { display:none; margin-top:5px; }
         main { max-width:800px; margin:20px auto; font-size:0.9rem; line-height:1.4; text-align:center; }
         h1 { text-transform:lowercase; text-align:center; font-size:1.2rem; }
         .footer-links { display:flex; justify-content:center; flex-wrap:wrap; gap:15px; background-color:#f7f7f7; }
@@ -32,15 +36,106 @@
     <div class="time" id="current-time"></div>
 </header>
 <div class="header-line"></div>
+<div class="translate-container">
+    <button id="translate-button" class="translate-button"><img src="IMG_1870.png" alt="Translate"></button>
+    <div id="google_translate_element"></div>
+</div>
 <main>
-    <h1>terms of service</h1>
-    <p>These terms govern use of the MaybeNot website and purchases made through it. By accessing the site, you agree to follow our policies and applicable laws.</p>
-    <h2>orders</h2>
-    <p>Products are released in limited quantities and may sell out without notice. Orders are subject to acceptance and may be cancelled if fraud is suspected.</p>
-    <h2>returns</h2>
-    <p>All sales are final unless otherwise stated. Contact support if there is an issue with your order.</p>
-    <h2>user conduct</h2>
-    <p>Do not misuse the site or interfere with its operation. We may suspend access for violations of these terms.</p>
+    <h1>Terms</h1>
+    <p><em>Effective August 17, 2025</em></p>
+    <p>Thank you for visiting the Maybe Not website, www.maybenot.com ("Site") owned and operated by Maybe Not Inc. ("Maybe Not", "us" or "we"). You should not access this Site or use our services until you have carefully read and agreed to these terms and conditions of use (the "Terms") which govern your access to and use of this Site. These Terms apply to all Site visitors’ access to and use of the Site.</p>
+
+    <h2>Using this Site</h2>
+    <p>Please use a standard-compliant web browser such as Safari 10.15+, Windows 10+, iPhone 10+ with iOS 14.4+, Android 10, &amp; iPad 8th gen+.</p>
+
+    <h2>Terms of Use</h2>
+    <p>By using our Site, you agree to the Terms of Use. We may change or update these terms so please check this page regularly. We do not represent or warrant that the information on our web site is accurate, complete, or current. This includes pricing and availability information. We reserve the right to correct any errors or omissions, and to change or update information at any time without prior notice.</p>
+
+    <h2>Termination Clause</h2>
+    <p>We reserve the right to terminate your access to our Site, without cause or notice. All provisions of this Agreement that, by their nature, should survive termination shall survive termination, including, without limitation, ownership provisions, warranty disclaimers, indemnity, and limitations of liability.</p>
+
+    <h2>Purchase for Personal Use Only</h2>
+    <p>You may purchase products only for personal use and not for resale. By placing your order, you certify that you are purchasing products for personal use only and not for resale. We reserve the right to refuse orders for any reason without explanation.</p>
+
+    <h2>Unlawful or Prohibited Uses</h2>
+    <p>As a condition of your access to and use of this Site, you may not use the Site for any purpose that is unlawful or prohibited by these Terms. You may not disrupt, disable, overburden, or impair any function of the Site; attempt to gain unauthorized access to any portion of the Site; use data mining, robots, spiders, scraping or similar automated or manual methods; or circumvent or modify any feature of the Site.</p>
+
+    <h2>In Store Purchase Policy</h2>
+    <p>You may only purchase one (1) style per product per person. Please note that you are also only limited to one transaction per customer, per day. The store staff reserves the right to refuse a purchase for any reason without explanation.</p>
+
+    <h2>Cancellation Policy</h2>
+    <p>We do not allow cancellations once the order has been placed. All orders are final and cannot be changed after submission. We do our best to ship all packages within 14 days. In the event that your order has not shipped within 14 days, you may reach out to customer service to request a cancellation.</p>
+
+    <h2>Return Policy</h2>
+    <p>We will gladly exchange an item for online store credit only. Before sending the item back, please email <a href="mailto:support@maybenot.com">support@maybenot.com</a> within 2 days of receipt of your shipment. Packages sent without first contacting us will not be accepted. Items to be exchanged must be returned in perfect, new condition with all original tags attached. Maybe Not must receive the returned item within 7 days of return authorization.</p>
+    <p>For any returned items, you will not be refunded the original cost of shipping, and you are responsible for the cost of the return shipping. Items may not be returned or exchanged in person at any Maybe Not store location. T‑Shirts, Hats, Skateboards, Bags, Accessories, Shoes or Sale Items cannot be returned or exchanged. We do not assume responsibility for reimbursement or compensation of returned packages lost in transit without proof of delivery to Maybe Not.</p>
+
+    <h2>Copyright &amp; Trademarks</h2>
+    <p>All content of our website including text, graphics, logos, button icons and images are property of Maybe Not Inc. and are protected by the United States and international copyright laws. You may electronically copy and print hard copies of pages from this web site solely for personal, non‑commercial purposes related to placing an order or shopping with maybenot.com. Any other use of our Site, content, images or information contained therein, including reproduction and internet links, is strictly prohibited without our prior written permission.</p>
+
+    <h2>Secure Processing</h2>
+    <p>Maybenot.com uses secure processing called SSL Encryption Technology, which is the industry standard. SSL (Secure Sockets Layer) is a protocol developed for the transmission of private information over the internet. SSL uses a private key to encrypt your data, including your credit card information, so that it cannot be read while being transferred over the internet.</p>
+
+    <h2>Privacy</h2>
+    <p>Maybenot.com respects our customers account information as private and confidential information and will never share this with any outside affiliates or individuals. Your information is secured and encrypted with the Secure Socket Layer Software. Our use of any information you provide via the Site shall be governed by our <a href="privacy.html">Privacy Policy</a>. We urge you to read our Privacy Policy. You acknowledge that you are solely responsible for the accuracy and content of such information.</p>
+
+    <h2>Shipping</h2>
+    <p>At this time, we are only accepting orders from residents that live in the U.S.A., Canada and Mexico. All orders are shipped via carriers selected by Maybe Not. The shipping rate to the contiguous 48 U.S. states is $10. The shipping rate to Alaska, Hawaii and Puerto Rico is $25. Orders for Canada are charged a flat rate $25 fee for UPS expedited shipping and a Canadian surcharge for estimated duty, fee and processing expenses. Canadian customers will not incur any additional charges upon delivery. Orders for Mexico are charged a flat rate $35 fee for UPS expedited shipping and a Mexican surcharge to cover VAT and Duty. Mexican customers will not incur any additional charges upon delivery. There is an additional $4 surcharge per skateboard, due to the size of this item. Please note that UPS does not deliver to APO/FPO addresses or P.O. boxes.</p>
+    <p>Please allow 3‑5 business days for order processing and verification, and an additional 7‑10 business days for delivery. We are not responsible for any lost, stolen, or damaged shipments. All shipments are insured and the buyer assumes all responsibilities of claims made with the shipping carrier. Please check back with us periodically for any updates regarding our shipping policies.</p>
+
+    <h2>Sales Tax</h2>
+    <p>Sales Tax is charged to those e‑commerce sales shipped within the United States where required by law. When an order is submitted, an estimated tax amount will post to your account. The exact tax rate for your order will be calculated according to applicable rates and rules for your local tax jurisdiction and will be reflected once final payment is settled.</p>
+    <p>E‑commerce sales being shipped to Mexico are also charged sales tax. The Mexican surcharge covers all Value Added Tax (VAT) and Duty. Mexican customers will not incur any additional charges upon delivery. Shipping is also taxed.</p>
+
+    <h2>Copyright</h2>
+    <p>This website is protected under copyright law and all rights reserved except as expressly provided herein. Individual documents, pages, or components may contain different copyright notices and/or additional proprietary notices.</p>
+    <p>If you believe that your work has been copied in a way that constitutes copyright infringement, please notify the Maybe Not agent for notice of claims of copyright infringement ("Copyright Agent") at:</p>
+    <p><a href="mailto:notices@maybenot.com">notices@maybenot.com</a><br>or<br>Copyright Agent/Legal Department<br>Maybe Not Website<br>123 Example Avenue, Chicago, Illinois 60601</p>
+    <p>In order to be effective, a notice of copyright infringement must be made in writing and include:</p>
+    <ul>
+        <li>Identification of the copyrighted work claimed to have been infringed, or, if multiple copyrighted works are covered by a single notification, a representative list of such works;</li>
+        <li>Identification of the material that is claimed to be infringing or to be the subject of infringing activity and that is to be removed or access to which is to be disabled, and information reasonably sufficient to permit the Copyright Agent to locate the material (e.g., the URL);</li>
+        <li>Your contact information, such as an address, telephone number, and email address at which you may be contacted;</li>
+        <li>A statement that you have a good faith belief that use of the material in the manner complained of is not authorized by the copyright owner, its agent, or the law; and</li>
+        <li>A statement that the information in the notification is accurate, and under penalty of perjury, that you are the owner of the exclusive right that is allegedly infringed or that you are authorized to act on behalf of the owner of an exclusive right that is allegedly infringed; and</li>
+        <li>Your physical or electronic signature.</li>
+    </ul>
+    <p>In accordance with the Digital Millennium Copyright Act (DMCA) and other applicable law, Maybe Not has adopted a policy of limiting access to or terminating the online accounts of users who are deemed repeat infringers. Under Maybe Not’s policy, a ‘repeat infringer’ is any user who repeatedly fails to adhere to Maybe Not’s Terms or local law by repeatedly submitting content that infringes the rights of another party.</p>
+
+    <h2>Contact Information</h2>
+    <p><a href="mailto:support@maybenot.com">support@maybenot.com</a><br>customer service hours: Monday - Friday 9:00 am - 6:00 pm CST</p>
+
+    <h2>Indemnity</h2>
+    <p>You agree to defend, indemnify and hold us, our directors, officers, employees, agents and affiliates harmless from any and all claims, liabilities, damages, costs and expenses, including reasonable attorneys’ fees, in any way arising from, related to or in connection with your use of the Site, your violation of the Terms or the posting or transmission of any materials on or through the Site by you, including, but not limited to, any third party claim that any information or materials you provide infringes any third party proprietary right.</p>
+
+    <h2>Disclaimer of Warranties</h2>
+    <p>YOU UNDERSTAND AND AGREE THAT: THE SITE, INCLUDING, WITHOUT LIMITATION, ALL CONTENT, FUNCTION, MATERIALS AND SERVICES IS PROVIDED “AS IS,” WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING, WITHOUT LIMITATION, ANY WARRANTY FOR INFORMATION, DATA, DATA PROCESSING SERVICES OR UNINTERRUPTED ACCESS, ANY WARRANTIES CONCERNING THE AVAILABILITY, ACCURACY, COMPLETENESS, USEFULNESS, OR CONTENT OF INFORMATION, AND ANY WARRANTIES OF TITLE, NON‑INFRINGEMENT, MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. WE DO NOT WARRANT THAT THE SITE OR THE FUNCTION, CONTENT OR SERVICES MADE AVAILABLE THEREBY WILL BE TIMELY, SECURE, UNINTERRUPTED OR ERROR FREE, OR THAT DEFECTS WILL BE CORRECTED. MAYBE NOT MAKES NO WARRANTY THAT THE SITE WILL MEET USERS’ EXPECTATIONS OR REQUIREMENTS. NO ADVICE, RESULTS OR INFORMATION, OR MATERIALS WHETHER ORAL OR WRITTEN, OBTAINED BY YOU THROUGH THE SITE SHALL CREATE ANY WARRANTY NOT EXPRESSLY MADE HEREIN. IF YOU ARE DISSATISFIED WITH THE SITE, YOUR SOLE REMEDY IS TO DISCONTINUE USING THE SITE.</p>
+
+    <h2>Limitation of Liability</h2>
+    <p>IN NO EVENT SHALL WE, OUR AFFILIATES OR ANY OF THEIR RESPECTIVE DIRECTORS, OFFICERS, EMPLOYEES, AGENTS, OR CONTENT OR SERVICE PROVIDERS BE LIABLE FOR ANY INDIRECT, SPECIAL, INCIDENTAL, CONSEQUENTIAL, EXEMPLARY OR PUNITIVE DAMAGES ARISING FROM OR DIRECTLY OR INDIRECTLY RELATED TO THE USE/MISUSE OF, OR THE INABILITY TO USE, THE SITE OR THE CONTENT, MATERIALS AND FUNCTION RELATED THERETO, INCLUDING, WITHOUT LIMITATION, LOSS OF REVENUE, OR ANTICIPATED PROFITS, OR LOST BUSINESS, DATA OR SALES, OR COST OF SUBSTITUTE SERVICES, EVEN IF WE OR OUR REPRESENTATIVE OR SUCH INDIVIDUAL HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES. SOME JURISDICTIONS DO NOT ALLOW THE LIMITATION OR EXCLUSION OF LIABILITY SO SOME OF THE ABOVE LIMITATIONS MAY NOT APPLY TO YOU. IN NO EVENT SHALL THE TOTAL LIABILITY OF US TO YOU FOR ALL DAMAGES, LOSSES, AND CAUSES OF ACTION (WHETHER IN CONTRACT OR TORT, INCLUDING, BUT NOT LIMITED TO, NEGLIGENCE OR OTHERWISE) ARISING FROM THE TERMS OR YOUR USE OF THE SITE EXCEED, IN THE AGGREGATE, $100.00.</p>
+
+    <h2>Governing Law Clause</h2>
+    <p>These terms and conditions are governed by the laws of the United States of America and the laws of the State of Illinois.</p>
+
+    <h2>General Information</h2>
+    <p>The Terms constitute the entire agreement between you and us and govern your use of the Site, superseding any prior agreements between you and us.</p>
+    <p>Any claim or cause of action you may have with respect to us or the Site must be commenced within one (1) year after the claim or cause of action arose.</p>
+    <p>Our failure to exercise or enforce any right or provision of the Terms shall not constitute a waiver of such right or provision. If any provision of the Terms is found by a court of competent jurisdiction to be invalid, the parties nevertheless agree that the court should endeavor to give effect to the parties’ intentions as reflected in the provision, and the other provisions of the Terms remain in full force and effect.</p>
+    <p>The Terms inure to the benefit of our successors, assigns and licensees. The section titles in the Terms are for convenience only and have no legal or contractual effect.</p>
+
+    <h2>Accessibility</h2>
+    <p>Maybe Not is committed to facilitating the accessibility and usability of its website www.maybenot.com for everyone. Maybe Not aims to comply with all applicable standards, including the World Wide Web Consortium’s Web Content Accessibility Guidelines 2.1 up to level AA. If you experience any problems in accessing any part of this website, please email us at <a href="mailto:accessibility@maybenot.com">accessibility@maybenot.com</a>, and we will work with you to provide what you need.</p>
+
+    <h2>Store Registration SMS Terms</h2>
+    <p>The in‑store registration is an online registration where you can sign up for the opportunity to attend an in‑store release at one of the Maybe Not stores. Your mobile number will be used to notify you if you have been chosen to attend an in‑store release.</p>
+    <p>You can withdraw from registration at any time. Just text "STOP" to the short code. After you send the SMS message "STOP" to us, we will send you an SMS message to confirm that you have been unsubscribed. After this, you will no longer receive SMS messages from us and will no longer be eligible to be chosen to attend an in‑store release. If you want to join again, just respond "UNSTOP" to renew your registration and we will start sending SMS messages to you again.</p>
+    <p>If you are experiencing issues with the messaging program you can reply with the keyword HELP for more assistance. Carriers are not liable for delayed or undelivered messages. As always, message and data rates may apply for any messages sent to you from us and to us from you. If you have any questions about your text plan or data plan, it is best to contact your wireless provider. If you have any questions regarding privacy, please read our <a href="privacy.html">privacy policy</a>.</p>
+
+    <h2>California and UK Modern Slavery Act</h2>
+    <p>Statement of Maybe Not for financial year ending March 31, 2025. Maybe Not is committed to preventing modern slavery and human trafficking in its supply chains and business operations and continues to take steps in this area. Maybe Not has in place a code of business conduct and training programs to educate its staff on forced labor and to promote consistent adherence to Maybe Not’s standards and expectations.</p>
+    <p>Maybe Not chooses its business partners with an emphasis on working with those equally committed to maintaining the highest levels of business standards and labor practices. Maybe Not also requires its third‑party product suppliers to comply with updated terms of engagement and compliance principles, which prohibit the use of forced labor, require certification that materials used comply with relevant laws, and require adherence to international labor standards and practices.</p>
+    <p>Through routine engagement with its suppliers, Maybe Not works to directly verify adherence to the company’s standards and practices, including compliance with local labor laws and requirements. As part of this effort, Maybe Not developed new independent audit procedures for its suppliers, and will continue enrolling them into these procedures in 2025 and beyond.</p>
+    <p>Maybe Not has internal accountability procedures for failure to meet its standards on modern slavery and human trafficking, continually reviews applicable legal requirements pertaining to forced labor and seeks to rely on best practices and other tools to promote compliance.</p>
 </main>
 <footer>
         <div class="footer-links">
@@ -110,5 +205,17 @@ if (logoOverlay) {
 }
 </script>
     <script src="footer-highlight.js"></script>
+<!-- Google Translate -->
+<script type="text/javascript">
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({pageLanguage: 'en'}, 'google_translate_element');
+}
+document.getElementById('translate-button').addEventListener('click', function() {
+  var el = document.getElementById('google_translate_element');
+  var current = window.getComputedStyle(el).display;
+  el.style.display = current === 'none' ? 'block' : 'none';
+});
+</script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 </html>
