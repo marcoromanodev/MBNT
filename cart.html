@@ -186,11 +186,42 @@
         .or {
             margin: 10px 0;
         }
+        .cart-footer {
+            display: none;
+        }
         .cart-footer a {
             color: #000;
             margin: 0 5px;
             font-size: 0.8em;
             text-decoration: none;
+        }
+        .footer-links {
+            display: none;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            background-color: #f7f7f7;
+        }
+        .footer-line {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding-bottom: 10px;
+        }
+        .footer-line.extra-padding {
+            padding-bottom: 10px;
+        }
+        .footer-links a {
+            color: #000;
+            text-decoration: none;
+            font-size: 0.7rem;
+        }
+        .footer-links a:hover,
+        .footer-links a:focus,
+        .footer-links a:active {
+            border: 2px solid red;
+            color: red;
         }
         button:not(.pay-btn):hover,
         button:not(.pay-btn):focus,
@@ -668,6 +699,15 @@
     </div>
 </div>
 <footer>
+    <div class="footer-links">
+        <div class="footer-line extra-padding">
+            <a href="shop.html">shop</a>
+            <a href="all.html">view all</a>
+            <a href="soon.html">preview</a>
+            <a href="soon.html">lookbook</a>
+            <a href="news.html">news</a>
+        </div>
+    </div>
     <div class="cart-footer">
         <a href="#">refund policy</a> |
         <a href="#">shipping</a> |
