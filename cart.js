@@ -70,6 +70,12 @@ function addToCart(button) {
         } else {
             msg = 'Please select a size.';
         }
+        if (missing.includes('color')) {
+            highlightField(item.querySelector('.color-options'));
+        }
+        if (missing.includes('size')) {
+            highlightField(item.querySelector('.size-select select'));
+        }
         showSelectionError(msg);
         return;
     }
@@ -131,15 +137,19 @@ function showSelectionError(message) {
         const el = content.querySelector(sel);
         if (el) el.style.display = 'none';
     });
-    let msg = content.querySelector('.empty-cart-message');
+    let msg = content.querySelector('.selection-error');
     if (!msg) {
         msg = document.createElement('div');
-        msg.className = 'empty-cart-message';
+        msg.className = 'selection-error';
+        msg.style.textAlign = 'center';
+        msg.style.color = 'red';
+        msg.style.fontWeight = 'bold';
         content.appendChild(msg);
     }
     msg.textContent = message;
     modal.style.display = 'flex';
     setTimeout(() => {
+        msg.remove();
         modal.style.display = 'none';
         populateCartModal();
     }, 2000);
@@ -150,9 +160,10 @@ function highlightField(field) {
     field.focus();
     field.scrollIntoView({ behavior: 'smooth', block: 'center' });
     field.style.outline = '2px solid red';
-    field.addEventListener('input', () => {
-        field.style.outline = '';
-    }, { once: true });
+    const clear = () => { field.style.outline = ''; };
+    field.addEventListener('input', clear, { once: true });
+    field.addEventListener('change', clear, { once: true });
+    field.addEventListener('click', clear, { once: true });
 }
 
 function createCartModal() {
