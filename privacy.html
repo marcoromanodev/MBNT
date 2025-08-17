@@ -13,8 +13,12 @@
         iframe { width:100%; height:100%; border:none; }
         .time { font-size:0.7rem; text-align:center; margin-top:-15px; font-weight:600; }
         .header-line { border-top:1px solid #000; margin-top:5px; width:100%; }
-        main { max-width:800px; margin:20px auto; font-size:0.9rem; line-height:1.4; text-align:center; }
+        .translate-button { margin-top:10px; padding:5px 10px; border:1px solid #000; background-color:#f7f7f7; cursor:pointer; font-size:0.7rem; }
+        main { max-width:800px; margin:20px auto; font-size:0.9rem; line-height:1.4; text-align:left; }
         h1 { text-transform:lowercase; text-align:center; font-size:1.2rem; }
+        table { width:100%; border-collapse:collapse; margin:20px 0; }
+        th, td { border:1px solid #000; padding:5px; font-size:0.7rem; text-align:center; }
+        th:first-child, td:first-child { text-align:left; }
         .footer-links { display:flex; justify-content:center; flex-wrap:wrap; gap:15px; background-color:#f7f7f7; }
         .footer-links a { color:#000; text-decoration:none; font-size:0.7rem; }
         .footer-links a:hover, .footer-links a:focus, .footer-links a:active { border:2px solid red; color:red; }
@@ -25,6 +29,7 @@
 </head>
 <body>
 <header class="header-container">
+    <button id="translate-button" class="translate-button">Translate</button>
     <div class="logo-container">
         <iframe id="logo-frame" src="https://www.vectary.com/viewer/v1/?model=8b9281ad-097b-4408-88e2-ef824efa63eb&env=studio3&turntable=1" frameborder="0"></iframe>
         <div class="logo-overlay"></div>
@@ -33,14 +38,111 @@
 </header>
 <div class="header-line"></div>
 <main>
-    <h1>privacy policy</h1>
-    <p>We collect information you provide, such as contact details and order data, to process purchases and improve our services.</p>
-    <h2>cookies</h2>
-    <p>Cookies help remember your preferences. You can disable cookies in your browser, but some features may not function properly.</p>
-    <h2>sharing</h2>
-    <p>Information is shared with trusted service providers to fulfill orders and meet legal requirements.</p>
-    <h2>your rights</h2>
-    <p>Contact us to access, correct, or delete your personal data. We respond to reasonable requests as required by law.</p>
+    <h1>Consumer Privacy Policy Statement</h1>
+    <p>At Maybe Not, we understand that you care how information about you is collected, used, and shared. This Privacy Statement describes information we may collect about you directly or indirectly, how and why we may collect, use and share your information, and the choices you have regarding your information. As more fully described below, we collect, use and share your information to better serve you and to improve our own business processes. By using our websites, mobile applications, or facilities, buying our products, participating in our promotions and events, or by providing your information to us in other ways, you agree to this Privacy Statement.</p>
+    <h2>Categories of Information We Collect</h2>
+    <p>In order to help us better understand you so that we can give you an excellent customer experience, we collect information that identifies you or that we can associate with you (your "personal information") as well as information that does not identify you (e.g., anonymous, deidentified, or aggregated data), and we may collect various categories of information directly (from you), or indirectly (from others), as more fully described below. The categories of personal information that we or our service providers have collected during the preceding 12 months are:</p>
+    <ul>
+        <li>Identifiers (such as your name, nickname, account name, unique personal identifier, online identifier/screenname, IP address, driver’s license number or signature);</li>
+        <li>Contact Information (such as your physical or mailing address, telephone number or email address);</li>
+        <li>Profile information (such as commercial information and inferences, including products or services purchased or considered, purchasing histories or tendencies, interactions with us, preferences, psychological traits/ predispositions, behavior, attitudes, intelligence or abilities/aptitudes, some of which may be assigned by probabilistic methods);</li>
+        <li>Education information (such as your education status or history);</li>
+        <li>Employment information (such as your employment status or history, or your professional information);</li>
+        <li>Internet activity (such as browsing history, search history, clicks, interactions with websites, applications and advertisements, or social media information);</li>
+        <li>Demographic information (such as your age, date of birth, sex or gender, race or ethnicity, sexual orientation, religion or national origin);</li>
+        <li>Physical characteristics or biometric information (such as your size, height, weight or other information relevant to your footwear and apparel preferences, audio, electronic, visual, thermal or olfactory information);</li>
+        <li>Financial information (such as your bank account number, credit card number, debit card number, other payment information, or insurance information); and</li>
+        <li>Location data (such as the geographical location information indicated by your mobile device or computer).</li>
+    </ul>
+    <h2>How Information About You Is Collected</h2>
+    <p>When you interact with us, we may collect information about you directly. Examples of direct interaction with us include when you visit our websites, shop in our stores, communicate with our customer service representatives, attend our events, use our mobile applications, participate in our marketing efforts (including contests sweepstakes and virtual events), participate in our customer loyalty programs, or any other way you interact with us. When we collect information about you directly, we may ask you to affirmatively furnish the information to us (such as when we ask you for your telephone number), or we may collect the information from your electronic device (such as when you download and use our mobile applications) or by observing your activity (such as when you visit our websites). We and some of our service providers and other third parties collect identifiers matched to your mobile or other devices, which can be used to deliver customized ads or content via the internet, across different devices or browsers (sometimes called “cross-device tracking”). In some cases, we may engage service providers to help us operate our business, and they may collect data on our behalf in the course of the services they provide to us. In other cases, third parties may obtain information about you independently, and we may acquire that data from a third party (for example, by purchasing the data from a data broker).</p>
+    <p>The following table shows the categories of personal information that we or our service providers may obtain directly (from consumers), or indirectly (from third parties), by category of source.</p>
+    <div style="overflow-x:auto;">
+    <table>
+        <thead>
+            <tr>
+                <th>Sources of Information<br>Categories of Information We Collect*</th>
+                <th>Directly from Consumers</th>
+                <th>Government Entities and Public Records</th>
+                <th>Consumer Data Resellers/ Brokers</th>
+                <th>Advertising Networks</th>
+                <th>Internet Service Providers</th>
+                <th>Operating Systems and Platforms</th>
+                <th>Social Networks/ Social Media</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>Identifiers</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td></tr>
+            <tr><td>Contact information</td><td>X</td><td>X</td><td>X</td><td></td><td></td><td></td><td>X</td></tr>
+            <tr><td>Profile information</td><td>X</td><td></td><td>X</td><td>X</td><td></td><td>X</td><td>X</td></tr>
+            <tr><td>Education information</td><td>X</td><td></td><td>X</td><td></td><td></td><td></td><td></td></tr>
+            <tr><td>Employment information</td><td>X</td><td></td><td>X</td><td></td><td></td><td></td><td></td></tr>
+            <tr><td>Internet activity</td><td>X</td><td></td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td></tr>
+            <tr><td>Demographic information</td><td>X</td><td>X</td><td>X</td><td></td><td></td><td></td><td>X</td></tr>
+            <tr><td>Physical characteristics or biometric information</td><td>X</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><td>Financial information</td><td>X</td><td></td><td>X</td><td></td><td></td><td></td><td></td></tr>
+            <tr><td>Location data</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td></tr>
+        </tbody>
+    </table>
+    </div>
+    <p>*Includes collection by our service providers or from other third parties</p>
+    <h2>Why Your Information Is Collected and Used</h2>
+    <p>We use the personal information we collect directly and indirectly to conduct our business, communicate with you, and provide better products, services, and experiences, as further described below. The specific purposes for which we or our service providers may collect and use information about you are (1) to provide the products and services that you have ordered or requested, and to communicate about your orders; (2) to enable and improve our customer service; (3) to address your comments, questions or complaints; (4) to personalize your experiences; (5) to understand your opinions, preferences and shopping habits; (6) to analyze trends and statistics; (7) to administer and fulfill our contests and other promotions, including special discounts for professionals, military personnel, students and first responders; (8) to analyze and improve our websites, mobile applications, facilities, products and services; (9) to market our products and services to you, including by sending you marketing communications and other information regarding our products, services, or special events, and to improve our marketing efforts; (10) to share reviews, testimonials, or other user-generated content; (11) to facilitate our merger or acquisition activities; (12) to secure and protect our information and technology systems, as well as information about you and other consumers; (13) to facilitate internal audits, dispute resolution or investigations; (14) to evaluate new technology for our businesses; (15) to conduct market research; (16) to formulate our business strategies; (17) to analyze business information about organizations to which you may belong (i.e., your employer); (18) to enable us to monitor and evaluate our third party service providers and their activities; (19) to manage our gift card programs, loyalty programs, other stored value programs; (20) to keep records of transactions; (21) to comply with our contractual obligations; (22) to detect and address actual or potential fraud; (23) to establish and maintain data back-ups for our business continuity and disaster recovery; and (24) to comply with various legal obligations or other rules to which we are subject. In the following table, we disclose the purposes for which we collect and use each category of personal information:</p>
+    <div style="overflow-x:auto;">
+    <table>
+        <thead>
+            <tr>
+                <th>Categories of Information We Collect</th>
+                <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th><th>13</th><th>14</th><th>15</th><th>16</th><th>17</th><th>18</th><th>19</th><th>20</th><th>21</th><th>22</th><th>23</th><th>24</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>Identifiers</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td></tr>
+            <tr><td>Contact information</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td></tr>
+            <tr><td>Profile information</td><td></td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td></td><td></td><td>X</td><td>X</td><td>X</td></tr>
+            <tr><td>Education information</td><td></td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td></td><td>X</td><td></td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td></td><td>X</td><td></td><td>X</td><td>X</td><td>X</td></tr>
+            <tr><td>Employment information</td><td></td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td></td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td></td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td></tr>
+            <tr><td>Internet activity</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td></td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td></tr>
+            <tr><td>Demographic information</td><td></td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td></td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td></td><td>X</td><td></td><td></td><td></td><td>X</td><td>X</td><td>X</td></tr>
+            <tr><td>Physical characteristics or biometric information</td><td></td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td></td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td></td><td>X</td><td></td><td></td><td></td><td>X</td><td>X</td><td>X</td></tr>
+            <tr><td>Financial information</td><td>X</td><td></td><td></td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td></td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td></tr>
+            <tr><td>Location data</td><td>X</td><td>X</td><td></td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td></td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td></td><td>X</td><td></td><td></td><td></td><td>X</td><td>X</td><td>X</td></tr>
+        </tbody>
+    </table>
+    </div>
+    <h2>What Information About You Is Shared and With Whom</h2>
+    <p>We may also share your personal information with service providers who provide services to us or conduct activities on our behalf. When we share your personal information with our service providers, we instruct them to limit their use and further sharing of your personal information so that they only use or share your personal information for the intended purposes (which are limited to those listed above). One example of our information sharing with a service provider is when we share your name, address, and similar contact information with a courier service for the purpose of delivering a product to you and notifying you of the status of the shipment. The categories of information that we may share with third parties (including our service providers) for a business purposes, or have shared during the preceding twelve (12) months, are the following: Identifiers; Contact information; Profile information; Education information; Employment information; Internet activity; Demographic information; Physical characteristics or biometric information; Financial information; and Location data. We share these categories of information for the same purposes we collect and use them, as described above under the caption “Why Your Information Is Collected and Used.”</p>
+    <p>We do not sell consumers’ personal information for money. We do, however, share consumers’ personal information with certain third parties in ways that might be considered a “sale” of personal information under the California Consumer Privacy Act, even though we do not receive any fee from the third parties in exchange, and we have done this in the twelve (12) months prior to the date of this Privacy Statement. For example, we allow third parties, such as Facebook® and Google®, to place technologies (such as cookies, tags, pixels, and scripts) on our websites for purposes of marketing to users of our websites, however, we ask our California consumers to consent to the use of these technologies when they visit our websites, and we do not share their information in this way unless they affirmatively agree. If you wish to make a request or exercise any of the above rights, please contact us at dataprivacy@maybenot.com.</p>
+    <h2>How You Can Opt Out of Online Advertising Or Other Promotional Communications</h2>
+    <p>Our websites use a variety of technologies to understand more about your interaction with our websites and our brands. You can manage how your mobile device, mobile browser and other devices share information with our websites and mobile apps, as well as how your browser handles cookies and other tracking technologies, by adjusting the privacy, security and Wi-Fi settings on your device. Please refer to instructions provided by your mobile service provider or the manufacturer of your device to learn how to adjust your settings. Our websites currently do not have a mechanism to recognize an Internet browser’s “Do Not Track” signals, and we cannot follow those signals. Several of the companies who utilize cookies or other tracking or monitoring mechanisms enable you to opt out of advertising through mechanisms established by trade groups. If you wish to reduce this type of third-party, interest-based advertising, you may opt out of advertising from members of the National Advertising Initiative here, and from members of the Digital Advertising Alliance here. Please note the links in the prior sentence will not opt you out of receiving all marketing communications from us. There are other ways in which you can tell us whether or not you want to receive promotional communications from us. When you set-up an account or log into your account on our brands’ websites or mobile applications, you may have an opportunity to make or change your selections with respect to each brand. You also will have an opportunity to opt-out of advertising email messages from us by clicking on an "unsubscribe" hyperlink contained in commercial e-mails those brands send you. If you receive a text message (SMS or MMS) from one of our brands and would like to opt out of receiving further text messages, you may do so by following the opt-out instructions within the text message.</p>
+    <h2>Children’s Privacy</h2>
+    <p>We do not intend to collect personal information from anyone who is under the age of 16. If you are under the age of 16 you should not provide any personal information to us. If you are a parent or guardian of a child under the age of 16 and suspect they have provided personal information to us, you may contact us using one of the Communication Methods described in this Privacy Statement to exercise your rights as a parent or guardian. We do not knowingly sell the personal information of consumers under 16 years of age.</p>
+    <h2>Keeping Your Personal Information Secure</h2>
+    <p>We have implemented reasonable security procedures and measures that are intended to protect your personal information and our information technology systems that store personal information. Unfortunately, no transmission of information over the Internet nor storage of information electronically can be guaranteed to be 100% secure. In order to help protect personal information you provide to us, you: (i) should not share your password or account information with others, (ii) should use a secure internet connection and web browser, (iii) should select a unique, complex, secure password, (iv) should change your password frequently and (v) should not use the same password elsewhere. If you become aware of any loss, theft or unauthorized use of a password, please contact us immediately using the contact information below. By providing your email address in connection with a purchase, or your use of our websites, mobile applications or services, you are consenting to receive electronic notice of any information security issues using your most recent email address in our records.</p>
+    <h2>Links To Other Websites</h2>
+    <p>Our websites and mobile applications may contain links to third-party websites to which this Privacy Statement does not apply ("Linked Websites"). Your use of Linked Websites will be governed by the terms of use, privacy policies, and other terms, notices, and policies set forth on or referenced in those Linked Websites.</p>
+    <h2>International Users</h2>
+    <p>This Privacy Statement describes our policies and procedures in the United States. Regardless of where you live, by using our U.S. websites or engaging with us while within the U.S., you consent to have your personal data transferred, processed, and stored in the United States, and allow us to use and collect your personal information in accordance with this Privacy Statement. If you live outside the U.S., we may host a website or application designed for use in your jurisdiction, and we encourage you to use that website or application. We are a global company, and personal information we collect in the United States may be transferred to other jurisdictions, as permitted by law.</p>
+    <h2>Your Options Regarding Personal Information</h2>
+    <p>We have established processes by which you can submit requests regarding your personal information. To exercise your options as described in this Privacy Statement, you may contact us in one of the following ways:</p>
+    <ul>
+        <li>by sending an email to <a href="mailto:dataprivacy@maybenot.com">dataprivacy@maybenot.com</a>; or</li>
+        <li>by mail at: Maybe Not Inc., 123 Example Avenue, Chicago, Illinois 60601, Attn: Legal Department / Data Privacy.</li>
+    </ul>
+    <p>Collectively, these are referred to as the “Communication Methods.” To effectively exercise your privacy options, you must use one of these Communication Methods.</p>
+    <p>The list below describes the types of requests you may make to us regarding information we have collected from you:</p>
+    <p><strong>Request to Know:</strong> You may ask us to furnish you with (i) the categories and specific pieces of personal information we have collected about you; (ii) the categories of sources from which we collect information about you; (iii) the business or commercial purposes for collecting information about you; and (iv) the categories of third parties with whom we share personal information about you (or have shared in the prior 12 months).</p>
+    <p><strong>Request to Delete:</strong> You may ask us to delete any personal information that we have collected from you and to direct our service providers to delete your personal information from their records. After verifying your request, we will comply as further described below, unless we determine that there is a lawful basis for retaining the information, including because the information is necessary to (i) complete a transaction or perform a contract between us; (ii) ensure security; (iii) debug or repair errors; (iv) exercise a legal right; (v) comply with another law or a legal obligation; (vi) conduct research; (vii) enable solely internal uses that are reasonably aligned with our consumers’ reasonable expectations; or (viii) otherwise use the information, internally, in a lawful manner that is compatible with the context in which you provided the information.</p>
+    <p><strong>Request to Opt-Out of Sale:</strong> You may request that we not sell your personal information. You may make such a request by sending an email to <a href="mailto:dataprivacy@maybenot.com">dataprivacy@maybenot.com</a>.</p>
+    <p>If you are a California resident, we will make commercially reasonable efforts to accommodate your request within 45 days; however, we may notify you during the initial 45-day period that we will extend the timeframe by up to 45 additional days, if an extension is reasonably necessary in order to fulfill your request. If you are a Nevada resident, we will fulfill your request within 60 days; however, we may extend the timeframe by up to 30 additional days, if an extension is reasonably necessary. We are not obligated to fulfill requests from residents of jurisdictions other than California (and, in the case of a Request to Opt-Out of Sale, Nevada). We reserve the right to deny any request to the extent permitted by applicable law. We will fulfill the same Request to Know from an individual up to two times in any twelve-month period, but we are not able to fulfill redundant Requests to Know more frequently than that. We will not discriminate against you because you have made a request described in this Privacy Statement or otherwise exercised your rights under applicable law. In addition, California law permits customers who are California residents to request certain information regarding our disclosure of personal information to third parties for the third parties’ own direct marketing purposes. To make such a request, please contact us using one of the Communication Methods described in this Privacy Statement, describing your request specifically.</p>
+    <p>We may offer financial incentives or offer you a different price, level or quality of goods or services in connection with programs that require you to disclose certain personal information, but only if you opt in to such an incentive program. If you opt in to any such incentive program, you may opt out at any time, as described in the terms and conditions of those programs, though you may lose the benefits associated with the incentive if you require us to delete your information.</p>
+    <h2>How Your Identity Will Be Verified</h2>
+    <p>For your privacy and security, and to prevent fraud and other harmful activities, when we receive a request through one of the Communication Methods, we need to ensure that the person submitting the request is the person they purport to be. Accordingly, we may take reasonable measures to verify the identity of the person submitting the request. Initially, we ask you to provide basic personal information when you submit a request, whether through our web form, toll-free telephone number, mail, or other approved Communication Method. This information will include your first name, middle name, last name, email address, shipping address and telephone number. Providing accurate information that matches our records is necessary so that we can locate the correct information within our systems and among our service providers. To verify your request, we may ask you to submit evidence beyond your basic personal information in order to prove your identity. You may submit this information simultaneously with your initial request (by mail or by using our interactive web form) or after your request (as a second step). For requests of specific pieces of personal information about a consumer, we will verify your identity to a reasonably high degree of certainty; whereas for requests to know the categories of personal information collected and used about a consumer, we will verify your identity to a reasonable degree of certainty. We may give you options, such as (i) submitting a signed statement and a redacted copy of identifying information (such as a government-issued ID), (ii) verifying your identity with a third-party verification company that we hire for this purpose, or (iii) showing your identifying information to our associate at one of our Chicago retail locations. If we ask you to verify your identity, you must promptly cooperate with our efforts so that we can fulfill your request. If you do not comply, your request cannot be fulfilled; and if you delay in complying, the fulfillment of your request is likely to be delayed, and may be denied, as a result.</p>
+    <h2>Requests from Authorized Agents</h2>
+    <p>If you submit a consumer privacy request on behalf of another person, you will be required to demonstrate your legal authority to act on behalf of that person, and we may contact you for verification purposes. For the protection of our customers, we must receive all information requested and must verify your authority to our satisfaction before we can fulfill your request.</p>
+    <h2>Changes to This Privacy Statement</h2>
+    <p>We will review our Privacy Statement periodically (at least annually), and we reserve the right, in our sole discretion, to revise, change or modify this Privacy Statement at any time. We will post any changes to this Privacy Statement to this page and they will be effective as of the date of posting. We encourage you to visit this page periodically to review this information. By engaging with us, including by visiting our website(s) or mobile application(s), after this Privacy Statement has been updated, you agree to the updated terms of this Privacy Statement. This Privacy Statement was last updated on October 1, 2024.</p>
+    <p><a href="#" onclick="window.print(); return false;">Print</a></p>
 </main>
 <footer>
         <div class="footer-links">
@@ -109,6 +211,18 @@ if (logoOverlay) {
     logoOverlay.addEventListener("touchstart", start);
 }
 </script>
-    <script src="footer-highlight.js"></script>
+<script src="footer-highlight.js"></script>
+<!-- Google Translate -->
+<div id="google_translate_element" style="display:none;"></div>
+<script type="text/javascript">
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({pageLanguage: 'en'}, 'google_translate_element');
+}
+document.getElementById('translate-button').addEventListener('click', function() {
+  var el = document.getElementById('google_translate_element');
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+});
+</script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 </html>
