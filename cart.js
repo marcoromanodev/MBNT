@@ -139,7 +139,7 @@ function showSelectionError(message) {
         modal = createCartModal();
     }
     const content = modal.querySelector('.cart-content');
-    const hideSelectors = ['.logo-container', '#cart-current-time', 'h2', '.item-count', '.order-summary-bar', '#order-summary-details', '.cart-buttons', '.or', '.express-checkout', '#checkout-form', '.cart-footer', '.cart-empty-message'];
+    const hideSelectors = ['.logo-container', '#cart-current-time', 'h2', '.item-count', '.order-summary-bar', '#order-summary-details', '.cart-buttons', '.or', '.express-checkout', '#checkout-form', '.cart-footer', '.footer-links', '.cart-empty-message'];
     hideSelectors.forEach(sel => {
         const el = content.querySelector(sel);
         if (el) el.style.display = 'none';
@@ -390,7 +390,16 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
                 </form>
             </div>
             <footer>
-                <div class="cart-footer">
+                <div class="footer-links" style="display:none;">
+                    <div class="footer-line extra-padding">
+                        <a href="shop.html">shop</a>
+                        <a href="all.html">view all</a>
+                        <a href="soon.html">preview</a>
+                        <a href="soon.html">lookbook</a>
+                        <a href="news.html">news</a>
+                    </div>
+                </div>
+                <div class="cart-footer" style="display:none;">
                     <a href="#">refund policy</a> |
                     <a href="#">shipping</a> |
                     <a href="privacy.html">privacy policy</a> |
@@ -457,6 +466,11 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
             #cart-modal .cart-item .remove-item{background:#000;color:#fff;border:none;position:absolute;top:0;right:0;cursor:pointer;font-size:14px;width:20px;height:20px;display:flex;align-items:center;justify-content:center;padding:0;font-family:Arial,sans-serif;line-height:0;text-indent:-2px;}
             #cart-modal .or {margin:10px 0;}
             #cart-modal footer a {color:#000;margin:0 5px;font-size:0.8em;text-decoration:none;}
+            #cart-modal .footer-links{display:flex;justify-content:center;flex-wrap:wrap;gap:15px;background:#fff;}
+            #cart-modal .footer-line{display:flex;justify-content:center;flex-wrap:wrap;gap:15px;padding-bottom:10px;}
+            #cart-modal .footer-line.extra-padding{padding-bottom:10px;}
+            #cart-modal .footer-links a{color:#000;text-decoration:none;font-size:0.8em;}
+            #cart-modal .footer-links a:hover,#cart-modal .footer-links a:focus,#cart-modal .footer-links a:active{border:2px solid red;color:red;background:#fff;}
             #cart-modal button:not(.pay-btn):not(.summary-toggle):hover,#cart-modal button:not(.pay-btn):not(.summary-toggle):focus,#cart-modal button:not(.pay-btn):not(.summary-toggle):active,#cart-modal footer a:hover,#cart-modal footer a:focus,#cart-modal footer a:active{border:2px solid red;color:red;background:#fff;}
             #checkout-form input {display:block;width:100%;margin:5px auto;padding:10px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;}
             .consent-text {font-size:0.7rem;margin-top:10px;}
@@ -520,7 +534,7 @@ function populateCartModal() {
     if (!itemsContainer) return;
     itemsContainer.innerHTML = '';
     if (cart.length === 0) {
-        const hideSelectors = ['.logo-container', '#cart-current-time', 'h2', '.item-count', '.order-summary-bar', '#order-summary-details', '.cart-buttons', '.or', '.express-checkout', '#checkout-form', '.cart-footer'];
+        const hideSelectors = ['.logo-container', '#cart-current-time', 'h2', '.item-count', '.order-summary-bar', '#order-summary-details', '.cart-buttons', '.or', '.express-checkout', '#checkout-form', '.cart-footer', '.footer-links'];
         hideSelectors.forEach(sel => { const el = modal.querySelector(sel); if (el) el.style.display = 'none'; });
         const content = modal.querySelector('.cart-content');
         content.style.display = 'flex';
@@ -589,7 +603,9 @@ function populateCartModal() {
     const finalPage = modal.querySelector('#final-checkout');
     if (finalPage) finalPage.style.display = 'none';
     const footer = modal.querySelector('.cart-footer');
-    if (footer) footer.style.display = 'block';
+    if (footer) footer.style.display = 'none';
+    const footerLinks = modal.querySelector('.footer-links');
+    if (footerLinks) footerLinks.style.display = 'none';
     const msg = modal.querySelector('.cart-empty-message');
     if (msg) msg.style.display = 'none';
 }
@@ -643,6 +659,10 @@ function showCheckoutForm(root = document.getElementById('cart-modal')) {
     const count = root.querySelector('.item-count');
     if (count) count.style.display = 'none';
     root.querySelector('#checkout-form').style.display = 'block';
+    const footer = root.querySelector('.cart-footer');
+    if (footer) footer.style.display = 'block';
+    const footerLinks = root.querySelector('.footer-links');
+    if (footerLinks) footerLinks.style.display = 'flex';
 }
 
 function populateOrderSummary(section, state = '', addressFilled = false) {
@@ -740,6 +760,10 @@ function showFinalPage(root = document.getElementById('cart-modal')) {
         }
         setupFinalForm(finalPage.querySelector('#final-form'));
     }
+    const footer = root.querySelector('.cart-footer');
+    if (footer) footer.style.display = 'block';
+    const footerLinks = root.querySelector('.footer-links');
+    if (footerLinks) footerLinks.style.display = 'flex';
 }
 
 function ensureStarStyles() {
@@ -978,7 +1002,7 @@ function populateCartPage() {
     const itemsContainer = page.querySelector('.cart-items');
     itemsContainer.innerHTML = '';
     if (cart.length === 0) {
-        const toHide = ['h2', '.item-count', '.cart-items', '.cost-summary', '.cart-buttons', '.or', '.express-checkout', '#checkout-form', '.cart-footer'];
+        const toHide = ['h2', '.item-count', '.cart-items', '.cost-summary', '.cart-buttons', '.or', '.express-checkout', '#checkout-form', '.cart-footer', '.footer-links'];
         toHide.forEach(sel => {
             const el = page.querySelector(sel) || document.querySelector(sel);
             if (el) el.style.display = 'none';
@@ -1060,9 +1084,9 @@ function populateCartPage() {
     const express = page.querySelector('.express-checkout');
     if (express) express.style.display = 'block';
     const footer = document.querySelector('.cart-footer');
-    if (footer) footer.style.display = 'block';
+    if (footer) footer.style.display = 'none';
     const footerLinks = document.querySelector('.footer-links');
-    if (footerLinks) footerLinks.style.display = 'flex';
+    if (footerLinks) footerLinks.style.display = 'none';
     const finalPage = page.querySelector('#final-checkout');
     if (finalPage) finalPage.style.display = 'none';
     const msg = page.querySelector('.cart-empty-message');
