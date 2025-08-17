@@ -414,6 +414,7 @@
             gap: 5px;
             flex-wrap: wrap;
             max-width: 100%;
+            position: relative;
         }
         .payment-logos img {
             height: 20px;
@@ -441,6 +442,7 @@
             .payment-logos {
                 margin-left: 10px;
                 justify-content: flex-start;
+                position: relative;
             }
             .payment-option.shop-pay .payment-label .subtext {
                 font-size: 0.6em;
@@ -448,7 +450,6 @@
         }
 
         .more-logos {
-            position: relative;
             margin-left: 5px;
             cursor: pointer;
             color: #000;
@@ -458,9 +459,9 @@
             display: none;
             position: absolute;
             bottom: 100%;
-            right: 0;
-            left: auto;
-            transform: translateX(-5px);
+            left: 0;
+            right: auto;
+            transform: translateX(0);
             background: #fff;
             padding: 5px;
             z-index: 10;
@@ -594,15 +595,14 @@
                         <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png" alt="Visa">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Mastercard-logo.png" alt="Mastercard">
                         <img src="amex.png" alt="American Express">
-                        <span class="more-logos" id="more-cards">+5
-                            <div class="more-logos-box" id="more-cards-box">
-                                <img src="discover.png" alt="Discover">
-                                <img src="elo.png" alt="Elo">
-                                <img src="jcb.png" alt="JCB">
-                                <img src="unionpay.png" alt="UnionPay">
-                                <img src="oo.png" alt="OO">
-                            </div>
-                        </span>
+                        <span class="more-logos" id="more-cards">+5</span>
+                        <div class="more-logos-box" id="more-cards-box">
+                            <img src="discover.png" alt="Discover">
+                            <img src="elo.png" alt="Elo">
+                            <img src="jcb.png" alt="JCB">
+                            <img src="unionpay.png" alt="UnionPay">
+                            <img src="oo.png" alt="OO">
+                        </div>
                     </span>
                 </label>
             </div>
@@ -787,7 +787,13 @@
             const showBox = () => { moreCardsBox.style.display = 'flex'; };
             const hideBox = () => { moreCardsBox.style.display = 'none'; };
             moreCards.addEventListener('mouseenter', showBox);
-            moreCards.addEventListener('mouseleave', hideBox);
+            moreCards.addEventListener('mouseleave', e => {
+                if (!moreCardsBox.contains(e.relatedTarget)) hideBox();
+            });
+            moreCardsBox.addEventListener('mouseenter', showBox);
+            moreCardsBox.addEventListener('mouseleave', e => {
+                if (!moreCards.contains(e.relatedTarget)) hideBox();
+            });
             moreCards.addEventListener('click', function() {
                 if (moreCardsBox.style.display === 'flex') {
                     hideBox();
