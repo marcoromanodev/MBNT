@@ -535,7 +535,7 @@ function populateCartModal() {
         if (!msg) {
             msg = document.createElement('p');
             msg.className = 'empty-cart-message';
-            msg.textContent = 'Your cart is currently empty.';
+            msg.textContent = 'Your cart is empty.';
             content.appendChild(msg);
         }
         msg.style.display = 'block';
@@ -962,14 +962,29 @@ function populateCartPage() {
         });
         const finalPage = page.querySelector('#final-checkout');
         if (finalPage) finalPage.style.display = 'none';
+        page.style.display = 'flex';
+        page.style.flexDirection = 'column';
+        page.style.alignItems = 'center';
+        page.style.justifyContent = 'center';
         let msg = page.querySelector('.empty-cart-message');
         if (!msg) {
             msg = document.createElement('p');
             msg.className = 'empty-cart-message';
-            msg.textContent = 'Your cart is currently empty.';
+            msg.textContent = 'Your cart is empty.';
             page.appendChild(msg);
         }
         msg.style.display = 'block';
+        const fullSite = document.getElementById('full-site-link');
+        if (fullSite) {
+            page.appendChild(fullSite);
+            fullSite.style.display = 'block';
+            fullSite.style.marginTop = '10px';
+            if (typeof toggleFullSiteLink === 'function') {
+                window.removeEventListener('scroll', toggleFullSiteLink);
+            }
+        }
+        const footer = document.querySelector('footer');
+        if (footer) footer.style.display = 'none';
         return;
     }
     let subtotal = 0;
@@ -1066,6 +1081,29 @@ function setupCartPage() {
 function setupCheckoutPage() {
     const finalPage = document.getElementById('final-checkout');
     if (!finalPage) return;
+    if (cart.length === 0) {
+        finalPage.innerHTML = '';
+        finalPage.style.display = 'flex';
+        finalPage.style.flexDirection = 'column';
+        finalPage.style.alignItems = 'center';
+        finalPage.style.justifyContent = 'center';
+        const msg = document.createElement('p');
+        msg.className = 'empty-cart-message';
+        msg.textContent = 'Your cart is empty.';
+        finalPage.appendChild(msg);
+        const fullSite = document.getElementById('full-site-link');
+        if (fullSite) {
+            finalPage.appendChild(fullSite);
+            fullSite.style.display = 'block';
+            fullSite.style.marginTop = '10px';
+            if (typeof toggleFullSiteLink === 'function') {
+                window.removeEventListener('scroll', toggleFullSiteLink);
+            }
+        }
+        const footer = document.querySelector('footer');
+        if (footer) footer.style.display = 'none';
+        return;
+    }
     populateOrderSummary(finalPage);
     const bar = finalPage.querySelector('.order-summary-bar');
     const details = finalPage.querySelector('.order-summary-details.top-summary');
