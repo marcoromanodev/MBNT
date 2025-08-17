@@ -139,7 +139,7 @@ function showSelectionError(message) {
         modal = createCartModal();
     }
     const content = modal.querySelector('.cart-content');
-    const hideSelectors = ['.logo-container', '#cart-current-time', 'h2', '.item-count', '.order-summary-bar', '#order-summary-details', '.cart-buttons', '.or', '.express-checkout', '#checkout-form', '.footer-links', '.cart-footer'];
+    const hideSelectors = ['.logo-container', '#cart-current-time', 'h2', '.item-count', '.order-summary-bar', '#order-summary-details', '.cart-buttons', '.or', '.express-checkout', '#checkout-form', '.footer-links', '.cart-footer', '.cart-empty-message'];
     hideSelectors.forEach(sel => {
         const el = content.querySelector(sel);
         if (el) el.style.display = 'none';
