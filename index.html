@@ -131,13 +131,13 @@
         }
 
         /* Social icons styling */
-        footer .social-icons {
+        .social-icons {
             display: flex;
             justify-content: center;
             gap: 8px;
         }
 
-        footer .social-icons a {
+        .social-icons a {
             text-decoration: none;
         }
 
@@ -151,17 +151,17 @@
             border: 2px solid red;
         }
 
-        footer .social-icons img {
+        .social-icons img {
             width: 16px;
             height: 16px;
         }
 
         /* Fix for xlogo.png to always be black */
-        footer .social-icons img[src="xlogo.png"] {
+        .social-icons img[src="xlogo.png"] {
             filter: brightness(0) invert(0); /* Ensure xlogo is always black */
         }
 
-        footer .social-icons img[src="xlogo.png"]:hover {
+        .social-icons img[src="xlogo.png"]:hover {
             filter: brightness(0); /* No change on hover, stays black */
         }
 
@@ -219,11 +219,11 @@
                 font-size: 0.6rem; /* Smaller text for the cookie banner on mobile */
             }
 
-            footer .social-icons {
+            .social-icons {
                 gap: 6px;
             }
 
-            footer .social-icons img {
+            .social-icons img {
                 width: 14px;
                 height: 14px;
             }
@@ -240,7 +240,7 @@
                 margin-top: -100px; /* Keep time in place as logo moves up */
             }
 
-            footer .social-icons {
+            .social-icons {
                 display: flex;
                 justify-content: center;
             }
@@ -276,34 +276,34 @@
         </ul>
     </nav>
 
+    <div class="social-icons">
+        <a href="https://www.instagram.com/maybenotreality/" target="_blank">
+            <div class="icon-wrapper">
+                <img src="instagram.png" alt="Instagram">
+            </div>
+        </a>
+        <a href="https://x.com/MaybeNotReality" target="_blank">
+            <div class="icon-wrapper">
+                <img src="xlogo.png" alt="X logo">
+            </div>
+        </a>
+        <a href="https://www.youtube.com/MaybeNotReality" target="_blank">
+            <div class="icon-wrapper">
+                <img src="youtube.png" alt="YouTube">
+            </div>
+        </a>
+        <a href="https://www.facebook.com/MaybeNotReality" target="_blank">
+            <div class="icon-wrapper">
+                <img src="facebook.png" alt="Facebook">
+            </div>
+        </a>
+        <a href="https://www.maybenot.wechat.com" target="_blank">
+            <div class="icon-wrapper">
+                <img src="wechat.png" alt="WeChat">
+            </div>
+        </a>
+    </div>
     <footer>
-        <div class="social-icons">
-            <a href="https://www.instagram.com/maybenotreality/" target="_blank">
-                <div class="icon-wrapper">
-                    <img src="instagram.png" alt="Instagram">
-                </div>
-            </a>
-            <a href="https://x.com/MaybeNotReality" target="_blank">
-                <div class="icon-wrapper">
-                    <img src="xlogo.png" alt="X logo">
-                </div>
-            </a>
-            <a href="https://www.youtube.com/MaybeNotReality" target="_blank">
-                <div class="icon-wrapper">
-                    <img src="youtube.png" alt="YouTube">
-                </div>
-            </a>
-            <a href="https://www.facebook.com/MaybeNotReality" target="_blank">
-                <div class="icon-wrapper">
-                    <img src="facebook.png" alt="Facebook">
-                </div>
-            </a>
-            <a href="https://www.maybenot.wechat.com" target="_blank">
-                <div class="icon-wrapper">
-                    <img src="wechat.png" alt="WeChat">
-                </div>
-            </a>
-        </div>
         <div class="legal-links">
             <a href="terms.html">terms</a>
             <a href="privacy.html">privacy</a>
