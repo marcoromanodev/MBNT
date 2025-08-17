@@ -18,6 +18,7 @@
         h1 { text-transform:lowercase; font-size:1.2rem; text-align:center; }
         form { text-align:center; }
         input { padding:5px; margin-top:10px; }
+        .or-separator { margin-top:10px; text-align:center; font-weight:bold; }
         .phone-input { margin-top:5px; display:flex; align-items:center; width:100%; }
         .phone-input .phone-icon { margin-right:5px; }
         .phone-input .phone-prefix { margin-right:5px; }
@@ -51,9 +52,11 @@
     <h1>mailing list</h1>
     <p>Our webstore is currently closed and will reopen soon with our Fall/Winter 2025 collection.</p>
     <p>For information regarding future news and releases, please sign up for our mailing list below.</p>
+    <p>Name is optional. Submit your email or your mobile phone number.</p>
     <form>
-        <input type="text" id="name" name="name" placeholder="Name"><br>
-        <input type="email" id="email" name="email" placeholder="Email" required><br>
+        <input type="text" id="name" name="name" placeholder="Name (optional)"><br>
+        <input type="email" id="email" name="email" placeholder="Email"><br>
+        <div class="or-separator">OR</div>
         <div class="phone-input">
             <span class="phone-icon">📱</span>
             <span class="phone-prefix">+1</span>
@@ -118,15 +121,17 @@ if (form) {
         const emailInput = document.getElementById('email');
         const email = emailInput.value.trim();
         let phone = phoneInput ? phoneInput.value.trim() : '';
-        if (email === '') return;
+        if (email === '' && phone === '') return;
         let msgText = 'Welcome to the Maybe Not Newsletter!';
         try {
-            const storedEmails = JSON.parse(localStorage.getItem('newsletterEmails') || '[]');
-            if (!storedEmails.includes(email)) {
-                storedEmails.push(email);
-                localStorage.setItem('newsletterEmails', JSON.stringify(storedEmails));
-            } else {
-                msgText = 'This email is already in the Newsletter!';
+            if (email !== '') {
+                const storedEmails = JSON.parse(localStorage.getItem('newsletterEmails') || '[]');
+                if (!storedEmails.includes(email)) {
+                    storedEmails.push(email);
+                    localStorage.setItem('newsletterEmails', JSON.stringify(storedEmails));
+                } else {
+                    msgText = 'This email is already in the Newsletter!';
+                }
             }
             if (phone !== '') {
                 if (!phone.startsWith('+1')) phone = '+1' + phone;
