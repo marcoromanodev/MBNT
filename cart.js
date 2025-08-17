@@ -189,7 +189,7 @@ function createCartModal() {
                 <div class="phone-input">
                     <span class="phone-icon">📱</span>
                     <span class="phone-prefix">+1</span>
-                    <input type="tel" name="signup_phone" placeholder="Mobile phone number" required>
+                    <input type="tel" name="signup_phone" placeholder="Mobile phone number">
                 </div>
                 <p class="consent-text">By submitting this form, you consent to receive informational (eg, order updates) and/or marketing texts (eg, cart reminders) from maybenot.com including texts sent by autodialer. Consent is not a condition of purchase. Msg & data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available). Privacy Policy & Terms.</p>
                 <button type="submit">Sign Up</button>
@@ -221,7 +221,7 @@ function createCartModal() {
                     <div class="phone-input">
                         <span class="phone-icon">📱</span>
                         <span class="phone-prefix">+1</span>
-                        <input type="tel" name="signup_phone" placeholder="Mobile phone number" required>
+                        <input type="tel" name="signup_phone" placeholder="Mobile phone number">
                     </div>
                     <p class="consent-text">By submitting this form, you consent to receive informational (eg, order updates) and/or marketing texts (eg, cart reminders) from maybenot.com including texts sent by autodialer. Consent is not a condition of purchase. Msg & data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available). Privacy Policy & Terms.</p>
                     <button type="submit">Sign Up</button>
@@ -322,7 +322,7 @@ function createCartModal() {
                             <span class="phone-prefix">+1</span>
                             <input type="tel" name="remember_phone" placeholder="Mobile phone number">
                         </div>
-                        <p class="phone-error" style="display:none;color:red;">The specified phone number does not match the expected pattern.</p>
+                        <p class="remember-warning empty-cart-message" style="display:none;">Please provide a mobile phone number to continue or deselect this option.</p>
                         <div class="secure-row">
                             <span class="secure-text">Secure and encrypted</span>
                             <div class="shop-logo"><img src="shoppayhalf.png" alt="Shop Pay"></div>
@@ -455,7 +455,7 @@ function createCartModal() {
             .payment-logos img[alt="Apple Pay"]{height:30px;}
             .payment-logos img.klarna-logo{height:40px;}
             .more-logos{position:relative;margin-left:5px;cursor:pointer;color:#000;font-weight:600;}
-            .more-logos-box{display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#000;padding:5px;z-index:10;}
+            .more-logos-box{display:none;position:absolute;bottom:100%;right:100%;background:#000;padding:5px;z-index:10;}
             .more-logos-box img{height:20px;margin:0 2px;filter:invert(1);}
             .shipping-method{display:flex;justify-content:space-between;border:1px solid #ccc;padding:10px;margin:5px 0;}
             #cart-modal .logo-container{width:80px;height:80px;margin:0 auto;}
@@ -767,20 +767,27 @@ function setupFinalForm(form) {
     const phone = form.querySelector('#phone-container');
     const msg = form.querySelector('#remember-message');
     const phoneInput = phone ? phone.querySelector('input[name="remember_phone"]') : null;
+    const warn = form.querySelector('.remember-warning');
     if (remember) {
         remember.addEventListener('change', () => {
             const show = remember.checked;
             if (phone) phone.style.display = show ? 'flex' : 'none';
             if (msg) msg.style.display = show ? 'block' : 'none';
+            if (!show && warn) warn.style.display = 'none';
         });
     }
     if (phoneInput) {
         phoneInput.addEventListener('input', () => {
             phoneInput.value = phoneInput.value.replace(/[^0-9]/g, '');
+            if (warn) warn.style.display = 'none';
         });
     }
     form.addEventListener('submit', e => {
         e.preventDefault();
+        if (remember && remember.checked && phoneInput && phoneInput.value.trim() === '') {
+            if (warn) warn.style.display = 'block';
+            return;
+        }
         if (phoneInput && phoneInput.value.trim() && !phoneInput.value.startsWith('+1')) {
             phoneInput.value = '+1' + phoneInput.value;
         }
@@ -982,7 +989,7 @@ function ensureCartCounter() {
     if (!document.getElementById('cart-counter-style')) {
         const style = document.createElement('style');
         style.id = 'cart-counter-style';
-        style.textContent = '.cart-counter{font-size:0.7rem;text-align:center;font-weight:600;cursor:pointer;display:inline-block;outline:2px solid transparent;padding:2px;} .cart-counter:hover,.cart-counter:focus,.cart-counter:active{outline-color:red;} .header-line{border-top:1px solid #000;width:100%;} .product-item{aspect-ratio:1/1;} .product-item img{width:100%;height:100%;object-fit:contain;object-position:center;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.1));} .product-item a:hover img,.product-item a:focus img,.product-item a:active img{outline:4px solid #ff0000;outline-offset:-4px;} .payment-icons{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;justify-content:center;justify-items:center;margin:10px auto;max-width:260px;width:100%;} .pay-btn{outline:2px solid transparent;} .pay-btn:hover,.pay-btn:focus,.pay-btn:active,.pay-btn.selected{outline-color:red;} .pay-btn.paypal{background:#ffc439;width:80px;height:40px;padding:0;margin-top:10px;align-self:center;} .pay-btn.paypal img{width:100%;height:100%;object-fit:contain;} .payment-icons img[alt="Apple Pay"]{width:120px;} .payment-icons img.klarna-logo{width:140px;} .payment-option{display:flex;align-items:center;border:1px solid #ccc;padding:10px;margin:5px 0;cursor:pointer;width:100%;box-sizing:border-box;gap:10px;flex-wrap:wrap;} .payment-option input{margin:0;flex-shrink:0;width:auto;padding:0;} .payment-option label{display:flex;align-items:center;justify-content:space-between;flex:1;cursor:pointer;gap:10px;flex-wrap:wrap;width:100%;} .payment-label{flex:1;min-width:0;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;} .payment-option.shop-pay .payment-label{white-space:normal;display:flex;flex-direction:column;align-items:flex-start;overflow:visible;text-overflow:unset;} .payment-option.shop-pay .payment-label .subtext{font-size:0.8em;white-space:normal;margin-top:2px;} .payment-logos{margin-left:10px;display:flex;align-items:center;gap:5px;flex-wrap:wrap;max-width:100%;} .payment-logos img{height:20px;max-width:100%;} .payment-logos img[alt="Apple Pay"]{height:30px;} .payment-logos img.klarna-logo{height:40px;} .more-logos{position:relative;margin-left:5px;cursor:pointer;color:#000;font-weight:600;} .more-logos-box{display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#000;padding:5px;z-index:10;} .more-logos-box img{height:20px;margin:0 2px;filter:invert(1);} .summary-label{background:#000;color:#fff;font-size:1em;display:inline-block;padding:10px;margin:0;margin-left:0;} .redirect-icon{text-align:center;font-size:2rem;} .paypal-inline{height:1em;vertical-align:middle;filter:invert(1);} .empty-cart-message{text-align:center;} a,button{transition:all 0.3s ease;} button:hover,button:focus,button:active,a:hover,a:focus,a:active{border:2px solid red;color:red;background:#fff;} .color-option{border:1px solid #000;} .color-option.selected,.color-option:hover,.color-option:focus,.color-option:active{border:2px solid red !important;} @media (max-width:480px){.payment-option{flex-wrap:wrap;}.payment-option label{flex-direction:row;align-items:center;flex-wrap:wrap;width:100%;}.payment-logos{margin-left:10px;justify-content:flex-start;}.payment-option.shop-pay .payment-label .subtext{font-size:0.6em;}}';
+        style.textContent = '.cart-counter{font-size:0.7rem;text-align:center;font-weight:600;cursor:pointer;display:inline-block;outline:2px solid transparent;padding:2px;} .cart-counter:hover,.cart-counter:focus,.cart-counter:active{outline-color:red;} .header-line{border-top:1px solid #000;width:100%;} .product-item{aspect-ratio:1/1;} .product-item img{width:100%;height:100%;object-fit:contain;object-position:center;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.1));} .product-item a:hover img,.product-item a:focus img,.product-item a:active img{outline:4px solid #ff0000;outline-offset:-4px;} .payment-icons{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;justify-content:center;justify-items:center;margin:10px auto;max-width:260px;width:100%;} .pay-btn{outline:2px solid transparent;} .pay-btn:hover,.pay-btn:focus,.pay-btn:active,.pay-btn.selected{outline-color:red;} .pay-btn.paypal{background:#ffc439;width:80px;height:40px;padding:0;margin-top:10px;align-self:center;} .pay-btn.paypal img{width:100%;height:100%;object-fit:contain;} .payment-icons img[alt="Apple Pay"]{width:120px;} .payment-icons img.klarna-logo{width:140px;} .payment-option{display:flex;align-items:center;border:1px solid #ccc;padding:10px;margin:5px 0;cursor:pointer;width:100%;box-sizing:border-box;gap:10px;flex-wrap:wrap;} .payment-option input{margin:0;flex-shrink:0;width:auto;padding:0;} .payment-option label{display:flex;align-items:center;justify-content:space-between;flex:1;cursor:pointer;gap:10px;flex-wrap:wrap;width:100%;} .payment-label{flex:1;min-width:0;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;} .payment-option.shop-pay .payment-label{white-space:normal;display:flex;flex-direction:column;align-items:flex-start;overflow:visible;text-overflow:unset;} .payment-option.shop-pay .payment-label .subtext{font-size:0.8em;white-space:normal;margin-top:2px;} .payment-logos{margin-left:10px;display:flex;align-items:center;gap:5px;flex-wrap:wrap;max-width:100%;} .payment-logos img{height:20px;max-width:100%;} .payment-logos img[alt="Apple Pay"]{height:30px;} .payment-logos img.klarna-logo{height:40px;} .more-logos{position:relative;margin-left:5px;cursor:pointer;color:#000;font-weight:600;} .more-logos-box{display:none;position:absolute;bottom:100%;right:100%;background:#000;padding:5px;z-index:10;} .more-logos-box img{height:20px;margin:0 2px;filter:invert(1);} .summary-label{background:#000;color:#fff;font-size:1em;display:inline-block;padding:10px;margin:0;margin-left:0;} .redirect-icon{text-align:center;font-size:2rem;} .paypal-inline{height:1em;vertical-align:middle;filter:invert(1);} .empty-cart-message{text-align:center;} a,button{transition:all 0.3s ease;} button:hover,button:focus,button:active,a:hover,a:focus,a:active{border:2px solid red;color:red;background:#fff;} .color-option{border:1px solid #000;} .color-option.selected,.color-option:hover,.color-option:focus,.color-option:active{border:2px solid red !important;} @media (max-width:480px){.payment-option{flex-wrap:wrap;}.payment-option label{flex-direction:row;align-items:center;flex-wrap:wrap;width:100%;}.payment-logos{margin-left:10px;justify-content:flex-start;}.payment-option.shop-pay .payment-label .subtext{font-size:0.6em;}}';
         document.head.appendChild(style);
     }
 }
