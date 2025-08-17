@@ -122,10 +122,11 @@ function openCart(showForm = false) {
     populateCartModal();
     modal.style.display = 'flex';
     if (cart.length === 0) {
-        const msg = modal.querySelector('.empty-cart-message');
+        const msg = modal.querySelector('.cart-empty-message');
         if (msg) {
             msg.textContent = 'Your cart is empty.';
             msg.style.display = 'block';
+            msg.style.color = '#000';
         }
     } else if (showForm) {
         showCheckoutForm(modal);
@@ -539,10 +540,10 @@ function populateCartModal() {
         content.style.justifyContent = 'center';
         const finalPage = modal.querySelector('#final-checkout');
         if (finalPage) finalPage.style.display = 'none';
-        let msg = modal.querySelector('.empty-cart-message');
+        let msg = content.querySelector('.cart-empty-message');
         if (!msg) {
             msg = document.createElement('p');
-            msg.className = 'empty-cart-message';
+            msg.className = 'empty-cart-message cart-empty-message';
             msg.textContent = 'Your cart is empty.';
             content.appendChild(msg);
         }
@@ -602,7 +603,7 @@ function populateCartModal() {
     if (footerLinks) footerLinks.style.display = 'flex';
     const footer = modal.querySelector('.cart-footer');
     if (footer) footer.style.display = 'block';
-    const msg = modal.querySelector('.empty-cart-message');
+    const msg = modal.querySelector('.cart-empty-message');
     if (msg) msg.style.display = 'none';
 }
 
@@ -975,10 +976,10 @@ function populateCartPage() {
         page.style.flexDirection = 'column';
         page.style.alignItems = 'center';
         page.style.justifyContent = 'center';
-        let msg = page.querySelector('.empty-cart-message');
+        let msg = page.querySelector('.cart-empty-message');
         if (!msg) {
             msg = document.createElement('p');
-            msg.className = 'empty-cart-message';
+            msg.className = 'empty-cart-message cart-empty-message';
             msg.textContent = 'Your cart is empty.';
             page.appendChild(msg);
         }
@@ -1051,7 +1052,7 @@ function populateCartPage() {
     if (footerLinks) footerLinks.style.display = 'flex';
     const finalPage = page.querySelector('#final-checkout');
     if (finalPage) finalPage.style.display = 'none';
-    const msg = page.querySelector('.empty-cart-message');
+    const msg = page.querySelector('.cart-empty-message');
     if (msg) msg.style.display = 'none';
 }
 
@@ -1097,7 +1098,7 @@ function setupCheckoutPage() {
         finalPage.style.alignItems = 'center';
         finalPage.style.justifyContent = 'center';
         const msg = document.createElement('p');
-        msg.className = 'empty-cart-message';
+        msg.className = 'empty-cart-message cart-empty-message';
         msg.textContent = 'Your cart is empty.';
         msg.style.color = '#000';
         finalPage.appendChild(msg);
