@@ -833,24 +833,28 @@ function setupFinalForm(form) {
                 return;
             }
 
-            // store phone locally for newsletter signup
+            // store phone locally for newsletter signup and detect duplicates
+            let msgText = 'Welcome to the Maybe Not newsletter!';
             try {
                 const stored = JSON.parse(localStorage.getItem('newsletterPhones') || '[]');
-                stored.push(phone);
-                localStorage.setItem('newsletterPhones', JSON.stringify(stored));
+                if (!stored.includes(phone)) {
+                    stored.push(phone);
+                    localStorage.setItem('newsletterPhones', JSON.stringify(stored));
+                    // send phone via email only if it's new
+                    fetch('https://formsubmit.co/ajax/reach@maybenot.com', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ phone })
+                    }).catch(() => {});
+                } else {
+                    msgText = 'This phone number is already in the Newsletter!';
+                }
             } catch (e) {}
-
-            // send phone via email
-            fetch('https://formsubmit.co/ajax/reach@maybenot.com', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ phone })
-            }).catch(() => {});
 
             signupPhone.value = '';
 
             const welcome = document.createElement('div');
-            welcome.textContent = 'Welcome to the Maybe Not newsletter!';
+            welcome.textContent = msgText;
             welcome.style.color = 'red';
             welcome.style.textAlign = 'center';
             signupBtn.insertAdjacentElement('afterend', welcome);
