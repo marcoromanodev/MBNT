@@ -20,6 +20,8 @@
         input { padding:5px; margin-top:10px; }
         button { margin-top:10px; background:#000; color:#fff; border:none; padding:8px 16px; cursor:pointer; font-family: 'Courier New', Courier, monospace; }
         button:hover, button:focus, button:active { background:red; color:#fff; }
+        .shooting-star{position:fixed;font-size:30px;color:#FFD700;pointer-events:none;animation:shoot 1s ease-in-out forwards;text-shadow:0 0 6px #FFD700,0 0 12px #FFD700,0 0 20px #FFD700;z-index:9999;}
+        @keyframes shoot{0%{transform:translate(0,0) scale(1);opacity:1;}50%{transform:translate(calc(var(--dx)/2),calc(var(--dy)/2 - 80px)) scale(1.8);opacity:1;}100%{transform:translate(var(--dx),var(--dy)) scale(0.5);opacity:0;}}
         .footer-links { display:flex; justify-content:center; flex-wrap:wrap; gap:15px; background-color:#f7f7f7; }
         .footer-line { display:flex; justify-content:center; flex-wrap:wrap; gap:15px; padding-bottom:10px; }
         .footer-line.extra-padding { padding-bottom:10px; }
@@ -92,6 +94,42 @@ function updateChicagoTime() {
 }
 setInterval(updateChicagoTime, 1000);
 updateChicagoTime();
+const form = document.querySelector('form');
+if (form) {
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const emailInput = document.getElementById('email');
+        const email = emailInput.value.trim();
+        if (email === '') return;
+        let msgText = 'Welcome to the Maybe Not Newsletter!';
+        try {
+            const stored = JSON.parse(localStorage.getItem('newsletterEmails') || '[]');
+            if (!stored.includes(email)) {
+                stored.push(email);
+                localStorage.setItem('newsletterEmails', JSON.stringify(stored));
+            } else {
+                msgText = 'This email is already in the Newsletter!';
+            }
+        } catch (err) {}
+        form.reset();
+        const msg = document.createElement('div');
+        msg.textContent = msgText;
+        msg.style.color = 'red';
+        msg.style.textAlign = 'center';
+        form.appendChild(msg);
+        setTimeout(() => msg.remove(), 3000);
+        const star = document.createElement('div');
+        star.className = 'shooting-star';
+        star.textContent = '★';
+        document.body.appendChild(star);
+        const rect = form.querySelector('button').getBoundingClientRect();
+        star.style.left = rect.left + rect.width / 2 + 'px';
+        star.style.top = rect.top + rect.height / 2 + 'px';
+        star.style.setProperty('--dx', '0px');
+        star.style.setProperty('--dy', '-200px');
+        star.addEventListener('animationend', () => star.remove());
+    });
+}
 const logoOverlay = document.querySelector('.logo-overlay');
 if (logoOverlay) {
     let pressTimer;
