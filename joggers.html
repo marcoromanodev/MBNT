@@ -134,5 +134,6 @@
     const logoOverlay=document.querySelector('.logo-overlay');
     if(logoOverlay){let pressTimer;let moved=false;const restoreOverlay=()=>{logoOverlay.style.display='block';};const cancel=()=>{clearTimeout(pressTimer);document.removeEventListener('mousemove',moveHandler);document.removeEventListener('touchmove',moveHandler);document.removeEventListener('mouseup',cancel);document.removeEventListener('touchend',cancel);document.removeEventListener('touchcancel',cancel);logoOverlay.style.display='none';setTimeout(restoreOverlay,1000);};const moveHandler=()=>{moved=true;cancel();};const startPress=()=>{moved=false;document.addEventListener('mousemove',moveHandler);document.addEventListener('touchmove',moveHandler);document.addEventListener('mouseup',cancel);document.addEventListener('touchend',cancel);document.addEventListener('touchcancel',cancel);pressTimer=setTimeout(()=>{if(!moved){window.location.href='index.html';}cancel();},600);};logoOverlay.addEventListener('mousedown',startPress);logoOverlay.addEventListener('touchstart',startPress);}
 </script>
+    <script src="footer-highlight.js"></script>
 </body>
 </html>
