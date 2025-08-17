@@ -267,11 +267,17 @@ function createCartModal() {
                     <h3>Delivery</h3>
                     <p>This will also be used as your billing address for this order.</p>
                     <input type="text" name="first_name" placeholder="Enter a first name" required>
+                    <p class="field-warning empty-cart-message" data-field="first_name" style="display:none;">Please enter a first name.</p>
                     <input type="text" name="last_name" placeholder="Enter a last name" required>
+                    <p class="field-warning empty-cart-message" data-field="last_name" style="display:none;">Please enter a last name.</p>
                     <input type="text" name="address" placeholder="Enter an address" required>
+                    <p class="field-warning empty-cart-message" data-field="address" style="display:none;">Please enter an address.</p>
                     <input type="text" name="city" placeholder="Enter a city" required>
+                    <p class="field-warning empty-cart-message" data-field="city" style="display:none;">Please enter a city.</p>
                     <input type="text" name="state" placeholder="Enter a state" required>
+                    <p class="field-warning empty-cart-message" data-field="state" style="display:none;">Please enter a state.</p>
                     <input type="text" name="zip" placeholder="Enter a ZIP / postal code" required>
+                    <p class="field-warning empty-cart-message" data-field="zip" style="display:none;">Please enter a ZIP / postal code.</p>
                     <h3>Shipping method</h3>
                     <p class="shipping-placeholder">Enter your shipping address to view available shipping methods.</p>
                     <div class="shipping-method" style="display:none;"><span>UPS Ground</span><span>$15.00</span></div>
@@ -299,9 +305,13 @@ function createCartModal() {
                     </div>
                     <div class="credit-card-fields" style="display:none;">
                         <input type="text" name="card_number" placeholder="Enter a card number">
+                        <p class="field-warning empty-cart-message" data-field="card_number" style="display:none;">Please enter a card number.</p>
                         <input type="text" name="exp_date" placeholder="Enter a valid expiration date">
+                        <p class="field-warning empty-cart-message" data-field="exp_date" style="display:none;">Please enter an expiration date.</p>
                         <input type="text" name="cvv" placeholder="Enter the CVV or security code on your card">
+                        <p class="field-warning empty-cart-message" data-field="cvv" style="display:none;">Please enter the CVV or security code.</p>
                         <input type="text" name="card_name" placeholder="Enter your name exactly as it’s written on your card">
+                        <p class="field-warning empty-cart-message" data-field="card_name" style="display:none;">Please enter the name on your card.</p>
                     </div>
                     <p class="card-warning empty-cart-message" style="display:none;">Please complete the card details.</p>
                     <div class="payment-option">
@@ -757,6 +767,9 @@ function setupFinalForm(form) {
     const emailInput = form.querySelector('input[name="contact_email"]');
     const emailWarning = form.querySelector('.email-warning');
     const creditRadio = form.querySelector('input[name="payment-method"][value="credit"]');
+    const addressInputs = form.querySelectorAll('input[name="first_name"], input[name="last_name"], input[name="address"], input[name="city"], input[name="state"], input[name="zip"]');
+    const fieldWarnings = {};
+    form.querySelectorAll('.field-warning').forEach(p => { fieldWarnings[p.dataset.field] = p; });
     ensureStarStyles();
     const signupBtn = form.querySelector('.signup-btn');
     const signupPhone = form.querySelector('input[name="signup_phone"]');
@@ -791,6 +804,12 @@ function setupFinalForm(form) {
 
     cardInputs.forEach(inp => inp.addEventListener('input', () => {
         if (cardWarning) cardWarning.style.display = 'none';
+        const warn = fieldWarnings[inp.name];
+        if (warn) warn.style.display = 'none';
+    }));
+    addressInputs.forEach(inp => inp.addEventListener('input', () => {
+        const warn = fieldWarnings[inp.name];
+        if (warn) warn.style.display = 'none';
     }));
     if (emailInput) {
         emailInput.addEventListener('input', () => {
@@ -834,18 +853,16 @@ function setupFinalForm(form) {
         const hideBox = () => { moreCardsBox.style.display = 'none'; };
         moreCards.addEventListener('mouseenter', showBox);
         moreCards.addEventListener('mouseleave', hideBox);
-        moreCards.addEventListener('click', e => {
-            e.stopPropagation();
+        moreCards.addEventListener('click', () => {
             if (moreCardsBox.style.display === 'flex') {
                 hideBox();
             } else {
                 showBox();
             }
         });
-        document.addEventListener('click', hideBox);
     }
-    const addressFields = form.querySelectorAll('input[name="address"], input[name="city"], input[name="state"], input[name="zip"]');
-    addressFields.forEach(f => f.addEventListener('input', () => updateShippingAndTax(form)));
+    const shippingFields = form.querySelectorAll('input[name="address"], input[name="city"], input[name="state"], input[name="zip"]');
+    shippingFields.forEach(f => f.addEventListener('input', () => updateShippingAndTax(form)));
     updateShippingAndTax(form);
 
     const remember = form.querySelector('#remember-me');
@@ -876,13 +893,36 @@ function setupFinalForm(form) {
             firstInvalid = firstInvalid || phoneInput;
             valid = false;
         }
-        if (creditRadio && creditRadio.checked) {
-            const emptyInput = Array.from(cardInputs).find(inp => inp.value.trim() === '');
-            if (emptyInput) {
-                if (cardWarning) cardWarning.style.display = 'block';
-                firstInvalid = firstInvalid || emptyInput;
+        addressInputs.forEach(inp => {
+            const fw = fieldWarnings[inp.name];
+            if (inp.value.trim() === '') {
+                if (fw) fw.style.display = 'block';
+                firstInvalid = firstInvalid || inp;
                 valid = false;
+            } else if (fw) {
+                fw.style.display = 'none';
             }
+        });
+        if (creditRadio && creditRadio.checked) {
+            let cardValid = true;
+            cardInputs.forEach(inp => {
+                const fw = fieldWarnings[inp.name];
+                if (inp.value.trim() === '') {
+                    if (fw) fw.style.display = 'block';
+                    firstInvalid = firstInvalid || inp;
+                    cardValid = false;
+                    valid = false;
+                } else if (fw) {
+                    fw.style.display = 'none';
+                }
+            });
+            if (!cardValid && cardWarning) {
+                cardWarning.style.display = 'block';
+            } else if (cardWarning) {
+                cardWarning.style.display = 'none';
+            }
+        } else if (cardWarning) {
+            cardWarning.style.display = 'none';
         }
         if (emailInput && emailInput.value.trim() === '') {
             if (emailWarning) emailWarning.style.display = 'block';
