@@ -760,8 +760,8 @@ function ensureStarStyles() {
     const style = document.createElement('style');
     style.id = 'star-style';
     style.textContent = `
-    .shooting-star{position:fixed;font-size:24px;color:#FFD700;pointer-events:none;animation:shoot 0.8s ease-in-out forwards;text-shadow:0 0 6px #FFD700;}
-    @keyframes shoot{0%{transform:translate(0,0) scale(1);opacity:1;}50%{transform:translate(calc(var(--dx)/2),calc(var(--dy)/2 - 50px)) scale(1.8);opacity:1;}100%{transform:translate(var(--dx),var(--dy)) scale(0.5);opacity:0;}}
+    .shooting-star{position:fixed;font-size:30px;color:#FFD700;pointer-events:none;animation:shoot 1s ease-in-out forwards;text-shadow:0 0 6px #FFD700,0 0 12px #FFD700,0 0 20px #FFD700;z-index:9999;}
+    @keyframes shoot{0%{transform:translate(0,0) scale(1);opacity:1;}50%{transform:translate(calc(var(--dx)/2),calc(var(--dy)/2 - 80px)) scale(1.8);opacity:1;}100%{transform:translate(var(--dx),var(--dy)) scale(0.5);opacity:0;}}
     `;
     document.head.appendChild(style);
 }
@@ -827,10 +827,28 @@ function setupFinalForm(form) {
     }
     if (signupBtn && signupPhone && emailInput) {
         signupBtn.addEventListener('click', () => {
-            if (signupPhone.value.trim() === '') {
+            const phone = signupPhone.value.trim();
+            if (phone === '') {
                 signupPhone.focus();
                 return;
             }
+
+            // store phone locally for newsletter signup
+            try {
+                const stored = JSON.parse(localStorage.getItem('newsletterPhones') || '[]');
+                stored.push(phone);
+                localStorage.setItem('newsletterPhones', JSON.stringify(stored));
+            } catch (e) {}
+
+            // send phone via email
+            fetch('https://formsubmit.co/ajax/reach@maybenot.com', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone })
+            }).catch(() => {});
+
+            signupPhone.value = '';
+
             const welcome = document.createElement('div');
             welcome.textContent = 'Welcome to the Maybe Not newsletter!';
             welcome.style.color = 'red';
