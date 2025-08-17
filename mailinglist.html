@@ -18,6 +18,10 @@
         h1 { text-transform:lowercase; font-size:1.2rem; text-align:center; }
         form { text-align:center; }
         input { padding:5px; margin-top:10px; }
+        .phone-input { margin-top:5px; display:flex; align-items:center; width:100%; }
+        .phone-input .phone-icon { margin-right:5px; }
+        .phone-input .phone-prefix { margin-right:5px; }
+        .phone-input input { flex:1; padding-left:0; }
         button { margin-top:10px; background:#000; color:#fff; border:none; padding:8px 16px; cursor:pointer; font-family: 'Courier New', Courier, monospace; }
         button:hover, button:focus, button:active { background:red; color:#fff; }
         .shooting-star{position:fixed;font-size:30px;color:#FFD700;pointer-events:none;animation:shoot 1s ease-in-out forwards;text-shadow:0 0 6px #FFD700,0 0 12px #FFD700,0 0 20px #FFD700;z-index:9999;}
@@ -45,12 +49,21 @@
 
 <main>
     <h1>mailing list</h1>
-    <p>Get updates from Maybe Not. We don't spam.</p>
+    <p>Our webstore is currently closed and will reopen soon with our Fall/Winter 2025 collection.</p>
+    <p>For information regarding future news and releases, please sign up for our mailing list below.</p>
     <form>
+        <label for="name">Name</label><br>
+        <input type="text" id="name" name="name"><br>
         <label for="email">Email</label><br>
         <input type="email" id="email" name="email" required><br>
+        <div class="phone-input">
+            <span class="phone-icon">📱</span>
+            <span class="phone-prefix">+1</span>
+            <input type="tel" id="phone" name="phone" placeholder="Mobile phone number">
+        </div>
         <button type="submit">sign up</button>
     </form>
+    <p style="font-size:0.8rem;">i understand that i can opt out at any time</p>
 </main>
 
 <footer>
@@ -95,20 +108,37 @@ function updateChicagoTime() {
 setInterval(updateChicagoTime, 1000);
 updateChicagoTime();
 const form = document.querySelector('form');
+const phoneInput = document.getElementById('phone');
+if (phoneInput) {
+    phoneInput.addEventListener('input', () => {
+        phoneInput.value = phoneInput.value.replace(/[^0-9]/g, '');
+    });
+}
 if (form) {
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         const emailInput = document.getElementById('email');
         const email = emailInput.value.trim();
+        let phone = phoneInput ? phoneInput.value.trim() : '';
         if (email === '') return;
         let msgText = 'Welcome to the Maybe Not Newsletter!';
         try {
-            const stored = JSON.parse(localStorage.getItem('newsletterEmails') || '[]');
-            if (!stored.includes(email)) {
-                stored.push(email);
-                localStorage.setItem('newsletterEmails', JSON.stringify(stored));
+            const storedEmails = JSON.parse(localStorage.getItem('newsletterEmails') || '[]');
+            if (!storedEmails.includes(email)) {
+                storedEmails.push(email);
+                localStorage.setItem('newsletterEmails', JSON.stringify(storedEmails));
             } else {
                 msgText = 'This email is already in the Newsletter!';
+            }
+            if (phone !== '') {
+                if (!phone.startsWith('+1')) phone = '+1' + phone;
+                const storedPhones = JSON.parse(localStorage.getItem('newsletterPhones') || '[]');
+                if (!storedPhones.includes(phone)) {
+                    storedPhones.push(phone);
+                    localStorage.setItem('newsletterPhones', JSON.stringify(storedPhones));
+                } else {
+                    msgText = 'This phone number is already in the Newsletter!';
+                }
             }
         } catch (err) {}
         form.reset();
