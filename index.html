@@ -105,6 +105,27 @@
             background-color: white;
         }
 
+        footer .legal-links {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.7rem;
+        }
+
+        footer .legal-links a {
+            color: #000;
+            text-decoration: none;
+        }
+
+        footer .legal-links a:hover,
+        footer .legal-links a:focus,
+        footer .legal-links a:active {
+            border: 2px solid red;
+            color: red;
+            background-color: white;
+        }
+
         /* Social icons styling */
         footer .social-icons {
             display: flex;
@@ -225,7 +246,7 @@
 <body>
 
 <div class="cookie-banner" id="cookie-banner">
-    This site uses cookies to improve your experience. By continuing to browse, you agree to the use of cookies. Read the <a href="#">Privacy Policy</a> here.<span class="cookie-close" onclick="closeCookieBanner()">✖</span>
+    This site uses cookies to improve your experience. By continuing to browse, you agree to the use of cookies. Read the <a href="privacy.html">Privacy Policy</a> here.<span class="cookie-close" onclick="closeCookieBanner()">✖</span>
 </div>
 
 <div class="container">
@@ -239,15 +260,15 @@
     <!-- Desktop Nav -->
     <nav class="desktop-nav">
         <ul>
-            <li><a href="#">news</a></li> <!-- Fix for first link hover -->
+            <li><a href="news.html">news</a></li> <!-- Fix for first link hover -->
             <li><a href="soon.html">winter 2025 preview</a></li>
             <li><a href="soon.html">winter 2025 lookbook</a></li>
             <li><a href="shop.html">shop</a></li>
-            <li><a href="#">random</a></li>
-            <li><a href="#">about</a></li>
-            <li><a href="#">stores</a></li>
-            <li><a href="#">contact</a></li>
-            <li><a href="#">mailing list</a></li>
+            <li><a href="random.html">random</a></li>
+            <li><a href="about.html">about</a></li>
+            <li><a href="stores.html">stores</a></li>
+            <li><a href="contact.html">contact</a></li>
+            <li><a href="mailinglist.html">mailing list</a></li>
         </ul>
     </nav>
 
@@ -278,6 +299,12 @@
                     <img src="wechat.png" alt="WeChat">
                 </div>
             </a>
+        </div>
+        <div class="legal-links">
+            <a href="terms.html">terms</a>
+            <a href="privacy.html">privacy</a>
+            <a href="faq.html">f.a.q.</a>
+            <a href="accessibility.html">accessibility</a>
         </div>
     </footer>
 </div>
