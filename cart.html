@@ -396,6 +396,9 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
+        .payment-label .subtext {
+            font-size: 0.8em;
+        }
         .payment-option.shop-pay .payment-label {
             white-space: normal;
             display: flex;
@@ -405,7 +408,6 @@
             text-overflow: unset;
         }
         .payment-option.shop-pay .payment-label .subtext {
-            font-size: 0.8em;
             white-space: normal;
             margin-top: 2px;
         }
@@ -680,7 +682,7 @@
             <div class="payment-option">
                 <input type="radio" name="payment-method" id="cart2-pay-klarna" value="klarna">
                 <label for="cart2-pay-klarna">
-                    <span class="payment-label">Klarna - Flexible payments</span>
+                    <span class="payment-label">Klarna - <span class="subtext">Flexible payments</span></span>
                     <span class="payment-logos"><img src="klarna.png" alt="Klarna" class="klarna-logo"></span>
                 </label>
             </div>
