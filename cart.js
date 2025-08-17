@@ -240,6 +240,7 @@ function createCartModal() {
                         <button type="button" id="login-btn" onclick="window.location.href='/account/login';">Log in</button>
                     </div>
                     <input type="email" name="contact_email" placeholder="Enter an email" required>
+                    <p class="email-warning empty-cart-message" style="display:none;">Please provide your contact email for this order.</p>
                     <h3>Delivery</h3>
                     <p>This will also be used as your billing address for this order.</p>
                     <input type="text" name="first_name" placeholder="Enter a first name" required>
@@ -279,6 +280,7 @@ function createCartModal() {
                         <input type="text" name="cvv" placeholder="Enter the CVV or security code on your card">
                         <input type="text" name="card_name" placeholder="Enter your name exactly as it’s written on your card">
                     </div>
+                    <p class="card-warning empty-cart-message" style="display:none;">Please complete the card details.</p>
                     <div class="payment-option">
                         <input type="radio" name="payment-method" id="cart-pay-apple" value="apple">
                         <label for="cart-pay-apple">
@@ -455,7 +457,7 @@ function createCartModal() {
             .payment-logos img[alt="Apple Pay"]{height:30px;}
             .payment-logos img.klarna-logo{height:40px;}
             .more-logos{position:relative;margin-left:5px;cursor:pointer;color:#000;font-weight:600;}
-            .more-logos-box{display:none;position:absolute;bottom:100%;right:100%;background:#000;padding:5px;z-index:10;}
+            .more-logos-box{display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#000;padding:5px;z-index:10;}
             .more-logos-box img{height:20px;margin:0 2px;filter:invert(1);}
             .shipping-method{display:flex;justify-content:space-between;border:1px solid #ccc;padding:10px;margin:5px 0;}
             #cart-modal .logo-container{width:80px;height:80px;margin:0 auto;}
@@ -716,11 +718,18 @@ function setupFinalForm(form) {
     const payBtn = form.querySelector('#final-order-submit');
     const paymentMsg = form.querySelector('#payment-message');
     const creditFields = form.querySelector('.credit-card-fields');
+    const cardInputs = creditFields ? creditFields.querySelectorAll('input') : [];
+    const cardWarning = form.querySelector('.card-warning');
+    const emailInput = form.querySelector('input[name="contact_email"]');
+    const emailWarning = form.querySelector('.email-warning');
+    const creditRadio = form.querySelector('input[name="payment-method"][value="credit"]');
+
     form.querySelectorAll('input[name="payment-method"]').forEach(input => {
         input.addEventListener('change', () => {
             paymentMsg.innerHTML = '';
             if (creditFields) {
                 creditFields.style.display = input.value === 'credit' ? 'block' : 'none';
+                if (input.value !== 'credit' && cardWarning) cardWarning.style.display = 'none';
             }
             switch (input.value) {
                 case 'apple':
@@ -742,6 +751,15 @@ function setupFinalForm(form) {
             }
         });
     });
+
+    cardInputs.forEach(inp => inp.addEventListener('input', () => {
+        if (cardWarning) cardWarning.style.display = 'none';
+    }));
+    if (emailInput) {
+        emailInput.addEventListener('input', () => {
+            if (emailWarning) emailWarning.style.display = 'none';
+        });
+    }
     const moreCards = form.querySelector('#more-cards');
     const moreCardsBox = form.querySelector('#more-cards-box');
     if (moreCards && moreCardsBox) {
@@ -784,10 +802,23 @@ function setupFinalForm(form) {
     }
     form.addEventListener('submit', e => {
         e.preventDefault();
+        let valid = true;
         if (remember && remember.checked && phoneInput && phoneInput.value.trim() === '') {
             if (warn) warn.style.display = 'block';
-            return;
+            valid = false;
         }
+        if (creditRadio && creditRadio.checked) {
+            const empty = Array.from(cardInputs).some(inp => inp.value.trim() === '');
+            if (empty) {
+                if (cardWarning) cardWarning.style.display = 'block';
+                valid = false;
+            }
+        }
+        if (emailInput && emailInput.value.trim() === '') {
+            if (emailWarning) emailWarning.style.display = 'block';
+            valid = false;
+        }
+        if (!valid) return;
         if (phoneInput && phoneInput.value.trim() && !phoneInput.value.startsWith('+1')) {
             phoneInput.value = '+1' + phoneInput.value;
         }
@@ -989,7 +1020,7 @@ function ensureCartCounter() {
     if (!document.getElementById('cart-counter-style')) {
         const style = document.createElement('style');
         style.id = 'cart-counter-style';
-        style.textContent = '.cart-counter{font-size:0.7rem;text-align:center;font-weight:600;cursor:pointer;display:inline-block;outline:2px solid transparent;padding:2px;} .cart-counter:hover,.cart-counter:focus,.cart-counter:active{outline-color:red;} .header-line{border-top:1px solid #000;width:100%;} .product-item{aspect-ratio:1/1;} .product-item img{width:100%;height:100%;object-fit:contain;object-position:center;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.1));} .product-item a:hover img,.product-item a:focus img,.product-item a:active img{outline:4px solid #ff0000;outline-offset:-4px;} .payment-icons{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;justify-content:center;justify-items:center;margin:10px auto;max-width:260px;width:100%;} .pay-btn{outline:2px solid transparent;} .pay-btn:hover,.pay-btn:focus,.pay-btn:active,.pay-btn.selected{outline-color:red;} .pay-btn.paypal{background:#ffc439;width:80px;height:40px;padding:0;margin-top:10px;align-self:center;} .pay-btn.paypal img{width:100%;height:100%;object-fit:contain;} .payment-icons img[alt="Apple Pay"]{width:120px;} .payment-icons img.klarna-logo{width:140px;} .payment-option{display:flex;align-items:center;border:1px solid #ccc;padding:10px;margin:5px 0;cursor:pointer;width:100%;box-sizing:border-box;gap:10px;flex-wrap:wrap;} .payment-option input{margin:0;flex-shrink:0;width:auto;padding:0;} .payment-option label{display:flex;align-items:center;justify-content:space-between;flex:1;cursor:pointer;gap:10px;flex-wrap:wrap;width:100%;} .payment-label{flex:1;min-width:0;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;} .payment-option.shop-pay .payment-label{white-space:normal;display:flex;flex-direction:column;align-items:flex-start;overflow:visible;text-overflow:unset;} .payment-option.shop-pay .payment-label .subtext{font-size:0.8em;white-space:normal;margin-top:2px;} .payment-logos{margin-left:10px;display:flex;align-items:center;gap:5px;flex-wrap:wrap;max-width:100%;} .payment-logos img{height:20px;max-width:100%;} .payment-logos img[alt="Apple Pay"]{height:30px;} .payment-logos img.klarna-logo{height:40px;} .more-logos{position:relative;margin-left:5px;cursor:pointer;color:#000;font-weight:600;} .more-logos-box{display:none;position:absolute;bottom:100%;right:100%;background:#000;padding:5px;z-index:10;} .more-logos-box img{height:20px;margin:0 2px;filter:invert(1);} .summary-label{background:#000;color:#fff;font-size:1em;display:inline-block;padding:10px;margin:0;margin-left:0;} .redirect-icon{text-align:center;font-size:2rem;} .paypal-inline{height:1em;vertical-align:middle;filter:invert(1);} .empty-cart-message{text-align:center;} a,button{transition:all 0.3s ease;} button:hover,button:focus,button:active,a:hover,a:focus,a:active{border:2px solid red;color:red;background:#fff;} .color-option{border:1px solid #000;} .color-option.selected,.color-option:hover,.color-option:focus,.color-option:active{border:2px solid red !important;} @media (max-width:480px){.payment-option{flex-wrap:wrap;}.payment-option label{flex-direction:row;align-items:center;flex-wrap:wrap;width:100%;}.payment-logos{margin-left:10px;justify-content:flex-start;}.payment-option.shop-pay .payment-label .subtext{font-size:0.6em;}}';
+        style.textContent = '.cart-counter{font-size:0.7rem;text-align:center;font-weight:600;cursor:pointer;display:inline-block;outline:2px solid transparent;padding:2px;} .cart-counter:hover,.cart-counter:focus,.cart-counter:active{outline-color:red;} .header-line{border-top:1px solid #000;width:100%;} .product-item{aspect-ratio:1/1;} .product-item img{width:100%;height:100%;object-fit:contain;object-position:center;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.1));} .product-item a:hover img,.product-item a:focus img,.product-item a:active img{outline:4px solid #ff0000;outline-offset:-4px;} .payment-icons{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;justify-content:center;justify-items:center;margin:10px auto;max-width:260px;width:100%;} .pay-btn{outline:2px solid transparent;} .pay-btn:hover,.pay-btn:focus,.pay-btn:active,.pay-btn.selected{outline-color:red;} .pay-btn.paypal{background:#ffc439;width:80px;height:40px;padding:0;margin-top:10px;align-self:center;} .pay-btn.paypal img{width:100%;height:100%;object-fit:contain;} .payment-icons img[alt="Apple Pay"]{width:120px;} .payment-icons img.klarna-logo{width:140px;} .payment-option{display:flex;align-items:center;border:1px solid #ccc;padding:10px;margin:5px 0;cursor:pointer;width:100%;box-sizing:border-box;gap:10px;flex-wrap:wrap;} .payment-option input{margin:0;flex-shrink:0;width:auto;padding:0;} .payment-option label{display:flex;align-items:center;justify-content:space-between;flex:1;cursor:pointer;gap:10px;flex-wrap:wrap;width:100%;} .payment-label{flex:1;min-width:0;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;} .payment-option.shop-pay .payment-label{white-space:normal;display:flex;flex-direction:column;align-items:flex-start;overflow:visible;text-overflow:unset;} .payment-option.shop-pay .payment-label .subtext{font-size:0.8em;white-space:normal;margin-top:2px;} .payment-logos{margin-left:10px;display:flex;align-items:center;gap:5px;flex-wrap:wrap;max-width:100%;} .payment-logos img{height:20px;max-width:100%;} .payment-logos img[alt="Apple Pay"]{height:30px;} .payment-logos img.klarna-logo{height:40px;} .more-logos{position:relative;margin-left:5px;cursor:pointer;color:#000;font-weight:600;} .more-logos-box{display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#000;padding:5px;z-index:10;} .more-logos-box img{height:20px;margin:0 2px;filter:invert(1);} .summary-label{background:#000;color:#fff;font-size:1em;display:inline-block;padding:10px;margin:0;margin-left:0;} .redirect-icon{text-align:center;font-size:2rem;} .paypal-inline{height:1em;vertical-align:middle;filter:invert(1);} .empty-cart-message{text-align:center;} a,button{transition:all 0.3s ease;} button:hover,button:focus,button:active,a:hover,a:focus,a:active{border:2px solid red;color:red;background:#fff;} .color-option{border:1px solid #000;} .color-option.selected,.color-option:hover,.color-option:focus,.color-option:active{border:2px solid red !important;} @media (max-width:480px){.payment-option{flex-wrap:wrap;}.payment-option label{flex-direction:row;align-items:center;flex-wrap:wrap;width:100%;}.payment-logos{margin-left:10px;justify-content:flex-start;}.payment-option.shop-pay .payment-label .subtext{font-size:0.6em;}}';
         document.head.appendChild(style);
     }
 }

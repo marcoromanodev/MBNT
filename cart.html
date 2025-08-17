@@ -461,7 +461,8 @@
             display: none;
             position: absolute;
             bottom: 100%;
-            right: 100%;
+            left: 50%;
+            transform: translateX(-50%);
             background: #000;
             padding: 5px;
             z-index: 10;
@@ -593,6 +594,7 @@
                 <button type="button" id="login-btn" onclick="window.location.href='/account/login';">Log in</button>
             </div>
             <input type="email" name="contact_email" placeholder="Enter an email" required>
+            <p class="email-warning empty-cart-message" style="display:none;">Please provide your contact email for this order.</p>
             <h3>Delivery</h3>
             <p>This will also be used as your billing address for this order.</p>
             <input type="text" name="first_name" placeholder="Enter a first name" required>
@@ -630,6 +632,7 @@
                 <input type="text" name="cvv" placeholder="Enter the CVV or security code on your card">
                 <input type="text" name="card_name" placeholder="Enter your name exactly as it’s written on your card">
             </div>
+            <p class="card-warning empty-cart-message" style="display:none;">Please complete the card details.</p>
             <div class="payment-option">
                 <input type="radio" name="payment-method" id="cart2-pay-apple" value="apple">
                 <label for="cart2-pay-apple">
