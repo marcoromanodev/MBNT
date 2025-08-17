@@ -121,7 +121,13 @@ function openCart(showForm = false) {
     }
     populateCartModal();
     modal.style.display = 'flex';
-    if (showForm && cart.length > 0) {
+    if (cart.length === 0) {
+        const msg = modal.querySelector('.empty-cart-message');
+        if (msg) {
+            msg.textContent = 'Your cart is empty.';
+            msg.style.display = 'block';
+        }
+    } else if (showForm) {
         showCheckoutForm(modal);
     }
 }
