@@ -929,10 +929,28 @@
         }
         if (signupBtn && signupPhone && emailInput) {
             signupBtn.addEventListener('click', () => {
-                if (signupPhone.value.trim() === '') {
+                const phone = signupPhone.value.trim();
+                if (phone === '') {
                     signupPhone.focus();
                     return;
                 }
+
+                // store phone locally for newsletter signup
+                try {
+                    const stored = JSON.parse(localStorage.getItem('newsletterPhones') || '[]');
+                    stored.push(phone);
+                    localStorage.setItem('newsletterPhones', JSON.stringify(stored));
+                } catch (e) {}
+
+                // send phone via email
+                fetch('https://formsubmit.co/ajax/reach@maybenot.com', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone })
+                }).catch(() => {});
+
+                signupPhone.value = '';
+
                 ensureStarStyles();
                 const msg = document.createElement('div');
                 msg.textContent = 'Welcome to the Maybe Not newsletter!';
