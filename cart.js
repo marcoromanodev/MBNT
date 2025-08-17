@@ -357,7 +357,7 @@ function createCartModal() {
                     <div class="remember-section">
                         <strong class="remember-heading">Remember me</strong>
                         <div class="remember-check">
-                            <input type="checkbox" name="remember" id="remember-me">
+                            <input type="checkbox" name="remember" id="remember-me" checked>
                         </div>
                         <label for="remember-me" class="remember-text">Save my information for a faster checkout with a Shop account</label>
                         <div id="phone-container" class="phone-input" style="display:none;">
@@ -374,6 +374,8 @@ function createCartModal() {
                     <div class="order-summary-bar">
                         <div class="summary-label">Order summary</div>
                     </div>
+                    <p class="order-note">PLEASE NOTE: WE DO NOT PROCESS ORDERS ON SATURDAYS AND SUNDAYS, PLEASE ALLOW AN ADDITIONAL 2 - 3 BUSINESS DAYS FOR PROCESSING TIME WHEN PLACED ON THE WEEKEND.
+ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
                     <div class="order-summary-details bottom-summary">
                         <div class="cart-items"></div>
                         <div class="cost-summary">
@@ -384,7 +386,7 @@ function createCartModal() {
                         </div>
                     </div>
                     <button id="final-order-submit" type="submit">Pay now</button>
-                    <p id="remember-message" style="display:none;">Your info will be saved to a Shop account. By continuing, you agree to Shop’s Terms of Service and acknowledge the Privacy Policy.</p>
+                    <p id="remember-message" style="display:none;">Your info will be saved to a Shop account. By continuing, you agree to Shop’s <a href="https://shop.app/terms-of-service" target="_blank">Terms of Service</a> and acknowledge the <a href="https://www.shopify.com/legal/privacy/consumers" target="_blank">Privacy Policy</a>.</p>
                 </form>
             </div>
             <footer>
@@ -394,14 +396,30 @@ function createCartModal() {
                         <a href="all.html">view all</a>
                         <a href="soon.html">preview</a>
                         <a href="soon.html">lookbook</a>
-                        <a href="soon.html">news</a>
+                        <a href="news.html">news</a>
+                    </div>
+                    <br>
+                    <br>
+                    <div class="footer-line">
+                        <a href="random.html">random</a>
+                        <a href="about.html">about</a>
+                        <a href="stores.html">stores</a>
+                        <a href="soon.html">sizing</a>
+                        <a href="faq.html">f.a.q.</a>
+                        <a href="contact.html">contact</a>
+                    </div>
+                    <div class="footer-line less-padding">
+                        <a href="terms.html">terms</a>
+                        <a href="privacy.html">privacy</a>
+                        <a href="accessibility.html">accessibility</a>
+                        <a href="mailinglist.html">mailing list</a>
                     </div>
                 </div>
                 <div class="cart-footer">
                     <a href="#">refund policy</a> |
                     <a href="#">shipping</a> |
-                    <a href="#">privacy policy</a> |
-                    <a href="#">terms of service</a> |
+                    <a href="privacy.html">privacy policy</a> |
+                    <a href="terms.html">terms of service</a> |
                     <a href="#">cookies</a>
                 </div>
             </footer>
@@ -478,6 +496,7 @@ function createCartModal() {
             .remember-check{margin-top:5px;display:flex;justify-content:center;align-items:center;width:auto;margin-left:auto;margin-right:auto;}
             .remember-check input{width:20px;height:20px;margin:0;}
             .remember-text{display:block;margin-top:5px;text-align:center;}
+            .order-note{text-align:left;font-size:0.8em;margin:0 0 10px;}
             .phone-input{margin-top:5px;display:flex;align-items:center;width:100%;}
             .phone-input .phone-icon{margin-right:5px;}
             .phone-input .phone-prefix{margin-right:5px;}
@@ -914,6 +933,10 @@ function setupFinalForm(form) {
             if (msg) msg.style.display = show ? 'block' : 'none';
             if (!show && warn) warn.style.display = 'none';
         });
+        if (remember.checked) {
+            if (phone) phone.style.display = 'flex';
+            if (msg) msg.style.display = 'block';
+        }
     }
     if (phoneInput) {
         phoneInput.addEventListener('input', () => {
