@@ -8,6 +8,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Bold the current category in navigation lists
+  document.querySelectorAll('.desktop-nav a, .mobile-nav a').forEach(link => {
+    if (link.getAttribute('href') === current) {
+      link.style.fontWeight = 'bold';
+    }
+  });
+
   document.querySelectorAll('.full-site-link a').forEach(link => {
     link.style.color = 'red';
   });
