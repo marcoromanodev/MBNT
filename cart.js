@@ -142,7 +142,7 @@ function showSelectionError(message) {
         msg = document.createElement('div');
         msg.className = 'selection-error';
         msg.style.textAlign = 'center';
-        msg.style.color = 'red';
+        msg.style.color = 'black';
         msg.style.fontWeight = 'bold';
         content.appendChild(msg);
     }
@@ -215,7 +215,7 @@ function createCartModal() {
                     <input type="tel" name="signup_phone" placeholder="Mobile phone number">
                 </div>
                 <p class="consent-text">By submitting this form, you consent to receive informational (eg, order updates) and/or marketing texts (eg, cart reminders) from maybenot.com including texts sent by autodialer. Consent is not a condition of purchase. Msg & data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available). Privacy Policy & Terms.</p>
-                <button type="submit">Sign Up</button>
+                <button type="button" class="signup-btn">Sign Up</button>
                 <h3>Express checkout</h3>
                 <div class="payment-icons">
                     <button class="pay-btn" data-method="Shop Pay"><img src="shoppay.png" alt="Shop Pay"></button>
@@ -247,7 +247,7 @@ function createCartModal() {
                         <input type="tel" name="signup_phone" placeholder="Mobile phone number">
                     </div>
                     <p class="consent-text">By submitting this form, you consent to receive informational (eg, order updates) and/or marketing texts (eg, cart reminders) from maybenot.com including texts sent by autodialer. Consent is not a condition of purchase. Msg & data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available). Privacy Policy & Terms.</p>
-                    <button type="submit">Sign Up</button>
+                    <button type="button" class="signup-btn">Sign Up</button>
                     <h3>Express checkout</h3>
                     <div class="payment-icons">
                         <button class="pay-btn" data-method="Shop Pay"><img src="shoppay.png" alt="Shop Pay"></button>
@@ -736,6 +736,17 @@ function showFinalPage(root = document.getElementById('cart-modal')) {
     }
 }
 
+function ensureStarStyles() {
+    if (document.getElementById('star-style')) return;
+    const style = document.createElement('style');
+    style.id = 'star-style';
+    style.textContent = `
+    .shooting-star{position:fixed;font-size:24px;color:#FFD700;pointer-events:none;animation:shoot 0.8s ease-in-out forwards;text-shadow:0 0 6px #FFD700;}
+    @keyframes shoot{0%{transform:translate(0,0) scale(1);opacity:1;}50%{transform:translate(calc(var(--dx)/2),calc(var(--dy)/2 - 50px)) scale(1.8);opacity:1;}100%{transform:translate(var(--dx),var(--dy)) scale(0.5);opacity:0;}}
+    `;
+    document.head.appendChild(style);
+}
+
 function setupFinalForm(form) {
     if (!form) return;
     const payBtn = form.querySelector('#final-order-submit');
@@ -746,6 +757,9 @@ function setupFinalForm(form) {
     const emailInput = form.querySelector('input[name="contact_email"]');
     const emailWarning = form.querySelector('.email-warning');
     const creditRadio = form.querySelector('input[name="payment-method"][value="credit"]');
+    ensureStarStyles();
+    const signupBtn = form.querySelector('.signup-btn');
+    const signupPhone = form.querySelector('input[name="signup_phone"]');
 
     form.querySelectorAll('input[name="payment-method"]').forEach(input => {
         input.addEventListener('change', () => {
@@ -781,6 +795,36 @@ function setupFinalForm(form) {
     if (emailInput) {
         emailInput.addEventListener('input', () => {
             if (emailWarning) emailWarning.style.display = 'none';
+        });
+    }
+    if (signupBtn && signupPhone && emailInput) {
+        signupBtn.addEventListener('click', () => {
+            if (signupPhone.value.trim() === '') {
+                signupPhone.focus();
+                return;
+            }
+            const welcome = document.createElement('div');
+            welcome.textContent = 'Welcome to the Maybe Not newsletter!';
+            welcome.style.color = 'red';
+            welcome.style.textAlign = 'center';
+            signupBtn.insertAdjacentElement('afterend', welcome);
+            setTimeout(() => welcome.remove(), 3000);
+
+            const star = document.createElement('div');
+            star.className = 'shooting-star';
+            star.textContent = '★';
+            document.body.appendChild(star);
+            const startRect = signupBtn.getBoundingClientRect();
+            const endRect = emailInput.getBoundingClientRect();
+            star.style.left = startRect.left + startRect.width / 2 + 'px';
+            star.style.top = startRect.top + startRect.height / 2 + 'px';
+            star.style.setProperty('--dx', endRect.left + endRect.width / 2 - (startRect.left + startRect.width / 2) + 'px');
+            star.style.setProperty('--dy', endRect.top + endRect.height / 2 - (startRect.top + startRect.height / 2) + 'px');
+            star.addEventListener('animationend', () => {
+                star.remove();
+                emailInput.focus();
+            });
+            emailInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
         });
     }
     const moreCards = form.querySelector('#more-cards');
