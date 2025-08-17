@@ -542,7 +542,7 @@
                 <input type="tel" name="signup_phone" placeholder="Mobile phone number">
             </div>
             <p class="consent-text">By submitting this form, you consent to receive informational (eg, order updates) and/or marketing texts (eg, cart reminders) from maybenot.com including texts sent by autodialer. Consent is not a condition of purchase. Msg & data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available). Privacy Policy & Terms.</p>
-            <button type="submit">Sign Up</button>
+            <button type="button" class="signup-btn">Sign Up</button>
             <h3>Express checkout</h3>
             <div class="payment-icons">
                 <button class="pay-btn" data-method="Shop Pay"><img src="shoppay.png" alt="Shop Pay"></button>
@@ -806,6 +806,8 @@
         const creditRadio = document.getElementById('pay-credit');
         const cardInputs = document.querySelectorAll('.credit-card-fields input');
         const cardWarning = document.querySelector('.card-warning');
+        const signupPhone = document.querySelector('input[name="signup_phone"]');
+        const signupBtn = document.querySelector('.signup-btn');
 
         function highlightField(field) {
             if (!field) return;
@@ -869,6 +871,37 @@
                     }
                 });
             }
+        }
+        if (signupBtn && signupPhone && emailInput) {
+            signupBtn.addEventListener('click', () => {
+                if (signupPhone.value.trim() === '') {
+                    signupPhone.focus();
+                    return;
+                }
+                ensureStarStyles();
+                const msg = document.createElement('div');
+                msg.textContent = 'Welcome to the Maybe Not newsletter!';
+                msg.style.color = 'red';
+                msg.style.textAlign = 'center';
+                signupBtn.insertAdjacentElement('afterend', msg);
+                setTimeout(() => msg.remove(), 3000);
+
+                const star = document.createElement('div');
+                star.className = 'shooting-star';
+                star.textContent = '★';
+                document.body.appendChild(star);
+                const startRect = signupBtn.getBoundingClientRect();
+                const endRect = emailInput.getBoundingClientRect();
+                star.style.left = startRect.left + startRect.width / 2 + 'px';
+                star.style.top = startRect.top + startRect.height / 2 + 'px';
+                star.style.setProperty('--dx', endRect.left + endRect.width / 2 - (startRect.left + startRect.width / 2) + 'px');
+                star.style.setProperty('--dy', endRect.top + endRect.height / 2 - (startRect.top + startRect.height / 2) + 'px');
+                star.addEventListener('animationend', () => {
+                    star.remove();
+                    emailInput.focus();
+                });
+                emailInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
         }
     </script>
 </body>
