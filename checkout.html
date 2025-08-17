@@ -82,7 +82,7 @@
         .paypal-inline {
             height: 1em;
             vertical-align: middle;
-            filter: invert(1);
+            filter: brightness(0) invert(1);
         }
         button:not(.pay-btn):not(.summary-toggle) {
             background: #000;
@@ -834,6 +834,33 @@
         document.querySelectorAll('.field-warning').forEach(p => { fieldWarnings[p.dataset.field] = p; });
         const signupPhone = document.querySelector('input[name="signup_phone"]');
         const signupBtn = document.querySelector('.signup-btn');
+        const payBtn = document.getElementById('final-order-submit');
+        const paymentMsg = document.getElementById('payment-message');
+
+        document.querySelectorAll('input[name="payment-method"]').forEach(input => {
+            input.addEventListener('change', () => {
+                if (paymentMsg) paymentMsg.innerHTML = '';
+                switch (input.value) {
+                    case 'apple':
+                        payBtn.textContent = 'Pay with Apple Pay';
+                        break;
+                    case 'paypal':
+                        payBtn.innerHTML = 'Pay now with <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" class="paypal-inline">';
+                        if (paymentMsg) {
+                            paymentMsg.innerHTML = '<div class="redirect-icon">↗</div>After clicking "Pay with PayPal", you will be redirected to PayPal to complete your purchase securely.';
+                        }
+                        break;
+                    case 'klarna':
+                        payBtn.textContent = 'Pay now';
+                        if (paymentMsg) {
+                            paymentMsg.innerHTML = '<div class="redirect-icon">↗</div>After clicking "Pay now", you will be redirected to Klarna - Flexible payments to complete your purchase securely.';
+                        }
+                        break;
+                    default:
+                        payBtn.textContent = 'Pay now';
+                }
+            });
+        });
 
         function highlightField(field) {
             if (!field) return;
