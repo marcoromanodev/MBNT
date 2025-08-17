@@ -186,8 +186,8 @@ function createCartModal() {
                 <div class="cart-items"></div>
                 <div class="cost-summary">
                     <div><span>Subtotal</span><span class="subtotal">$0.00</span></div>
-                    <div><span>Tax</span><span class="tax">$0.00</span></div>
-                    <div><span>Shipping</span><span class="shipping">$15.00</span></div>
+                    <div><span>Tax</span><span class="tax">Calculated at checkout</span></div>
+                    <div><span>Shipping</span><span class="shipping">Calculated at checkout</span></div>
                     <div><strong>Total</strong><strong class="total">$0.00</strong></div>
                 </div>
             </div>
@@ -370,7 +370,7 @@ function createCartModal() {
                         <div class="cost-summary">
                             <div><span>Subtotal</span><span class="subtotal">$0.00</span></div>
                             <div><span>Tax</span><span class="tax">$0.00</span></div>
-                            <div><span>Shipping</span><span class="shipping">$15.00</span></div>
+                            <div><span>Shipping</span><span class="shipping">Select shipping method</span></div>
                             <div><strong>Total</strong><strong class="total">$0.00</strong></div>
                         </div>
                     </div>
@@ -562,11 +562,10 @@ function populateCartModal() {
         btn.addEventListener('click', () => removeFromCart(parseInt(btn.dataset.index)));
     });
     modal.querySelector('.item-count').textContent = `${cart.length} Item(s)`;
-    const tax = subtotal * defaultTaxRate;
-    const total = subtotal + tax + shippingCost;
+    const total = subtotal;
     modal.querySelector('.subtotal').textContent = `$${subtotal.toFixed(2)}`;
-    modal.querySelector('.tax').textContent = `$${tax.toFixed(2)}`;
-    modal.querySelector('.shipping').textContent = `$${shippingCost.toFixed(2)}`;
+    modal.querySelector('.tax').textContent = 'Calculated at checkout';
+    modal.querySelector('.shipping').textContent = 'Calculated at checkout';
     modal.querySelector('.total').textContent = `$${total.toFixed(2)}`;
     const orderTotal = modal.querySelector('.order-summary-bar .order-total');
     if (orderTotal) orderTotal.textContent = `$${total.toFixed(2)}`;
@@ -649,12 +648,13 @@ function showCheckoutForm(root = document.getElementById('cart-modal')) {
     root.querySelector('#checkout-form').style.display = 'block';
 }
 
-function populateOrderSummary(section, state = '') {
+function populateOrderSummary(section, state = '', addressFilled = false) {
     if (!section) return;
     const subtotal = cart.reduce((sum, item) => sum + parseFloat(item.price), 0);
     const rate = state && stateTaxRates[state] !== undefined ? stateTaxRates[state] : defaultTaxRate;
     const tax = subtotal * rate;
-    const total = subtotal + tax + shippingCost;
+    const shipping = addressFilled ? shippingCost : 0;
+    const total = subtotal + tax + shipping;
 
     section.querySelectorAll('.order-summary-details').forEach(details => {
         const itemsContainer = details.querySelector('.cart-items');
@@ -680,7 +680,7 @@ function populateOrderSummary(section, state = '') {
         });
         subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
         if (taxEl) taxEl.textContent = `$${tax.toFixed(2)}`;
-        if (shippingEl) shippingEl.textContent = `$${shippingCost.toFixed(2)}`;
+        if (shippingEl) shippingEl.textContent = addressFilled ? `$${shippingCost.toFixed(2)}` : 'Select shipping method';
         totalEl.textContent = `$${total.toFixed(2)}`;
     });
 
@@ -701,7 +701,7 @@ function updateShippingAndTax(form) {
     if (placeholder) placeholder.style.display = addressFilled ? 'none' : 'block';
     if (method) method.style.display = addressFilled ? 'flex' : 'none';
     const state = form.querySelector('input[name="state"]')?.value.trim().toUpperCase() || '';
-    populateOrderSummary(checkout, state);
+    populateOrderSummary(checkout, state, addressFilled);
 }
 
 function showFinalPage(root = document.getElementById('cart-modal')) {
@@ -1009,14 +1009,13 @@ function populateCartPage() {
     });
     const itemCountEl = page.querySelector('.item-count');
     if (itemCountEl) itemCountEl.textContent = `${cart.length} Item(s)`;
-    const tax = subtotal * defaultTaxRate;
-    const total = subtotal + tax + shippingCost;
+    const total = subtotal;
     const subtotalEl = page.querySelector('.subtotal');
     if (subtotalEl) subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
     const taxEl = page.querySelector('.tax');
-    if (taxEl) taxEl.textContent = `$${tax.toFixed(2)}`;
+    if (taxEl) taxEl.textContent = 'Calculated at checkout';
     const shippingEl = page.querySelector('.shipping');
-    if (shippingEl) shippingEl.textContent = `$${shippingCost.toFixed(2)}`;
+    if (shippingEl) shippingEl.textContent = 'Calculated at checkout';
     const totalEl = page.querySelector('.total');
     if (totalEl) totalEl.textContent = `$${total.toFixed(2)}`;
     const orderTotal = page.querySelector('.order-summary-bar .order-total');
