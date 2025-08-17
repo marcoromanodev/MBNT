@@ -5,4 +5,8 @@ document.addEventListener('DOMContentLoaded', () => {
       link.style.fontWeight = 'bold';
     }
   });
+
+  document.querySelectorAll('.full-site-link a').forEach(link => {
+    link.style.color = 'red';
+  });
 });
