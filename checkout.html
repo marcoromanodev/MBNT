@@ -425,6 +425,13 @@
         .payment-logos img.klarna-logo {
             height: 40px;
         }
+        .payment-logos img[alt="Visa"],
+        .payment-logos img[alt="Mastercard"],
+        .payment-logos img[alt="American Express"] {
+            height: 20px;
+            width: 32px;
+            object-fit: contain;
+        }
 
         @media (max-width: 480px) {
             .payment-option label {
@@ -453,7 +460,7 @@
             bottom: 100%;
             right: 0;
             left: auto;
-            transform: none;
+            transform: translateX(-5px);
             background: #fff;
             padding: 5px;
             z-index: 10;
