@@ -62,11 +62,13 @@ function addToCart(button) {
     if (hasColor && !colorSelected) missing.push('color');
 
     if (missing.length) {
-        let msg = 'Please select ';
+        let msg = '';
         if (missing.length === 2) {
-            msg += 'a size and color.';
+            msg = 'Please select a style/color and size.';
+        } else if (missing[0] === 'color') {
+            msg = 'Please select a style/color.';
         } else {
-            msg += `a ${missing[0]}.`;
+            msg = 'Please select a size.';
         }
         showSelectionError(msg);
         return;
@@ -141,6 +143,16 @@ function showSelectionError(message) {
         modal.style.display = 'none';
         populateCartModal();
     }, 2000);
+}
+
+function highlightField(field) {
+    if (!field) return;
+    field.focus();
+    field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    field.style.outline = '2px solid red';
+    field.addEventListener('input', () => {
+        field.style.outline = '';
+    }, { once: true });
 }
 
 function createCartModal() {
@@ -457,8 +469,8 @@ function createCartModal() {
             .payment-logos img[alt="Apple Pay"]{height:30px;}
             .payment-logos img.klarna-logo{height:40px;}
             .more-logos{position:relative;margin-left:5px;cursor:pointer;color:#000;font-weight:600;}
-            .more-logos-box{display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#000;padding:5px;z-index:10;}
-            .more-logos-box img{height:20px;margin:0 2px;filter:invert(1);}
+            .more-logos-box{display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#fff;padding:5px;z-index:10;border:1px solid #ccc;box-shadow:0 2px 8px rgba(0,0,0,0.15);}
+            .more-logos-box img{height:20px;margin:0 2px;}
             .shipping-method{display:flex;justify-content:space-between;border:1px solid #ccc;padding:10px;margin:5px 0;}
             #cart-modal .logo-container{width:80px;height:80px;margin:0 auto;}
             #cart-modal .logo-container iframe{width:100%;height:100%;border:none;}
@@ -803,22 +815,29 @@ function setupFinalForm(form) {
     form.addEventListener('submit', e => {
         e.preventDefault();
         let valid = true;
+        let firstInvalid = null;
         if (remember && remember.checked && phoneInput && phoneInput.value.trim() === '') {
             if (warn) warn.style.display = 'block';
+            firstInvalid = firstInvalid || phoneInput;
             valid = false;
         }
         if (creditRadio && creditRadio.checked) {
-            const empty = Array.from(cardInputs).some(inp => inp.value.trim() === '');
-            if (empty) {
+            const emptyInput = Array.from(cardInputs).find(inp => inp.value.trim() === '');
+            if (emptyInput) {
                 if (cardWarning) cardWarning.style.display = 'block';
+                firstInvalid = firstInvalid || emptyInput;
                 valid = false;
             }
         }
         if (emailInput && emailInput.value.trim() === '') {
             if (emailWarning) emailWarning.style.display = 'block';
+            firstInvalid = firstInvalid || emailInput;
             valid = false;
         }
-        if (!valid) return;
+        if (!valid) {
+            highlightField(firstInvalid);
+            return;
+        }
         if (phoneInput && phoneInput.value.trim() && !phoneInput.value.startsWith('+1')) {
             phoneInput.value = '+1' + phoneInput.value;
         }
