@@ -50,6 +50,42 @@ function initCart() {
     });
 }
 
+// animate a star from the clicked button to the cart icon
+function animateStar(button) {
+    const cartIcon = document.querySelector('.cart-icon');
+    if (!cartIcon || !button) return;
+
+    const startRect = button.getBoundingClientRect();
+    const endRect = cartIcon.getBoundingClientRect();
+    const startX = startRect.left + startRect.width / 2;
+    const startY = startRect.top + startRect.height / 2;
+    const endX = endRect.left + endRect.width / 2;
+    const endY = endRect.top + endRect.height / 2;
+
+    const star = document.createElement('div');
+    star.textContent = '★';
+    star.style.position = 'fixed';
+    star.style.left = `${startX}px`;
+    star.style.top = `${startY}px`;
+    star.style.fontSize = '24px';
+    star.style.color = 'gold';
+    star.style.pointerEvents = 'none';
+    star.style.zIndex = '1000';
+    document.body.appendChild(star);
+
+    const animation = star.animate(
+        [
+            { transform: 'translate(0, 0)', opacity: 1 },
+            { transform: `translate(${endX - startX}px, ${endY - startY}px)`, opacity: 0 }
+        ],
+        {
+            duration: 1000,
+            easing: 'ease-in-out'
+        }
+    );
+    animation.onfinish = () => star.remove();
+}
+
 function addToCart(button) {
     const item = button.closest('.product-item');
     const hasColor = item.querySelector('.color-option') !== null;
@@ -93,6 +129,7 @@ function addToCart(button) {
     localStorage.setItem('cart', JSON.stringify(cart));
     // TODO: sync with store server for inventory management
     updateCartCounter();
+    animateStar(button);
 }
 
 function checkout(button) {
