@@ -1165,6 +1165,9 @@ function setupCartPage() {
 function setupCheckoutPage() {
     const finalPage = document.getElementById('final-checkout');
     if (!finalPage) return;
+    if (document.getElementById('cart-page') && cart.length === 0) {
+        return;
+    }
     if (cart.length === 0) {
         finalPage.innerHTML = '';
         finalPage.style.display = 'flex';
