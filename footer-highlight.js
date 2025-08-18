@@ -15,7 +15,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  document.querySelectorAll('.full-site-link a').forEach(link => {
-    link.style.color = 'red';
-  });
+  const style = document.createElement('style');
+  style.innerHTML = `
+    a { color: red !important; }
+    a:visited { color: red !important; }
+  `;
+  document.head.appendChild(style);
 });
