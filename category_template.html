@@ -299,7 +299,11 @@
             background: red;
             color: #fff;
         }
-    </style>
+        .header-container { position: sticky; top: 0; z-index: 1000; }
+    .logo-container { height: 10vh; }
+    .time { margin-top: -5px; }
+    .cart-counter { margin-top: 5px; }
+</style>
 </head>
 <body>
 
@@ -309,13 +313,13 @@
         <div class="logo-overlay"></div>
     </div>
     <div class="time" id="current-time"></div>
-    </header>
-<div class="header-line"></div>
+    <div class="header-line"></div>
 <div class="cart-counter">
         <span class="cart-icon">🛒</span><span id="cart-count">0</span>
 
 </div>
 
+</header>
 <section class="product-section">
     <div class="product-grid">
         {{ITEMS}}

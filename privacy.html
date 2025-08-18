@@ -29,7 +29,11 @@
         .full-site-link { text-align:center; margin-top:20px; }
         @media (min-width:769px) { footer { position:fixed; bottom:0; width:100%; text-align:center; background-color:#f7f7f7; padding:20px 0; } .footer-links { padding-bottom:30px; } }
         @media (max-width:768px) { footer .footer-links { justify-content:center; padding-bottom:25px; margin-top:40px; } }
-    </style>
+        .header-container { position: sticky; top: 0; z-index: 1000; }
+    .logo-container { height: 10vh; }
+    .time { margin-top: -5px; }
+    .cart-counter { margin-top: 5px; }
+</style>
 </head>
 <body>
 <header class="header-container">
@@ -38,8 +42,8 @@
         <div class="logo-overlay"></div>
     </div>
     <div class="time" id="current-time"></div>
-</header>
 <div class="header-line"></div>
+</header>
 <div class="translate-container">
     <button id="translate-button" class="translate-button"><img src="IMG_1870.png" alt="Translate"></button>
     <div id="google_translate_element"></div>

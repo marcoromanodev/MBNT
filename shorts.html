@@ -56,7 +56,11 @@
         .color-option.selected, .color-option:hover, .color-option:focus { border:2px solid red; }
         .product-item button { background:#000; color:#fff; border:2px solid #000; font-family:'Courier New', Courier, monospace; cursor:pointer; margin-top:5px; }
         .product-item button:hover, .product-item button:active, .product-item button:focus { background:#fff; color:red; border-color:red; }
-    </style>
+        .header-container { position: sticky; top: 0; z-index: 1000; }
+    .logo-container { height: 10vh; }
+    .time { margin-top: -5px; }
+    .cart-counter { margin-top: 5px; }
+</style>
 </head>
 <body>
 <header class="header-container">
@@ -65,12 +69,12 @@
         <div class="logo-overlay"></div>
     </div>
     <div class="time" id="current-time"></div>
-    </header>
-<div class="header-line"></div>
+    <div class="header-line"></div>
 <div class="cart-counter">
     <span class="cart-icon">🛒</span><span id="cart-count">0</span>
 </div>
 
+</header>
 <div class="product-item" data-product="shorts" data-price="50" data-selected-color="" data-size="">
     <div class="image-slider" data-images="blackshorts.png,whiteshorts.png">
         <button class="prev">&#10094;</button>

@@ -512,7 +512,11 @@
                 width: 100%;
             }
         }
-    </style>
+        .header-container { position: sticky; top: 0; z-index: 1000; }
+    .logo-container { height: 10vh; }
+    .time { margin-top: -5px; }
+    .cart-counter { margin-top: 5px; }
+</style>
 </head>
 <body>
     <header class="header-container">
@@ -521,9 +525,9 @@
             <div class="logo-overlay"></div>
         </div>
         <div class="time" id="current-time"></div>
-    </header>
     <div class="header-line"></div>
-    <div id="final-checkout">
+</header>
+<div id="final-checkout">
         <form id="final-form">
             <h2 class="checkout-domain">maybenot.com</h2>
             <div class="order-summary-bar">
