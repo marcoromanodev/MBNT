@@ -1269,7 +1269,10 @@ function ensureCartCounter() {
 
 document.addEventListener('DOMContentLoaded', () => {
     initCart();
-    ensureCartCounter();
+    const page = window.location.pathname.split('/').pop();
+    if (page !== 'cart.html' && page !== 'checkout.html') {
+        ensureCartCounter();
+    }
     document.querySelectorAll('button:not(.pay-btn)').forEach(btn => {
         btn.style.background = '#000';
         btn.style.color = '#fff';
