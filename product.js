@@ -77,18 +77,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const headerLine = document.querySelector('.header-line');
   const cartCounter = document.querySelector('.cart-counter');
   if (header && headerLine) {
-    header.insertAdjacentElement('afterend', headerLine);
-  }
-  if (headerLine && cartCounter) {
-    headerLine.insertAdjacentElement('afterend', cartCounter);
-  }
-  if (headerLine) {
+    if (headerLine.parentElement !== header) {
+      header.appendChild(headerLine);
+    }
     headerLine.style.borderTop = '1px solid #000';
     headerLine.style.marginTop = '5px';
     headerLine.style.width = '100%';
-  }
-  if (cartCounter) {
-    cartCounter.style.marginTop = '5px';
+    if (cartCounter) {
+      if (cartCounter.parentElement !== header) {
+        header.appendChild(cartCounter);
+      }
+      headerLine.insertAdjacentElement('afterend', cartCounter);
+      cartCounter.style.marginTop = '5px';
+    }
   }
 
   const productItem = document.querySelector('.product-item');

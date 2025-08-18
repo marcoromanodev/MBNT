@@ -1245,13 +1245,13 @@ function ensureCartCounter() {
                 headerLine = document.createElement('div');
                 headerLine.className = 'header-line';
             }
-            header.insertAdjacentElement('afterend', headerLine);
+            if (headerLine.parentElement !== header) {
+                header.appendChild(headerLine);
+            }
             headerLine.style.marginTop = '5px';
-        }
-        if (headerLine) {
-            headerLine.insertAdjacentElement('afterend', counter);
-        } else if (header) {
-            header.insertAdjacentElement('afterend', counter);
+            if (counter.parentElement !== headerLine.parentElement) {
+                headerLine.insertAdjacentElement('afterend', counter);
+            }
         }
     }
     counter.style.marginTop = '5px';
