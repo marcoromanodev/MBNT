@@ -44,6 +44,8 @@
             text-align: center;
             margin-top: -5px;
             font-weight: 600;
+            position: relative;
+            z-index: 20;
         }
         iframe {
             width: 100%;
@@ -721,10 +723,8 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
             const currentTime = new Intl.DateTimeFormat('en-US', options).format(new Date()).replace(",", "");
             document.getElementById('current-time').textContent = currentTime + " CHICAGO";
         }
-        document.addEventListener('DOMContentLoaded', () => {
-            updateChicagoTime();
-            setInterval(updateChicagoTime, 1000);
-        });
+        updateChicagoTime();
+        setInterval(updateChicagoTime, 1000);
 
         const fullSiteLink = document.getElementById('full-site-link');
         if (window.top !== window.self && fullSiteLink) {
