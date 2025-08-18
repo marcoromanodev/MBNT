@@ -13,7 +13,7 @@
             font-family: 'Courier New', Courier, monospace;
             background-color: #f7f7f7; /* Off-white background color */
             color: #000;
-            height: 100%;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -85,6 +85,7 @@
             display: block;
             width: 100%;
             margin-top: 20px; /* Ensure spacing between time and the first nav link */
+            flex-shrink: 0;
         }
 
         nav.mobile-nav ul {
@@ -126,6 +127,7 @@
             width: 100%;
             text-align: center;
             margin-top: 20px;
+            flex-shrink: 0;
         }
 
         .desktop-nav ul {
@@ -341,6 +343,7 @@
         }
         .mobile-nav {
             margin-top: 20px;
+            flex-shrink: 0;
         }
         .product-info {
             pointer-events: none;
