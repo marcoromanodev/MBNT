@@ -603,7 +603,7 @@
                 <input type="text" name="card_name" placeholder="Enter your name exactly as it’s written on your card">
                 <p class="field-warning empty-cart-message" data-field="card_name" style="display:none;">Please enter the name on your card.</p>
             </div>
-            <p class="card-warning empty-cart-message" style="display:none;">Please complete the card details.</p>
+            <p class="card-warning empty-cart-message" style="display:none;">Please fill out credit card details.</p>
             <div class="payment-option">
                 <input type="radio" name="payment-method" id="pay-apple" value="apple">
                 <label for="pay-apple">
@@ -712,44 +712,6 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
         const fullSiteLink = document.getElementById('full-site-link');
         if (window.top !== window.self && fullSiteLink) {
             fullSiteLink.style.display = 'none';
-        }
-        const logoOverlay = document.querySelector(".logo-overlay");
-        if (logoOverlay) {
-            let pressTimer;
-            let moved = false;
-            const restoreOverlay = () => {
-                logoOverlay.style.display = "block";
-            };
-            const cancel = () => {
-                clearTimeout(pressTimer);
-                document.removeEventListener("mousemove", moveHandler);
-                document.removeEventListener("touchmove", moveHandler);
-                document.removeEventListener("mouseup", cancel);
-                document.removeEventListener("touchend", cancel);
-                document.removeEventListener("touchcancel", cancel);
-                logoOverlay.style.display = "none";
-                setTimeout(restoreOverlay, 1000);
-            };
-            const moveHandler = () => {
-                moved = true;
-                cancel();
-            };
-            const startPress = () => {
-                moved = false;
-                document.addEventListener("mousemove", moveHandler);
-                document.addEventListener("touchmove", moveHandler);
-                document.addEventListener("mouseup", cancel);
-                document.addEventListener("touchend", cancel);
-                document.addEventListener("touchcancel", cancel);
-                pressTimer = setTimeout(() => {
-                    if (!moved) {
-                        window.location.href = "index.html";
-                    }
-                    cancel();
-                }, 600);
-            };
-            logoOverlay.addEventListener("mousedown", startPress);
-            logoOverlay.addEventListener("touchstart", startPress);
         }
 
         const creditRadio = document.getElementById('pay-credit');
@@ -928,8 +890,15 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
                         firstInvalid = firstInvalid || emailInput;
                         valid = false;
                     }
+                    const cardMissing = Array.from(cardInputs).some(inp => inp.value.trim() === '');
+                    const addressMissing = Array.from(addressInputs).some(inp => inp.value.trim() === '');
+                    const emailMissing = emailInput && emailInput.value.trim() === '';
+                    const phoneMissing = remember && remember.checked && phoneInput.value.trim() === '';
                     if (!valid) {
                         e.preventDefault();
+                        if (creditRadio && creditRadio.checked && cardMissing && !addressMissing && !emailMissing && !phoneMissing) {
+                            alert('Please fill out credit card details.');
+                        }
                         highlightField(firstInvalid);
                         return;
                     }
