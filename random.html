@@ -25,6 +25,7 @@
         @media (min-width:769px) { footer { position:fixed; bottom:0; width:100%; text-align:center; background-color:#f7f7f7; padding:20px 0; } .footer-links { padding-bottom:30px; } }
         @media (max-width:768px) { footer .footer-links { justify-content:center; padding-bottom:25px; margin-top:40px; } }
         .full-site-link { text-align:center; }
+        .source-link { font-size:0.7rem; text-decoration:underline; color:#000; }
     </style>
 </head>
 <body>
@@ -39,7 +40,7 @@
 
 <main>
     <h1>random</h1>
-    <p id="random-msg"></p>
+    <div id="random-msg"></div>
     <p>Feeling unpredictable? Refresh for a new message.</p>
 </main>
 
@@ -111,8 +112,29 @@ if (logoOverlay) {
     };
     logoOverlay.addEventListener("mousedown", start);
     logoOverlay.addEventListener("touchstart", start);
-const messages = ["no drops today","check back later","maybe not now","surprise coming soon"];
-document.getElementById("random-msg").textContent = messages[Math.floor(Math.random()*messages.length)];
+    const loadFact = () => {
+        const today = new Date();
+        const month = today.getMonth() + 1;
+        const day = today.getDate();
+        fetch(`https://en.wikipedia.org/api/rest_v1/feed/onthisday/events/${month}/${day}`)
+            .then(res => res.json())
+            .then(data => {
+                const container = document.getElementById('random-msg');
+                if (data.events && data.events.length) {
+                    const event = data.events[Math.floor(Math.random() * data.events.length)];
+                    const link = (event.pages && event.pages[0] && event.pages[0].content_urls && event.pages[0].content_urls.desktop)
+                        ? event.pages[0].content_urls.desktop.page
+                        : `https://en.wikipedia.org/wiki/${encodeURIComponent(event.title)}`;
+                    container.innerHTML = `${event.text} <a class="source-link" href="${link}" target="_blank" rel="noopener">source</a>`;
+                } else {
+                    container.textContent = 'No facts available today.';
+                }
+            })
+            .catch(() => {
+                document.getElementById('random-msg').textContent = 'Error fetching fact.';
+            });
+    };
+    loadFact();
 }
 </script>
     <script src="footer-highlight.js"></script>
