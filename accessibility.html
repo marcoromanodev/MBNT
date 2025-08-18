@@ -13,7 +13,7 @@
         iframe { width:100%; height:100%; border:none; }
         .time { font-size:0.7rem; text-align:center; margin-top:-15px; font-weight:600; }
         .header-line { border-top:1px solid #000; margin-top:5px; width:100%; }
-        .translate-container { text-align:center; position:sticky; top:0; background:#f7f7f7; z-index:1000; }
+        .translate-container { text-align:center; background:#f7f7f7; }
         .translate-button { margin-top:10px; padding:0; border:none; background:transparent; cursor:pointer; }
         .translate-button img { width:24px; height:auto; }
         #google_translate_element { display:none; margin-top:5px; }
@@ -39,11 +39,11 @@
     </div>
     <div class="time" id="current-time"></div>
 <div class="header-line"></div>
+    <div class="translate-container">
+        <button id="translate-button" class="translate-button"><img src="IMG_1870.png" alt="Translate"></button>
+        <div id="google_translate_element"></div>
+    </div>
 </header>
-<div class="translate-container">
-    <button id="translate-button" class="translate-button"><img src="IMG_1870.png" alt="Translate"></button>
-    <div id="google_translate_element"></div>
-</div>
 <main>
     <h1>accessibility</h1>
     <p>MaybeNot is committed to providing a website that is accessible to all visitors and aims to comply with the World Wide Web Consortium's Web Content Accessibility Guidelines&nbsp;2.1 up to level AA. We follow best practices and regularly review our site to improve usability.</p>
