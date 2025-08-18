@@ -174,7 +174,6 @@
             align-items: center;
         }
 
-
         .product-item a {
             display: block;
             text-decoration: none;
@@ -441,14 +440,16 @@
 
     setInterval(updateChicagoTime, 1000);
 
-    window.addEventListener('scroll', function() {
+    function toggleFullSiteLink() {
         var fullSiteLink = document.getElementById('full-site-link');
-        if (window.innerHeight + window.scrollY >= document.body.offsetHeight && window.innerWidth <= 768) {
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
             fullSiteLink.style.display = 'block';
         } else {
             fullSiteLink.style.display = 'none';
         }
-    });
+    }
+    window.addEventListener('scroll', toggleFullSiteLink);
+    toggleFullSiteLink();
 
                 const logoOverlay = document.querySelector(".logo-overlay");
     if (logoOverlay) {
