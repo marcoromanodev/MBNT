@@ -40,9 +40,8 @@
 
 <main>
     <h1>random</h1>
-    <div id="random-date"></div>
+    <p>Feeling unpredictable? Refresh the page</p>
     <div id="random-msg"></div>
-    <p>Feeling unpredictable? Refresh the page!</p>
 </main>
 
 <footer>
@@ -118,7 +117,6 @@ if (logoOverlay) {
         const month = today.getMonth() + 1;
         const day = today.getDate();
         const dateOptions = { month: 'long', day: 'numeric', year: 'numeric' };
-        document.getElementById('random-date').textContent = today.toLocaleDateString('en-US', dateOptions);
         fetch(`https://en.wikipedia.org/api/rest_v1/feed/onthisday/events/${month}/${day}`)
             .then(res => res.json())
             .then(data => {
@@ -128,7 +126,9 @@ if (logoOverlay) {
                     const link = (event.pages && event.pages[0] && event.pages[0].content_urls && event.pages[0].content_urls.desktop)
                         ? event.pages[0].content_urls.desktop.page
                         : `https://en.wikipedia.org/wiki/${encodeURIComponent(event.title)}`;
-                    container.innerHTML = `${event.text} <a class="source-link" href="${link}" target="_blank" rel="noopener">source</a>`;
+                    const eventDate = new Date(event.year, month - 1, day);
+                    const dateString = eventDate.toLocaleDateString('en-US', dateOptions);
+                    container.innerHTML = `${dateString} ${event.text} <a class="source-link" href="${link}" target="_blank" rel="noopener">source</a>`;
                 } else {
                     container.textContent = 'No facts available today.';
                 }
