@@ -198,14 +198,16 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
   document.head.appendChild(style);
 
-  window.addEventListener('scroll', function() {
+  function toggleFullSiteLink() {
     var fullSiteLink = document.getElementById('full-site-link');
     if (fullSiteLink) {
-      if (window.innerHeight + window.scrollY >= document.body.offsetHeight && window.innerWidth <= 768) {
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
         fullSiteLink.style.display = 'block';
       } else {
         fullSiteLink.style.display = 'none';
       }
     }
-  });
+  }
+  window.addEventListener('scroll', toggleFullSiteLink);
+  toggleFullSiteLink();
 });

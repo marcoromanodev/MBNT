@@ -243,7 +243,7 @@
             }
 
             .full-site-link {
-                display: block; /* Ensure it's visible only on mobile */
+                display: block;
                 width: 100%;
                 text-align: center;
                 padding: 10px;
@@ -308,7 +308,12 @@
             }
 
             .full-site-link {
-                display: none !important; /* Ensure full-site link doesn't show on desktop */
+                display: block;
+                width: 100%;
+                text-align: center;
+                padding: 10px;
+                background-color: #f7f7f7;
+                color: #000;
             }
         }
             /* Header and overlay fixes */
@@ -475,15 +480,17 @@
         }
     });
 
-    // Show the full-site link only when the user scrolls to the bottom on mobile
-    window.addEventListener('scroll', function() {
+    // Show the full-site link only when the user scrolls to the bottom
+    function toggleFullSiteLink() {
         var fullSiteLink = document.getElementById('full-site-link');
-        if (window.innerHeight + window.scrollY >= document.body.offsetHeight && window.innerWidth <= 768) {
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
             fullSiteLink.style.display = 'block';
         } else {
             fullSiteLink.style.display = 'none';
         }
-    });
+    }
+    window.addEventListener('scroll', toggleFullSiteLink);
+    toggleFullSiteLink();
 
                 const logoOverlay = document.querySelector(".logo-overlay");
     if (logoOverlay) {

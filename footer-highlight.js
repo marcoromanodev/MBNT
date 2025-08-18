@@ -1,6 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
   const current = window.location.pathname.split('/').pop() || 'index.html';
-  const isShopPage = current === 'shop.html' || document.querySelector('.product-item');
+  const isShopPage =
+    current === 'shop.html' ||
+    document.querySelector('.product-item') ||
+    document.querySelector('.product-grid');
   document.querySelectorAll('footer a').forEach(link => {
     const href = link.getAttribute('href');
     if (href === current || (isShopPage && href === 'shop.html')) {
