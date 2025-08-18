@@ -440,16 +440,7 @@
 
     setInterval(updateChicagoTime, 1000);
 
-    function toggleFullSiteLink() {
-        var fullSiteLink = document.getElementById('full-site-link');
-        if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-            fullSiteLink.style.display = 'block';
-        } else {
-            fullSiteLink.style.display = 'none';
-        }
-    }
-    window.addEventListener('scroll', toggleFullSiteLink);
-    toggleFullSiteLink();
+    // Full-site link is always visible; scroll handler removed
 
                 const logoOverlay = document.querySelector(".logo-overlay");
     if (logoOverlay) {
