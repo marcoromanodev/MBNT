@@ -15,10 +15,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  const style = document.createElement('style');
-  style.innerHTML = `
-    a { color: red !important; }
-    a:visited { color: red !important; }
-  `;
-  document.head.appendChild(style);
+  // Recolor only links that still use the browser's default blue or purple
+  document.querySelectorAll('a').forEach(link => {
+    const color = getComputedStyle(link).color;
+    if (
+      color === 'rgb(0, 0, 238)' ||
+      color === 'rgb(0, 0, 255)' ||
+      color === 'blue' ||
+      color === 'rgb(85, 26, 139)' ||
+      color === 'purple'
+    ) {
+      link.style.color = 'red';
+    }
+  });
 });
