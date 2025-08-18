@@ -36,7 +36,11 @@
         @media (min-width:769px) { footer { position:fixed; bottom:0; width:100%; text-align:center; background-color:#f7f7f7; padding:20px 0; } .footer-links { padding-bottom:30px; } }
         @media (max-width:768px) { footer .footer-links { justify-content:center; padding-bottom:25px; margin-top:40px; } }
         .full-site-link { text-align:center; }
-    </style>
+        .header-container { position: sticky; top: 0; z-index: 1000; }
+    .logo-container { height: 10vh; }
+    .time { margin-top: -5px; }
+    .cart-counter { margin-top: 5px; }
+</style>
 </head>
 <body>
 <header class="header-container">
@@ -45,9 +49,8 @@
         <div class="logo-overlay"></div>
     </div>
     <div class="time" id="current-time"></div>
-</header>
 <div class="header-line"></div>
-
+</header>
 <main>
     <h1>mailing list</h1>
     <p>Our webstore is currently closed and will reopen soon with our Fall/Winter 2025 collection.</p>

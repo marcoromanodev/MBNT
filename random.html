@@ -26,7 +26,11 @@
         @media (max-width:768px) { footer .footer-links { justify-content:center; padding-bottom:25px; margin-top:40px; } }
         .full-site-link { text-align:center; }
         .source-link { font-size:0.7rem; text-decoration:underline; color:#000; }
-    </style>
+        .header-container { position: sticky; top: 0; z-index: 1000; }
+    .logo-container { height: 10vh; }
+    .time { margin-top: -5px; }
+    .cart-counter { margin-top: 5px; }
+</style>
 </head>
 <body>
 <header class="header-container">
@@ -35,9 +39,8 @@
         <div class="logo-overlay"></div>
     </div>
     <div class="time" id="current-time"></div>
-</header>
 <div class="header-line"></div>
-
+</header>
 <main>
     <h1>random</h1>
     <p>Feeling unpredictable? Refresh the page!</p>
