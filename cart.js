@@ -439,8 +439,8 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
                 <div class="cart-footer" style="display:none;">
                     <a href="#">refund policy</a> |
                     <a href="#">shipping</a> |
-                    <a href="privacy.html">privacy policy</a> |
-                    <a href="terms.html">terms of service</a> |
+                    <a href="privacy.html" style="color: red;">privacy policy</a> |
+                    <a href="terms.html" style="color: red;">terms of service</a> |
                     <a href="#">cookies</a>
                 </div>
             </footer>
