@@ -40,8 +40,9 @@
 
 <main>
     <h1>random</h1>
+    <div id="random-date"></div>
     <div id="random-msg"></div>
-    <p>Feeling unpredictable? Refresh for a new message.</p>
+    <p>Feeling unpredictable? Refresh the page!</p>
 </main>
 
 <footer>
@@ -116,6 +117,8 @@ if (logoOverlay) {
         const today = new Date();
         const month = today.getMonth() + 1;
         const day = today.getDate();
+        const dateOptions = { month: 'long', day: 'numeric', year: 'numeric' };
+        document.getElementById('random-date').textContent = today.toLocaleDateString('en-US', dateOptions);
         fetch(`https://en.wikipedia.org/api/rest_v1/feed/onthisday/events/${month}/${day}`)
             .then(res => res.json())
             .then(data => {
