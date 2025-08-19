@@ -39,7 +39,7 @@
         .time {
             font-size: 0.7rem;
             text-align: center;
-            margin-top: -15px;
+            margin-top: 0;
             font-weight: 600;
         }
         iframe {
@@ -515,7 +515,7 @@
         .header-container { position: sticky; top: 0; z-index: 1000; }
         .logo-container { height: 10vh; }
         .time {
-            margin-top: -5px;
+            margin-top: 0;
             position: relative;
             z-index: 1001;
         }
@@ -729,10 +729,8 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
                 clock.textContent = currentTime + " CHICAGO";
             }
         }
-        document.addEventListener('DOMContentLoaded', () => {
-            updateChicagoTime();
-            setInterval(updateChicagoTime, 1000);
-        });
+        updateChicagoTime();
+        setInterval(updateChicagoTime, 1000);
 
         const fullSiteLink = document.getElementById('full-site-link');
         if (window.top !== window.self && fullSiteLink) {
