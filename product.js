@@ -200,6 +200,64 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
+  // "You May Also Like" recommendation section
+  const allProducts = [
+    { href: 'shirt.html', img: 'blackshirt.png', alt: 'T-Shirt' },
+    { href: 'hoodie.html', img: 'blackhoodie.png', alt: 'Hoodie' },
+    { href: 'truckerhat.html', img: 'truckerwhitefront.png', alt: 'Trucker Hat' },
+    { href: 'socks.html', img: 'blacksocks.png', alt: 'Socks' },
+    { href: 'shorts.html', img: 'blackshorts.png', alt: 'Shorts' },
+    { href: 'joggers.html', img: 'blackjoggers.png', alt: 'Joggers' },
+    { href: 'dufflebag.html', img: 'dufflebag1.png', alt: 'Duffle Bag' },
+    { href: 'backpack.html', img: 'backpackblack.png', alt: 'Backpack' },
+    { href: 'skateboard1.html', img: 'skateboard3v2.png', alt: 'Skateboard 1' },
+    { href: 'skateboard2.html', img: 'skateboard4.png', alt: 'Skateboard 2' },
+    { href: 'skateboard3.html', img: 'skateboard1.png', alt: 'Skateboard 3' }
+  ];
+
+  function shuffle(arr) {
+    return arr.sort(() => Math.random() - 0.5);
+  }
+
+  const recommendations = shuffle(allProducts.filter(p => p.href !== currentPage));
+
+  // TODO: Replace random selection with personalized suggestions based on user data
+  const productEl = document.querySelector('.product-item');
+  if (productEl && recommendations.length) {
+    const section = document.createElement('section');
+    section.className = 'recommend-section';
+    section.innerHTML = `
+      <h2>You May Also Like</h2>
+      <div class="recommend-container">
+        <button class="prev">&#10094;</button>
+        <div class="recommend-track"></div>
+        <button class="next">&#10095;</button>
+      </div>
+    `;
+    productEl.insertAdjacentElement('afterend', section);
+
+    const track = section.querySelector('.recommend-track');
+    recommendations.forEach(prod => {
+      const link = document.createElement('a');
+      link.className = 'recommend-item';
+      link.href = prod.href;
+      const img = document.createElement('img');
+      img.src = prod.img;
+      img.alt = prod.alt;
+      link.appendChild(img);
+      track.appendChild(link);
+    });
+
+    const prev = section.querySelector('.prev');
+    const next = section.querySelector('.next');
+    prev.addEventListener('click', () => {
+      track.scrollBy({ left: -track.clientWidth, behavior: 'smooth' });
+    });
+    next.addEventListener('click', () => {
+      track.scrollBy({ left: track.clientWidth, behavior: 'smooth' });
+    });
+  }
+
   // Inject footer similar to shop.html
   const footer = document.querySelector('footer');
   if (footer) {
@@ -276,6 +334,18 @@ document.addEventListener('DOMContentLoaded', () => {
     .size-select { margin-top:10px; display:flex; justify-content:center; }
     .size-select select { background:#000; color:#fff; border:1px solid #000; padding:5px; }
     .size-select select:hover, .size-select select:focus, .size-select select:active { border:2px solid red; }
+    .recommend-section { width:100%; margin:30px auto; text-align:center; }
+    .recommend-section h2 { margin-bottom:10px; }
+    .recommend-container { position:relative; max-width:800px; margin:0 auto; }
+    .recommend-track { display:flex; overflow-x:auto; scroll-behavior:smooth; scrollbar-width:none; }
+    .recommend-track::-webkit-scrollbar { display:none; }
+    .recommend-item { flex:0 0 calc(100% / 3); padding:5px; box-sizing:border-box; }
+    .recommend-item img { width:100%; height:auto; object-fit:cover; }
+    .recommend-container button { position:absolute; top:50%; transform:translateY(-50%); background:transparent; border:2px solid transparent; font-size:2rem; cursor:pointer; color:red; z-index:1; }
+    .recommend-container button:hover, .recommend-container button:focus, .recommend-container button:active { background:white; border:2px solid red; }
+    .recommend-container .prev { left:0; }
+    .recommend-container .next { right:0; }
+    @media (min-width:768px) { .recommend-item { flex:0 0 calc(100% / 4); } }
     `;
   document.head.appendChild(footerStyle);
 
