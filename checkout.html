@@ -23,7 +23,7 @@
             align-items: center;
             position: sticky;
             top: 0;
-            z-index: 10000;
+            z-index: 1000;
         }
         .logo-container {
             position: relative;
@@ -44,10 +44,6 @@
             text-align: center;
             margin-top: -5px;
             font-weight: 600;
-            position: relative;
-            z-index: 10001;
-            display: block;
-            width: 100%;
         }
         iframe {
             width: 100%;
@@ -58,8 +54,6 @@
             border-top: 1px solid #000;
             width: 100%;
             margin-top: 5px;
-            position: relative;
-            z-index: 1001;
         }
         .cart-buttons {
             display: flex;
@@ -728,24 +722,7 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
             }
         }
 
-        function ensureClock() {
-            const header = document.querySelector('.header-container');
-            let clock = document.getElementById('current-time');
-            if (!clock && header) {
-                clock = document.createElement('div');
-                clock.id = 'current-time';
-                clock.className = 'time';
-                const headerLine = header.querySelector('.header-line');
-                if (headerLine) {
-                    header.insertBefore(clock, headerLine);
-                } else {
-                    header.appendChild(clock);
-                }
-            }
-        }
-
         document.addEventListener('DOMContentLoaded', () => {
-            ensureClock();
             updateChicagoTime();
             setInterval(updateChicagoTime, 1000);
         });
