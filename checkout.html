@@ -514,7 +514,15 @@
         }
         .header-container { position: sticky; top: 0; z-index: 1000; }
         .logo-container { height: 10vh; }
-        .time { margin-top: -5px; display: block; }
+        .time {
+            margin-top: -5px;
+            position: relative;
+            z-index: 1001;
+        }
+        .header-line {
+            position: relative;
+            z-index: 1001;
+        }
     </style>
 </head>
 <body>
@@ -716,10 +724,15 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
                 day: '2-digit',
             };
             const currentTime = new Intl.DateTimeFormat('en-US', options).format(new Date()).replace(",", "");
-            document.getElementById('current-time').textContent = currentTime + " CHICAGO";
+            const clock = document.getElementById('current-time');
+            if (clock) {
+                clock.textContent = currentTime + " CHICAGO";
+            }
         }
-        updateChicagoTime();
-        setInterval(updateChicagoTime, 1000);
+        document.addEventListener('DOMContentLoaded', () => {
+            updateChicagoTime();
+            setInterval(updateChicagoTime, 1000);
+        });
 
         const fullSiteLink = document.getElementById('full-site-link');
         if (window.top !== window.self && fullSiteLink) {
