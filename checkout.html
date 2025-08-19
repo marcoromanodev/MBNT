@@ -514,7 +514,7 @@
         }
         .header-container { position: sticky; top: 0; z-index: 1000; }
         .logo-container { height: 10vh; }
-        .time { margin-top: -5px; }
+        .time { margin-top: -5px; display: block; }
     </style>
 </head>
 <body>
@@ -524,7 +524,7 @@
             <div class="logo-overlay"></div>
         </div>
         <div class="time" id="current-time"></div>
-    <div class="header-line"></div>
+        <div class="header-line"></div>
 </header>
 <div id="final-checkout">
         <form id="final-form">
@@ -706,7 +706,6 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
 </footer>
 <script src="cart.js"></script>
     <script>
-        const timeEl = document.getElementById('current-time');
         function updateChicagoTime() {
             const options = {
                 timeZone: 'America/Chicago',
@@ -716,10 +715,8 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
                 month: '2-digit',
                 day: '2-digit',
             };
-            if (timeEl) {
-                const currentTime = new Intl.DateTimeFormat('en-US', options).format(new Date()).replace(",", "");
-                timeEl.textContent = currentTime + " CHICAGO";
-            }
+            const currentTime = new Intl.DateTimeFormat('en-US', options).format(new Date()).replace(",", "");
+            document.getElementById('current-time').textContent = currentTime + " CHICAGO";
         }
         updateChicagoTime();
         setInterval(updateChicagoTime, 1000);
