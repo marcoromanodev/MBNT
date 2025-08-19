@@ -728,7 +728,7 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
+        (function ensureClock() {
             const header = document.querySelector('.header-container');
             let clock = document.getElementById('current-time');
             if (!clock && header) {
@@ -742,9 +742,10 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
                     header.appendChild(clock);
                 }
             }
-            updateChicagoTime();
-            setInterval(updateChicagoTime, 1000);
-        });
+        })();
+
+        updateChicagoTime();
+        setInterval(updateChicagoTime, 1000);
 
         const fullSiteLink = document.getElementById('full-site-link');
         if (window.top !== window.self && fullSiteLink) {
