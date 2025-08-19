@@ -12,6 +12,7 @@ function initSliders() {
       img.style.width = '100%';
       img.style.height = '100%';
       img.style.objectFit = 'contain';
+      img.style.filter = 'drop-shadow(0 4px 10px rgba(0,0,0,0.5))';
     }
     slider.style.aspectRatio = '1 / 1';
     slider.style.overflow = 'hidden';
