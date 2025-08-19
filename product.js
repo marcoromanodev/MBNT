@@ -246,6 +246,15 @@ document.addEventListener('DOMContentLoaded', () => {
       img.src = prod.img;
       img.alt = prod.alt;
       link.appendChild(img);
+
+      // Highlight the clicked recommendation with a red outline
+      link.addEventListener('click', () => {
+        track.querySelectorAll('.recommend-item').forEach(item => {
+          item.classList.remove('selected');
+        });
+        link.classList.add('selected');
+      });
+
       return link;
     }
 
@@ -360,8 +369,9 @@ document.addEventListener('DOMContentLoaded', () => {
     .recommend-container { position:relative; max-width:800px; margin:0 auto; }
     .recommend-track { display:flex; overflow-x:auto; scroll-behavior:smooth; scrollbar-width:none; }
     .recommend-track::-webkit-scrollbar { display:none; }
-    .recommend-item { flex:0 0 calc(100% / 3); padding:5px; box-sizing:border-box; }
+    .recommend-item { flex:0 0 calc(100% / 3); padding:5px; box-sizing:border-box; border:2px solid transparent; }
     .recommend-item img { width:100%; height:auto; object-fit:cover; }
+    .recommend-item.selected, .recommend-item:hover, .recommend-item:focus, .recommend-item:active { border:2px solid red; }
     .recommend-container button { position:absolute; top:50%; transform:translateY(-50%); background:transparent; border:2px solid transparent; font-size:2rem; cursor:pointer; color:red; z-index:1; }
     .recommend-container button:hover, .recommend-container button:focus, .recommend-container button:active { background:white; border:2px solid red; }
     .recommend-container .prev { left:0; }
