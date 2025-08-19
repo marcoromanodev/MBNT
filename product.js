@@ -237,7 +237,8 @@ document.addEventListener('DOMContentLoaded', () => {
     productEl.insertAdjacentElement('afterend', section);
 
     const track = section.querySelector('.recommend-track');
-    recommendations.forEach(prod => {
+
+    function createItem(prod) {
       const link = document.createElement('a');
       link.className = 'recommend-item';
       link.href = prod.href;
@@ -245,15 +246,35 @@ document.addEventListener('DOMContentLoaded', () => {
       img.src = prod.img;
       img.alt = prod.alt;
       link.appendChild(img);
-      track.appendChild(link);
-    });
+      return link;
+    }
+
+    const itemsPerView = window.innerWidth >= 768 ? 4 : 3;
+
+    function addItems(count, toStart = false) {
+      for (let i = 0; i < count; i++) {
+        const prod = recommendations[Math.floor(Math.random() * recommendations.length)];
+        const item = createItem(prod);
+        if (toStart) {
+          track.prepend(item);
+          const width = track.clientWidth / itemsPerView;
+          track.scrollLeft += width;
+        } else {
+          track.appendChild(item);
+        }
+      }
+    }
+
+    addItems(itemsPerView * 2);
 
     const prev = section.querySelector('.prev');
     const next = section.querySelector('.next');
     prev.addEventListener('click', () => {
+      addItems(itemsPerView, true);
       track.scrollBy({ left: -track.clientWidth, behavior: 'smooth' });
     });
     next.addEventListener('click', () => {
+      addItems(itemsPerView);
       track.scrollBy({ left: track.clientWidth, behavior: 'smooth' });
     });
   }
