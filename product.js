@@ -125,7 +125,14 @@ document.addEventListener('DOMContentLoaded', () => {
     'joggers.html': 'pants.html',
     'shorts.html': 'pants.html',
     'americandenim.html': 'pants.html',
-    'hoodie.html': 'sweatshirts.html'
+    'hoodie.html': 'sweatshirts.html',
+    'dufflebag.html': 'bags.html',
+    'backpack.html': 'bags.html',
+    'truckerhat.html': 'hats.html',
+    'socks.html': 'accessories.html',
+    'skateboard1.html': 'skate.html',
+    'skateboard2.html': 'skate.html',
+    'skateboard3.html': 'skate.html'
   };
   const currentPage = window.location.pathname.split('/').pop();
   const category = categoryMap[currentPage];
