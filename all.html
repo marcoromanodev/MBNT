@@ -304,6 +304,9 @@
     .logo-container { height: 10vh; }
     .time { margin-top: -5px; }
     .cart-counter { margin-top: 5px; }
+        .pagination { text-align: center; margin-top: 20px; }
+        .pagination button { font-family: 'Courier New', Courier, monospace; background: #fff; color: #000; border: 1px solid #000; cursor: pointer; }
+        .pagination button:hover { background: red; color: #fff; }
 </style>
 </head>
 <body>
@@ -447,6 +450,9 @@
     </a>
 </div>
     </div>
+    <div class="pagination">
+        <button id="next-page">next page</button>
+    </div>
 </section>
 
 <!-- Desktop Nav -->
@@ -537,6 +543,30 @@
     }
 
     setInterval(updateChicagoTime, 1000);
+
+    const items = Array.from(document.querySelectorAll('.product-item'));
+    const itemsPerPage = 9;
+    let currentPage = 0;
+    const totalPages = Math.ceil(items.length / itemsPerPage);
+    const nextBtn = document.getElementById('next-page');
+
+    function showPage(page) {
+        items.forEach((item, index) => {
+            item.style.display = Math.floor(index / itemsPerPage) === page ? 'block' : 'none';
+        });
+        if (nextBtn) {
+            nextBtn.style.display = page < totalPages - 1 ? 'block' : 'none';
+        }
+    }
+
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            currentPage++;
+            showPage(currentPage);
+        });
+    }
+
+    showPage(currentPage);
 
     // Full-site link is always visible; scroll handler removed
 
