@@ -2,6 +2,8 @@
 // Expects a div.image-slider with data-images="img1,img2,..."
 // and an img element plus .prev and .next buttons inside.
 
+const PRODUCT_SHADOW = 'drop-shadow(0 4px 10px rgba(0,0,0,0.5))';
+
 function initSliders() {
   document.querySelectorAll('.image-slider').forEach(slider => {
     const allImages = slider.dataset.images ? slider.dataset.images.split(',') : [];
@@ -13,7 +15,7 @@ function initSliders() {
       img.style.width = '100%';
       img.style.height = '100%';
       img.style.objectFit = 'contain';
-      img.style.filter = 'drop-shadow(0 4px 10px rgba(0,0,0,0.5))';
+      img.style.filter = PRODUCT_SHADOW;
     }
     slider.style.aspectRatio = '1 / 1';
     slider.style.overflow = 'hidden';
@@ -55,6 +57,10 @@ function initSliders() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  const shadowStyle = document.createElement('style');
+  shadowStyle.textContent = `.image-slider img { filter: ${PRODUCT_SHADOW}; }`;
+  document.head.appendChild(shadowStyle);
+
   initSliders();
 
   function updateChicagoTime() {
@@ -231,8 +237,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Footer styles
-  const style = document.createElement('style');
-  style.textContent = `
+  const footerStyle = document.createElement('style');
+  footerStyle.textContent = `
     .footer-links { display:flex; justify-content:center; flex-wrap:wrap; gap:15px; background-color:#f7f7f7; }
     .footer-line { display:flex; justify-content:center; flex-wrap:wrap; gap:15px; padding-bottom:10px; }
     .footer-line.extra-padding { padding-bottom:10px; }
@@ -271,7 +277,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .size-select select { background:#000; color:#fff; border:1px solid #000; padding:5px; }
     .size-select select:hover, .size-select select:focus, .size-select select:active { border:2px solid red; }
     `;
-  document.head.appendChild(style);
+  document.head.appendChild(footerStyle);
 
   function toggleFullSiteLink() {
     var fullSiteLink = document.getElementById('full-site-link');
