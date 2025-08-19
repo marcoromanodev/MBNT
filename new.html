@@ -304,7 +304,7 @@
     .logo-container { height: 10vh; }
     .time { margin-top: -5px; }
         .cart-counter { margin-top: 5px; }
-        .pagination { text-align: center; margin-top: 20px; }
+        .pagination { display: flex; justify-content: center; gap: 10px; margin-top: 20px; }
         .pagination button { font-family: 'Courier New', Courier, monospace; background: #fff; color: #000; border: 1px solid #000; cursor: pointer; }
         .pagination button:hover { background: red; color: #fff; }
 </style>
@@ -452,6 +452,7 @@
 </div>
     </div>
     <div class="pagination">
+        <button id="prev-page">previous page</button>
         <button id="next-page">next page</button>
     </div>
 </section>
@@ -550,20 +551,44 @@
     let currentPage = 0;
     const totalPages = Math.ceil(items.length / itemsPerPage);
     const nextBtn = document.getElementById('next-page');
+    const prevBtn = document.getElementById('prev-page');
 
     function showPage(page) {
         items.forEach((item, index) => {
             item.style.display = Math.floor(index / itemsPerPage) === page ? 'block' : 'none';
         });
         if (nextBtn) {
-            nextBtn.style.display = page < totalPages - 1 ? 'block' : 'none';
+            nextBtn.style.display = page < totalPages - 1 ? 'inline-block' : 'none';
+        }
+        if (prevBtn) {
+            prevBtn.style.display = page > 0 ? 'inline-block' : 'none';
+        }
+    }
+
+    function scrollToFirst(page) {
+        const first = items[page * itemsPerPage];
+        if (first) {
+            first.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     }
 
     if (nextBtn) {
         nextBtn.addEventListener('click', () => {
-            currentPage++;
-            showPage(currentPage);
+            if (currentPage < totalPages - 1) {
+                currentPage++;
+                showPage(currentPage);
+                scrollToFirst(currentPage);
+            }
+        });
+    }
+
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            if (currentPage > 0) {
+                currentPage--;
+                showPage(currentPage);
+                scrollToFirst(currentPage);
+            }
         });
     }
 
