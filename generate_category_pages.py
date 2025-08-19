@@ -26,7 +26,7 @@ products = [
     {
         "name": "Hat",
         "price": 50,
-        "image": "blackhat.png",
+        "image": "whitehat.png",
         "link": "hat.html",
         "categories": ["hats", "new", "all"],
     },
@@ -40,7 +40,7 @@ products = [
     {
         "name": "T-Shirt",
         "price": 40,
-        "image": "blackshirt.png",
+        "image": "whiteshirt.png",
         "link": "shirt.html",
         "categories": ["shirts", "t-shirts", "new", "all"],
     },
@@ -54,7 +54,7 @@ products = [
     {
         "name": "Shorts",
         "price": 50,
-        "image": "blackshorts.png",
+        "image": "whiteshorts.png",
         "link": "shorts.html",
         "categories": ["pants", "new", "all"],
     },
