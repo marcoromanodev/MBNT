@@ -4,8 +4,9 @@
 
 function initSliders() {
   document.querySelectorAll('.image-slider').forEach(slider => {
-    const images = slider.dataset.images ? slider.dataset.images.split(',') : [];
-    if (images.length === 0) return;
+    const allImages = slider.dataset.images ? slider.dataset.images.split(',') : [];
+    if (allImages.length === 0) return;
+    let images = [...allImages];
     let index = 0;
     const img = slider.querySelector('img');
     if (img) {
@@ -37,13 +38,14 @@ function initSliders() {
     const product = slider.closest('.product-item');
     product?.querySelectorAll('.color-option').forEach((opt) => {
       opt.addEventListener('click', () => {
+        const color = opt.dataset.color || '';
+        images = color ? allImages.filter(src => src.includes(color)) : [...allImages];
+        if (images.length === 0) images = [opt.dataset.image];
         const idx = images.indexOf(opt.dataset.image);
-        if (idx !== -1) {
-          index = idx;
-          img.src = images[index];
-        }
+        index = idx !== -1 ? idx : 0;
+        img.src = images[index];
         if (product) {
-          product.dataset.selectedColor = opt.dataset.color || '';
+          product.dataset.selectedColor = color;
           product.querySelectorAll('.color-option').forEach(o => o.classList.remove('selected'));
           opt.classList.add('selected');
         }
