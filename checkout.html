@@ -712,6 +712,15 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
 <script src="cart.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', () => {
+        const header = document.querySelector('.header-container');
+        let timeEl = document.getElementById('current-time');
+        if (header && !timeEl) {
+            timeEl = document.createElement('div');
+            timeEl.id = 'current-time';
+            timeEl.className = 'time';
+            const headerLine = header.querySelector('.header-line');
+            header.insertBefore(timeEl, headerLine);
+        }
         function updateChicagoTime() {
             const options = {
                 timeZone: 'America/Chicago',
@@ -721,8 +730,10 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
                 month: '2-digit',
                 day: '2-digit',
             };
-            const currentTime = new Intl.DateTimeFormat('en-US', options).format(new Date()).replace(",", "");
-            document.getElementById('current-time').textContent = currentTime + " CHICAGO";
+            if (timeEl) {
+                const currentTime = new Intl.DateTimeFormat('en-US', options).format(new Date()).replace(",", "");
+                timeEl.textContent = currentTime + " CHICAGO";
+            }
         }
         updateChicagoTime();
         setInterval(updateChicagoTime, 1000);
