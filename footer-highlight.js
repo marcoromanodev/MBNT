@@ -4,6 +4,23 @@ document.addEventListener('DOMContentLoaded', () => {
     current === 'shop.html' ||
     document.querySelector('.product-item') ||
     document.querySelector('.product-grid');
+
+  // Ensure all shop and product pages use a sticky header like the t-shirt page
+  const header = document.querySelector('.header-container');
+  if (header) {
+    header.style.position = 'sticky';
+    header.style.top = '0';
+    header.style.zIndex = '1000';
+  }
+
+  const { documentElement: html, body } = document;
+  [html, body].forEach(el => {
+    el.style.display = 'block';
+    el.style.minHeight = '100%';
+  });
+  body.style.flexDirection = '';
+  body.style.alignItems = '';
+
   document.querySelectorAll('footer a').forEach(link => {
     const href = link.getAttribute('href');
     if (href === current || (isShopPage && href === 'shop.html')) {
