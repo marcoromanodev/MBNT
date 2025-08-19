@@ -21,14 +21,11 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
         }
         .logo-container {
             position: relative;
             width: 20vw;
-            height: 10vh;
+            height: 15vh;
         }
         .logo-overlay {
             position: absolute;
@@ -42,7 +39,7 @@
         .time {
             font-size: 0.7rem;
             text-align: center;
-            margin-top: -5px;
+            margin-top: -15px;
             font-weight: 600;
         }
         iframe {
@@ -709,7 +706,6 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
 </footer>
 <script src="cart.js"></script>
     <script>
-    document.addEventListener('DOMContentLoaded', () => {
         const timeEl = document.getElementById('current-time');
         function updateChicagoTime() {
             const options = {
@@ -980,7 +976,6 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
                 emailInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
             });
         }
-    });
     </script>
     <script src="footer-highlight.js"></script>
 </body>
