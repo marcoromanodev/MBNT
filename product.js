@@ -378,7 +378,8 @@ document.addEventListener('DOMContentLoaded', () => {
     .size-select select { background:#000; color:#fff; border:1px solid #000; padding:5px; }
     .size-select select:hover, .size-select select:focus, .size-select select:active { border:2px solid red; }
     .product-item { margin-bottom:0; padding-bottom:0; }
-    .recommend-section { width:100%; margin:0 auto; text-align:center; }
+    .recommend-section { width:100%; margin:0 auto; text-align:center; margin-bottom:0; padding-bottom:0; }
+    .desktop-nav { margin-top:0; }
     .recommend-section h2 { margin:0 0 10px; }
     .recommend-container { position:relative; max-width:800px; margin:0 auto; }
     .recommend-track { display:flex; overflow-x:auto; scroll-behavior:smooth; scrollbar-width:none; }
@@ -396,7 +397,7 @@ document.addEventListener('DOMContentLoaded', () => {
     @media (min-width:768px) {
       .recommend-item { flex:0 0 calc(100% / 4); }
       .product-item { margin-bottom:0; padding-bottom:0; }
-      .recommend-section { margin-top:20px; padding-top:20px; }
+      .recommend-section { margin-top:20px; padding-top:20px; margin-bottom:0; padding-bottom:0; }
     }
     `;
   document.head.appendChild(footerStyle);
