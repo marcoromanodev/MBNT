@@ -236,8 +236,16 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
     // Append recommendations directly inside the product container to avoid
     // extra whitespace on desktop between the product details and
-    // recommendations.
+    // recommendations. Place the category navigation directly beneath this
+    // section so there is no gap on desktop.
     productEl.appendChild(section);
+
+    const desktopNav = document.querySelector('.desktop-nav');
+    if (desktopNav) {
+      productEl.appendChild(desktopNav);
+      desktopNav.style.marginTop = '0';
+      desktopNav.style.paddingTop = '0';
+    }
 
     const track = section.querySelector('.recommend-track');
 
@@ -380,6 +388,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .product-item { margin-bottom:0 !important; padding-bottom:0 !important; }
     .recommend-section { width:100%; margin:0 auto; text-align:center; margin-bottom:0 !important; padding-bottom:0 !important; }
     .desktop-nav { margin-top:0 !important; padding-top:0 !important; }
+    .mobile-nav { margin-top:0 !important; }
     .recommend-section h2 { margin:0 0 10px; }
     .recommend-container { position:relative; max-width:800px; margin:0 auto; }
     .recommend-track { display:flex; overflow-x:auto; scroll-behavior:smooth; scrollbar-width:none; }
@@ -398,6 +407,8 @@ document.addEventListener('DOMContentLoaded', () => {
       .recommend-item { flex:0 0 calc(100% / 4); }
       .product-item { margin-bottom:0 !important; padding-bottom:0 !important; }
       .recommend-section { margin-top:20px; padding-top:20px; margin-bottom:0 !important; padding-bottom:0 !important; }
+      .desktop-nav { display:block !important; }
+      .mobile-nav { display:none !important; }
     }
     `;
   document.head.appendChild(footerStyle);
