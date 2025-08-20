@@ -396,7 +396,7 @@ document.addEventListener('DOMContentLoaded', () => {
     @media (min-width:768px) {
       .recommend-item { flex:0 0 calc(100% / 4); }
       .product-item { margin-bottom:0; padding-bottom:0; }
-      .recommend-section { margin-top:0; padding-top:0; }
+      .recommend-section { margin-top:20px; padding-top:20px; }
     }
     `;
   document.head.appendChild(footerStyle);
