@@ -234,7 +234,10 @@ document.addEventListener('DOMContentLoaded', () => {
         <button class="next">&#10095;</button>
       </div>
     `;
-    productEl.insertAdjacentElement('afterend', section);
+    // Append recommendations directly inside the product container to avoid
+    // extra whitespace on desktop between the product details and
+    // recommendations.
+    productEl.appendChild(section);
 
     const track = section.querySelector('.recommend-track');
 
