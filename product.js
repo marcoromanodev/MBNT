@@ -375,7 +375,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .size-select select { background:#000; color:#fff; border:1px solid #000; padding:5px; }
     .size-select select:hover, .size-select select:focus, .size-select select:active { border:2px solid red; }
     .recommend-section { width:100%; margin:30px auto; text-align:center; }
-    .recommend-section h2 { margin-bottom:10px; }
+    .recommend-section h2 { margin:0 0 10px; }
     .recommend-container { position:relative; max-width:800px; margin:0 auto; }
     .recommend-track { display:flex; overflow-x:auto; scroll-behavior:smooth; scrollbar-width:none; }
     .recommend-track::-webkit-scrollbar { display:none; }
@@ -386,7 +386,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .recommend-container button:hover, .recommend-container button:focus, .recommend-container button:active { background:white; border:2px solid red; }
     .recommend-container .prev { left:0; }
     .recommend-container .next { right:0; }
-    @media (min-width:768px) { .recommend-item { flex:0 0 calc(100% / 4); } }
+    @media (min-width:768px) { .recommend-item { flex:0 0 calc(100% / 4); } .recommend-section { margin-top:0; } }
     `;
   document.head.appendChild(footerStyle);
 
