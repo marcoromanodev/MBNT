@@ -260,9 +260,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const itemsPerView = window.innerWidth >= 768 ? 4 : 3;
 
+    function getRandomProducts(count) {
+      const pool = [...recommendations];
+      const selected = [];
+      for (let i = 0; i < count && pool.length; i++) {
+        const idx = Math.floor(Math.random() * pool.length);
+        selected.push(pool.splice(idx, 1)[0]);
+      }
+      return selected;
+    }
+
     function addItems(count, toStart = false) {
-      for (let i = 0; i < count; i++) {
-        const prod = recommendations[Math.floor(Math.random() * recommendations.length)];
+      const prods = getRandomProducts(count);
+      prods.forEach(prod => {
         const item = createItem(prod);
         if (toStart) {
           track.prepend(item);
@@ -271,7 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
           track.appendChild(item);
         }
-      }
+      });
     }
 
     addItems(itemsPerView * 2);
