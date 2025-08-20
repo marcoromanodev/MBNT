@@ -223,8 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // TODO: Replace random selection with personalized suggestions based on user data
   const productEl = document.querySelector('.product-item');
-  const desktopNav = document.querySelector('.desktop-nav');
-  if (productEl && desktopNav && recommendations.length) {
+  if (productEl && recommendations.length) {
     const section = document.createElement('section');
     section.className = 'recommend-section';
     section.innerHTML = `
@@ -235,9 +234,10 @@ document.addEventListener('DOMContentLoaded', () => {
         <button class="next">&#10095;</button>
       </div>
     `;
-    // Place recommendations after the category navigation so the nav stays
-    // directly beneath the product information.
-    desktopNav.insertAdjacentElement('afterend', section);
+    // Append recommendations directly inside the product container to avoid
+    // extra whitespace on desktop between the product details and
+    // recommendations.
+    productEl.appendChild(section);
 
     const track = section.querySelector('.recommend-track');
 
