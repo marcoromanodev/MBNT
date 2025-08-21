@@ -234,11 +234,14 @@
             opacity: 0;
             transition: opacity 0.3s ease;
             z-index: 1;
+            box-sizing: border-box;
         }
 
         .product-item:hover .product-info,
-        .product-item:focus .product-info {
+        .product-item:focus .product-info,
+        .product-item:active .product-info {
             opacity: 1;
+            border: 2px solid red;
         }
 
         /* Footer Links styling */
@@ -326,18 +329,9 @@
         
 <div class="product-item">
     <a href="hat.html">
-        <img src="whitehat.png" alt="Baseball Cap">
+        <img src="whitehat.png" alt="Hat">
         <div class="product-info">
-            <p>Baseball Cap</p>
-            <p>$40</p>
-        </div>
-    </a>
-</div>
-<div class="product-item">
-    <a href="truckerhat.html">
-        <img src="truckerwhitefront.png" alt="Trucker Hat">
-        <div class="product-info">
-            <p>Trucker Hat</p>
+            <p>Hat</p>
             <p>$50</p>
         </div>
     </a>

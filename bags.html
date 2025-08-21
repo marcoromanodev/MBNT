@@ -234,11 +234,14 @@
             opacity: 0;
             transition: opacity 0.3s ease;
             z-index: 1;
+            box-sizing: border-box;
         }
 
         .product-item:hover .product-info,
-        .product-item:focus .product-info {
+        .product-item:focus .product-info,
+        .product-item:active .product-info {
             opacity: 1;
+            border: 2px solid red;
         }
 
         /* Footer Links styling */
@@ -322,26 +325,8 @@
 
 </header>
 <section class="product-section">
-    
-<div class="product-grid">
-<div class="product-item">
-    <a href="dufflebag.html">
-        <img src="dufflebag1.png" alt="Duffle Bag">
-        <div class="product-info">
-            <p>Duffle Bag</p>
-            <p>$80</p>
-        </div>
-    </a>
-</div>
-<div class="product-item">
-    <a href="backpack.html">
-        <img src="backpackblack.png" alt="Backpack">
-        <div class="product-info">
-            <p>Backpack</p>
-            <p>$60</p>
-        </div>
-    </a>
-</div>
+    <div class="product-grid">
+        <div class="coming-soon">Coming Soon..</div>
     </div>
 </section>
 
