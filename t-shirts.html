@@ -234,11 +234,14 @@
             opacity: 0;
             transition: opacity 0.3s ease;
             z-index: 1;
+            box-sizing: border-box;
         }
 
         .product-item:hover .product-info,
-        .product-item:focus .product-info {
+        .product-item:focus .product-info,
+        .product-item:active .product-info {
             opacity: 1;
+            border: 2px solid red;
         }
 
         /* Footer Links styling */
@@ -329,7 +332,7 @@
         <img src="whiteshirt.png" alt="T-Shirt">
         <div class="product-info">
             <p>T-Shirt</p>
-            <p>$30</p>
+            <p>$40</p>
         </div>
     </a>
 </div>
