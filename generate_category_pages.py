@@ -59,7 +59,7 @@ products = [
         "categories": ["pants", "new", "all"],
     },
     {
-        "name": "American Denim",
+        "name": "American Denim Jeans",
         "price": 90,
         "image": "bluejeans.png",
         "link": "americandenim.html",
