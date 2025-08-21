@@ -65,6 +65,55 @@ products = [
         "link": "americandenim.html",
         "categories": ["pants", "new", "all"],
     },
+    {
+        "name": "Duffle Bag",
+        "price": 80,
+        "image": "dufflebag1.png",
+        "link": "dufflebag.html",
+        "categories": ["bags", "new", "all"],
+    },
+    {
+        "name": "Backpack",
+        "price": 60,
+        "image": "backpackblack.png",
+        "link": "backpack.html",
+        "categories": ["bags", "new", "all"],
+    },
+    {
+        "name": "Trucker Hat",
+        "price": 50,
+        "image": "truckerwhitefront.png",
+        "link": "truckerhat.html",
+        "categories": ["hats", "new", "all"],
+    },
+    {
+        "name": "Socks",
+        "price": 20,
+        "image": "blacksocks.png",
+        "link": "socks.html",
+        "categories": ["accessories", "new", "all"],
+    },
+    {
+        "name": "Skateboard 1",
+        "price": 100,
+        "image": "skateboard3v2.png",
+        "link": "skateboard1.html",
+        "categories": ["skate", "new", "all"],
+    },
+    {
+        "name": "Skateboard 2",
+        "price": 100,
+        "image": "skateboard4.png",
+        "link": "skateboard2.html",
+        "categories": ["skate", "new", "all"],
+    },
+    {
+        "name": "Skateboard 3",
+        "price": 100,
+        "image": "skateboard1.png",
+        "link": "skateboard3.html",
+        "categories": ["skate", "new", "all"],
+    },
 ]
 
 item_template = """
