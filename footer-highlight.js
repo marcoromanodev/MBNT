@@ -30,7 +30,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Bold the current category in navigation lists
   document.querySelectorAll('.desktop-nav a, .mobile-nav a').forEach(link => {
-    if (link.getAttribute('href') === current) {
+    const href = link.getAttribute('href');
+    const base = href.replace('.html', '');
+    if (
+      href === current ||
+      current.startsWith(`${base}-`) ||
+      (isShopPage && href === 'shop.html')
+    ) {
       link.style.fontWeight = 'bold';
     }
   });
