@@ -4,6 +4,8 @@ import os
 with open('category_template.html') as f:
     template = f.read()
 
+ITEMS_PER_PAGE = 9
+
 categories = [
     ("new", "New"),
     ("jackets", "Jackets"),
@@ -128,16 +130,35 @@ item_template = """
 </div>"""
 
 for slug, title in categories:
-    items = []
-    for product in products:
-        if slug in product["categories"]:
-            items.append(item_template.format(**product))
-    if not items:
-        items_content = '<div class="coming-soon">Coming Soon..</div>'
-    else:
-        items_content = "\n    ".join(items)
-    page = template.replace("{{TITLE}}", title).replace("{{ITEMS}}", items_content)
-    filename = f"{slug}.html"
-    with open(filename, "w") as f:
-        f.write(page)
-    print(f"Wrote {filename}")
+    category_products = [p for p in products if slug in p["categories"]]
+    total_pages = max(1, (len(category_products) + ITEMS_PER_PAGE - 1) // ITEMS_PER_PAGE)
+    for page_num in range(1, total_pages + 1):
+        start = (page_num - 1) * ITEMS_PER_PAGE
+        end = start + ITEMS_PER_PAGE
+        page_products = category_products[start:end]
+        if not page_products:
+            items_content = '<div class="coming-soon">Coming Soon..</div>'
+        else:
+            items = [item_template.format(**prod) for prod in page_products]
+            items_content = "\n    ".join(items)
+
+        pagination_links = []
+        if page_num > 1:
+            prev_file = f"{slug}.html" if page_num == 2 else f"{slug}-page{page_num - 1}.html"
+            pagination_links.append(f'<a href="{prev_file}" class="pagination-button">Previous Page</a>')
+        if page_num < total_pages:
+            next_file = f"{slug}-page{page_num + 1}.html"
+            pagination_links.append(f'<a href="{next_file}" class="pagination-button">Next Page</a>')
+        if pagination_links:
+            pagination_html = '<div class="pagination">' + "\n        ".join(pagination_links) + '</div>'
+        else:
+            pagination_html = ''
+
+        page = (template.replace("{{TITLE}}", title)
+                         .replace("{{ITEMS}}", items_content)
+                         .replace("{{PAGINATION}}", pagination_html))
+
+        filename = f"{slug}.html" if page_num == 1 else f"{slug}-page{page_num}.html"
+        with open(filename, "w") as f:
+            f.write(page)
+        print(f"Wrote {filename}")
