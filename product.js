@@ -407,8 +407,8 @@ document.addEventListener('DOMContentLoaded', () => {
     .size-select { margin-top:10px; display:flex; justify-content:center; }
     .size-select select { background:#000; color:#fff; border:1px solid #000; padding:5px; }
     .size-select select:hover, .size-select select:focus, .size-select select:active { border:2px solid red; }
-    .quantity-select { margin-top:10px; display:flex; justify-content:center; align-items:center; background:#000; color:#fff; gap:15px; padding:5px 10px; }
-    .quantity-select button { background:transparent; border:none; color:#fff; font-size:1rem; cursor:pointer; }
+    .quantity-select { margin-top:10px; display:flex; justify-content:center; align-items:center; background:#000; color:#fff; gap:7.5px; padding:2.5px 5px; font-size:0.5rem; }
+    .quantity-select button { background:transparent; border:none; color:#fff; font-size:0.5rem; cursor:pointer; }
     .quantity-select button:hover, .quantity-select button:focus, .quantity-select button:active { color:red; }
     .product-item { margin-bottom:0 !important; padding-bottom:0 !important; }
     .recommend-section { width:100%; margin:0 auto; text-align:center; margin-bottom:0 !important; padding-bottom:0 !important; }
