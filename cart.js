@@ -1,5 +1,9 @@
 let cart = [];
 
+function getTotalQuantity() {
+    return cart.reduce((sum, item) => sum + (parseInt(item.quantity) || 1), 0);
+}
+
 const shippingCost = 15;
 const stateTaxRates = {
     AL: 0.04, AK: 0, AZ: 0.056, AR: 0.065, CA: 0.0725, CO: 0.029,
@@ -123,6 +127,7 @@ function addToCart(button) {
         image: item.querySelector('img') ? item.querySelector('img').src : '',
         style: item.dataset.style || '',
         size: item.dataset.size || '',
+        quantity: parseInt(item.dataset.quantity) || 1,
         timestamp: Date.now()
     };
     cart.push(product);
@@ -593,6 +598,7 @@ function populateCartModal() {
     }
     let subtotal = 0;
     cart.forEach((item, index) => {
+        const qty = parseInt(item.quantity) || 1;
         const div = document.createElement('div');
         div.className = 'cart-item';
         div.innerHTML = `
@@ -602,16 +608,17 @@ function populateCartModal() {
                 ${item.style ? `<div>Style: ${item.style}</div>` : ''}
                 ${item.color ? `<div>Color: ${item.color}</div>` : ''}
                 ${item.size ? `<div>Size: ${item.size}</div>` : ''}
+                <div>Qty: ${qty}</div>
             </div>
-            <span>$${parseFloat(item.price).toFixed(2)}</span>
+            <span>$${(parseFloat(item.price) * qty).toFixed(2)}</span>
             <button class="remove-item" data-index="${index}">&times;</button>`;
         itemsContainer.appendChild(div);
-        subtotal += parseFloat(item.price);
+        subtotal += parseFloat(item.price) * qty;
     });
     itemsContainer.querySelectorAll('.remove-item').forEach(btn => {
         btn.addEventListener('click', () => removeFromCart(parseInt(btn.dataset.index)));
     });
-    modal.querySelector('.item-count').textContent = `${cart.length} Item(s)`;
+    modal.querySelector('.item-count').textContent = `${getTotalQuantity()} Item(s)`;
     const total = subtotal;
     modal.querySelector('.subtotal').textContent = `$${subtotal.toFixed(2)}`;
     modal.querySelector('.tax').textContent = 'Calculated at checkout';
@@ -670,7 +677,7 @@ function showCheckoutForm(root = document.getElementById('cart-modal')) {
         details.style.display = 'none';
         const totalEl = bar.querySelector('.order-total');
         if (totalEl) {
-            const total = cart.reduce((sum, item) => sum + parseFloat(item.price), 0);
+            const total = cart.reduce((sum, item) => sum + parseFloat(item.price) * (parseInt(item.quantity) || 1), 0);
             totalEl.textContent = `$${total.toFixed(2)}`;
         }
         const toggle = root.querySelector('#toggle-order-summary');
@@ -704,7 +711,7 @@ function showCheckoutForm(root = document.getElementById('cart-modal')) {
 
 function populateOrderSummary(section, state = '', addressFilled = false) {
     if (!section) return;
-    const subtotal = cart.reduce((sum, item) => sum + parseFloat(item.price), 0);
+    const subtotal = cart.reduce((sum, item) => sum + parseFloat(item.price) * (parseInt(item.quantity) || 1), 0);
     const rate = state && stateTaxRates[state] !== undefined ? stateTaxRates[state] : defaultTaxRate;
     const tax = subtotal * rate;
     const shipping = addressFilled ? shippingCost : 0;
@@ -719,6 +726,7 @@ function populateOrderSummary(section, state = '', addressFilled = false) {
         if (!itemsContainer || !subtotalEl || !totalEl) return;
         itemsContainer.innerHTML = '';
         cart.forEach(item => {
+            const qty = parseInt(item.quantity) || 1;
             const div = document.createElement('div');
             div.className = 'cart-item no-remove';
             div.innerHTML = `
@@ -728,8 +736,9 @@ function populateOrderSummary(section, state = '', addressFilled = false) {
                     ${item.style ? `<div>Style: ${item.style}</div>` : ''}
                     ${item.color ? `<div>Color: ${item.color}</div>` : ''}
                     ${item.size ? `<div>Size: ${item.size}</div>` : ''}
+                    <div>Qty: ${qty}</div>
                 </div>
-                <span>$${parseFloat(item.price).toFixed(2)}</span>`;
+                <span>$${(parseFloat(item.price) * qty).toFixed(2)}</span>`;
             itemsContainer.appendChild(div);
         });
         subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
@@ -1074,6 +1083,7 @@ function populateCartPage() {
     }
     let subtotal = 0;
     cart.forEach((item, index) => {
+        const qty = parseInt(item.quantity) || 1;
         const div = document.createElement('div');
         div.className = 'cart-item';
         div.innerHTML = `
@@ -1083,17 +1093,18 @@ function populateCartPage() {
                 ${item.style ? `<div>Style: ${item.style}</div>` : ''}
                 ${item.color ? `<div>Color: ${item.color}</div>` : ''}
                 ${item.size ? `<div>Size: ${item.size}</div>` : ''}
+                <div>Qty: ${qty}</div>
             </div>
-            <span>$${parseFloat(item.price).toFixed(2)}</span>
+            <span>$${(parseFloat(item.price) * qty).toFixed(2)}</span>
             <button class="remove-item" data-index="${index}">&times;</button>`;
         itemsContainer.appendChild(div);
-        subtotal += parseFloat(item.price);
+        subtotal += parseFloat(item.price) * qty;
     });
     itemsContainer.querySelectorAll('.remove-item').forEach(btn => {
         btn.addEventListener('click', () => removeFromCart(parseInt(btn.dataset.index)));
     });
     const itemCountEl = page.querySelector('.item-count');
-    if (itemCountEl) itemCountEl.textContent = `${cart.length} Item(s)`;
+    if (itemCountEl) itemCountEl.textContent = `${getTotalQuantity()} Item(s)`;
     const total = subtotal;
     const subtotalEl = page.querySelector('.subtotal');
     if (subtotalEl) subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
@@ -1224,7 +1235,7 @@ function setupCheckoutPage() {
 function updateCartCounter() {
     const counter = document.getElementById('cart-count');
     if (counter) {
-        counter.textContent = cart.length;
+        counter.textContent = getTotalQuantity();
     }
 }
 

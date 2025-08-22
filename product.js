@@ -198,6 +198,28 @@ document.addEventListener('DOMContentLoaded', () => {
           item.dataset.size = sizeSelect.value;
         });
       }
+
+      const sizeWrapper = item.querySelector('.size-select');
+      if (sizeWrapper && !item.querySelector('.quantity-select')) {
+        item.dataset.quantity = '1';
+        const qty = document.createElement('div');
+        qty.className = 'quantity-select';
+        qty.innerHTML = `<button class="qty-minus">-</button><span class="qty-value">1</span><button class="qty-plus">+</button>`;
+        sizeWrapper.insertAdjacentElement('afterend', qty);
+        const value = qty.querySelector('.qty-value');
+        qty.querySelector('.qty-minus').addEventListener('click', () => {
+          let q = parseInt(item.dataset.quantity) || 1;
+          if (q > 1) q--;
+          item.dataset.quantity = q;
+          value.textContent = q;
+        });
+        qty.querySelector('.qty-plus').addEventListener('click', () => {
+          let q = parseInt(item.dataset.quantity) || 1;
+          q++;
+          item.dataset.quantity = q;
+          value.textContent = q;
+        });
+      }
     });
 
   // "You May Also Like" recommendation section
@@ -385,6 +407,9 @@ document.addEventListener('DOMContentLoaded', () => {
     .size-select { margin-top:10px; display:flex; justify-content:center; }
     .size-select select { background:#000; color:#fff; border:1px solid #000; padding:5px; }
     .size-select select:hover, .size-select select:focus, .size-select select:active { border:2px solid red; }
+    .quantity-select { margin-top:10px; display:flex; justify-content:center; align-items:center; background:#000; color:#fff; gap:15px; padding:5px 10px; }
+    .quantity-select button { background:transparent; border:none; color:#fff; font-size:1rem; cursor:pointer; }
+    .quantity-select button:hover, .quantity-select button:focus, .quantity-select button:active { color:red; }
     .product-item { margin-bottom:0 !important; padding-bottom:0 !important; }
     .recommend-section { width:100%; margin:0 auto; text-align:center; margin-bottom:0 !important; padding-bottom:0 !important; }
     .desktop-nav { margin-top:0 !important; padding-top:0 !important; }
