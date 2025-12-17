@@ -20,6 +20,29 @@ const stateTaxRates = {
 // Default tax rate when the customer's state is unknown (store based in IL)
 const defaultTaxRate = stateTaxRates['IL'];
 
+const defaultPriceLookup = {
+    't-shirt': 'price_REPLACE_TSHIRT',
+    hoodie: 'price_REPLACE_HOODIE',
+    shorts: 'price_REPLACE_SHORTS',
+    joggers: 'price_REPLACE_JOGGERS',
+    hat: 'price_REPLACE_HAT',
+    truckerhat: 'price_REPLACE_TRUCKER_HAT',
+    socks: 'price_REPLACE_SOCKS',
+    backpack: 'price_REPLACE_BACKPACK',
+    dufflebag: 'price_REPLACE_DUFFLEBAG',
+    'american-denim': 'price_REPLACE_AMERICAN_DENIM',
+    skateboard1: 'price_REPLACE_SKATEBOARD1',
+    skateboard2: 'price_REPLACE_SKATEBOARD2',
+    skateboard3: 'price_REPLACE_SKATEBOARD3'
+};
+
+const stripeSettings = {
+    publishableKey: window.STRIPE_PUBLISHABLE_KEY || 'pk_test_REPLACE_WITH_YOUR_PUBLISHABLE_KEY',
+    successUrl: window.STRIPE_SUCCESS_URL || `${window.location.origin}/success.html`,
+    cancelUrl: window.STRIPE_CANCEL_URL || `${window.location.origin}/cart.html`,
+    priceLookup: { ...defaultPriceLookup, ...(window.STRIPE_PRICE_LOOKUP || {}) }
+};
+
 const paymentHandlers = {
     'Shop Pay': () => alert('Shop Pay integration pending.'),
     'Apple Pay': () => alert('Apple Pay integration pending.'),
@@ -27,15 +50,96 @@ const paymentHandlers = {
     'Google Pay': () => alert('Google Pay integration pending.'),
     'Klarna': () => alert('Klarna integration pending.'),
     'Venmo': () => alert('Venmo integration pending.'),
-    'Stripe': () => alert('Stripe integration pending.')
+    Stripe: () => startStripeCheckout()
 };
 
-function handlePayment(method) {
+async function handlePayment(method) {
     const handler = paymentHandlers[method];
-    if (handler) {
-        handler();
-    } else {
+    if (!handler) {
         alert(`${method} payment not implemented.`);
+        return;
+    }
+    try {
+        await handler();
+    } catch (err) {
+        alert(err.message || `${method} payment failed.`);
+    }
+}
+
+let stripePromise = null;
+function loadStripeJs() {
+    if (window.Stripe) return Promise.resolve();
+    if (stripePromise) return stripePromise;
+    stripePromise = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://js.stripe.com/v3';
+        script.async = true;
+        script.onload = resolve;
+        script.onerror = () => reject(new Error('Stripe.js failed to load.'));
+        document.head.appendChild(script);
+    });
+    return stripePromise;
+}
+
+async function getStripe() {
+    if (!stripeSettings.publishableKey || stripeSettings.publishableKey.includes('REPLACE')) {
+        throw new Error('Stripe is not configured. Please set STRIPE_PUBLISHABLE_KEY and STRIPE_PRICE_LOOKUP.');
+    }
+    await loadStripeJs();
+    if (!window.Stripe) {
+        throw new Error('Stripe.js not available.');
+    }
+    return window.Stripe(stripeSettings.publishableKey);
+}
+
+function normalizeProductKey(item) {
+    if (!item) return '';
+    if (item.stripePriceId) return item.stripePriceId;
+    if (item.priceId) return item.priceId;
+    return (item.name || item.product || '').toLowerCase();
+}
+
+function buildStripeLineItems() {
+    const lineItems = [];
+    const missing = [];
+    cart.forEach(item => {
+        const key = normalizeProductKey(item);
+        const directPrice = item.stripePriceId && item.stripePriceId.startsWith('price_') ? item.stripePriceId : '';
+        const priceId = directPrice || stripeSettings.priceLookup[key] || (key && stripeSettings.priceLookup[key.toLowerCase()]);
+        if (!priceId) {
+            missing.push(key || 'unknown item');
+            return;
+        }
+        lineItems.push({ price: priceId, quantity: parseInt(item.quantity) || 1 });
+    });
+    return { lineItems, missing };
+}
+
+async function startStripeCheckout() {
+    if (!cart.length) {
+        alert('Your cart is empty.');
+        return;
+    }
+
+    const { lineItems, missing } = buildStripeLineItems();
+    if (missing.length) {
+        alert(`Stripe price IDs missing for: ${missing.join(', ')}. Please configure STRIPE_PRICE_LOOKUP.`);
+        return;
+    }
+    if (!lineItems.length) {
+        alert('Unable to start checkout without items.');
+        return;
+    }
+
+    const stripe = await getStripe();
+    const { error } = await stripe.redirectToCheckout({
+        lineItems,
+        mode: 'payment',
+        successUrl: stripeSettings.successUrl,
+        cancelUrl: stripeSettings.cancelUrl
+    });
+    if (error) {
+        alert(error.message || 'Unable to start Stripe Checkout.');
     }
 }
 
@@ -124,6 +228,7 @@ function addToCart(button) {
         name: item.dataset.product,
         color: colorSelected ? colorSelected.dataset.color : item.dataset.selectedColor || '',
         price: item.dataset.price,
+        stripePriceId: item.dataset.priceId || '',
         image: item.querySelector('img') ? item.querySelector('img').src : '',
         style: item.dataset.style || '',
         size: item.dataset.size || '',
