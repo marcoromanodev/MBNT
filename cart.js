@@ -36,12 +36,65 @@ const defaultPriceLookup = {
     skateboard3: 'price_REPLACE_SKATEBOARD3'
 };
 
-const stripeSettings = {
+const defaultStripeSettings = {
     publishableKey: window.STRIPE_PUBLISHABLE_KEY || 'pk_test_REPLACE_WITH_YOUR_PUBLISHABLE_KEY',
     successUrl: window.STRIPE_SUCCESS_URL || `${window.location.origin}/success.html`,
     cancelUrl: window.STRIPE_CANCEL_URL || `${window.location.origin}/cart.html`,
     priceLookup: { ...defaultPriceLookup, ...(window.STRIPE_PRICE_LOOKUP || {}) }
 };
+
+const stripeSettings = { ...defaultStripeSettings };
+
+function applyStripeSettings(overrides = {}) {
+    if (overrides.publishableKey) {
+        stripeSettings.publishableKey = overrides.publishableKey;
+    }
+    stripeSettings.successUrl = overrides.successUrl || stripeSettings.successUrl || defaultStripeSettings.successUrl;
+    stripeSettings.cancelUrl = overrides.cancelUrl || stripeSettings.cancelUrl || defaultStripeSettings.cancelUrl;
+    stripeSettings.priceLookup = {
+        ...defaultPriceLookup,
+        ...(overrides.priceLookup || {}),
+        ...(window.STRIPE_PRICE_LOOKUP || {})
+    };
+}
+
+applyStripeSettings();
+
+let stripeConfigPromise = null;
+async function loadStripeConfig() {
+    if (window.STRIPE_PUBLISHABLE_KEY || window.STRIPE_PRICE_LOOKUP) {
+        applyStripeSettings({
+            publishableKey: window.STRIPE_PUBLISHABLE_KEY,
+            successUrl: window.STRIPE_SUCCESS_URL,
+            cancelUrl: window.STRIPE_CANCEL_URL,
+            priceLookup: window.STRIPE_PRICE_LOOKUP
+        });
+        return;
+    }
+
+    if (!stripeConfigPromise) {
+        stripeConfigPromise = fetch('stripe-config.json')
+            .then(res => (res.ok ? res.json() : {}))
+            .then(config => {
+                window.STRIPE_PUBLISHABLE_KEY = config.publishableKey || '';
+                window.STRIPE_SUCCESS_URL = config.successUrl || '';
+                window.STRIPE_CANCEL_URL = config.cancelUrl || '';
+                window.STRIPE_PRICE_LOOKUP = config.priceLookup || {};
+
+                applyStripeSettings({
+                    publishableKey: window.STRIPE_PUBLISHABLE_KEY,
+                    successUrl: window.STRIPE_SUCCESS_URL,
+                    cancelUrl: window.STRIPE_CANCEL_URL,
+                    priceLookup: window.STRIPE_PRICE_LOOKUP
+                });
+            })
+            .catch(() => {
+                stripeConfigPromise = null;
+            });
+    }
+
+    return stripeConfigPromise;
+}
 
 const paymentHandlers = {
     'Shop Pay': () => alert('Shop Pay integration pending.'),
@@ -106,11 +159,12 @@ function buildStripeLineItems() {
         const key = normalizeProductKey(item);
         const directPrice = item.stripePriceId && item.stripePriceId.startsWith('price_') ? item.stripePriceId : '';
         const priceId = directPrice || stripeSettings.priceLookup[key] || (key && stripeSettings.priceLookup[key.toLowerCase()]);
-        if (!priceId) {
+        const validPriceId = priceId && !priceId.includes('REPLACE') ? priceId : '';
+        if (!validPriceId) {
             missing.push(key || 'unknown item');
             return;
         }
-        lineItems.push({ price: priceId, quantity: parseInt(item.quantity) || 1 });
+        lineItems.push({ price: validPriceId, quantity: parseInt(item.quantity) || 1 });
     });
     return { lineItems, missing };
 }
@@ -120,6 +174,8 @@ async function startStripeCheckout() {
         alert('Your cart is empty.');
         return;
     }
+
+    await loadStripeConfig();
 
     const { lineItems, missing } = buildStripeLineItems();
     if (missing.length) {
