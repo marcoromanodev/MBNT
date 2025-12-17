@@ -1,0 +1,20 @@
+{
+  "publishableKey": "pk_live_REPLACE_WITH_PUBLISHABLE_KEY",
+  "successUrl": "/success.html",
+  "cancelUrl": "/cart.html",
+  "priceLookup": {
+    "t-shirt": "price_REPLACE_TSHIRT",
+    "hoodie": "price_REPLACE_HOODIE",
+    "shorts": "price_REPLACE_SHORTS",
+    "joggers": "price_REPLACE_JOGGERS",
+    "hat": "price_REPLACE_HAT",
+    "truckerhat": "price_REPLACE_TRUCKER_HAT",
+    "socks": "price_REPLACE_SOCKS",
+    "backpack": "price_REPLACE_BACKPACK",
+    "dufflebag": "price_REPLACE_DUFFLEBAG",
+    "american-denim": "price_REPLACE_AMERICAN_DENIM",
+    "skateboard1": "price_REPLACE_SKATEBOARD1",
+    "skateboard2": "price_REPLACE_SKATEBOARD2",
+    "skateboard3": "price_REPLACE_SKATEBOARD3"
+  }
+}
