@@ -37,7 +37,7 @@ const defaultPriceLookup = {
 };
 
 const defaultStripeSettings = {
-    publishableKey: window.STRIPE_PUBLISHABLE_KEY || 'pk_test_REPLACE_WITH_YOUR_PUBLISHABLE_KEY',
+    publishableKey: window.STRIPE_PUBLISHABLE_KEY || '',
     successUrl: window.STRIPE_SUCCESS_URL || `${window.location.origin}/success.html`,
     cancelUrl: window.STRIPE_CANCEL_URL || `${window.location.origin}/cart.html`,
     checkoutEndpoint: window.STRIPE_CHECKOUT_ENDPOINT || '',
@@ -72,6 +72,18 @@ function buildStripeLookupAliasMap() {
 }
 
 const stripeLookupAliasMap = buildStripeLookupAliasMap();
+const activeStripeProductKeys = new Set(Object.keys(defaultPriceLookup));
+
+function filterActivePriceLookup(config = {}) {
+    return Object.entries(config).reduce((lookup, [rawKey, value]) => {
+        if (typeof value !== 'string' || !value) return lookup;
+        const canonicalKey = canonicalizeStripeProductKey(rawKey);
+        if (!canonicalKey || !activeStripeProductKeys.has(canonicalKey)) return lookup;
+        lookup[canonicalKey] = value;
+        return lookup;
+    }, {});
+}
+
 
 function normalizeCheckoutUrl(url, fallback) {
     if (typeof url !== 'string' || !url.trim()) return fallback;
@@ -138,8 +150,8 @@ function applyStripeSettings(overrides = {}) {
     );
     stripeSettings.priceLookup = {
         ...defaultPriceLookup,
-        ...normalizePriceLookupMap(overrides.priceLookup || {}),
-        ...normalizePriceLookupMap(window.STRIPE_PRICE_LOOKUP || {})
+        ...filterActivePriceLookup(overrides.priceLookup || {}),
+        ...filterActivePriceLookup(window.STRIPE_PRICE_LOOKUP || {})
     };
 }
 
@@ -243,7 +255,10 @@ function loadStripeJs() {
 
 async function getStripe() {
     if (!stripeSettings.publishableKey || stripeSettings.publishableKey.includes('REPLACE')) {
-        throw new Error('Stripe is not configured. Please set STRIPE_PUBLISHABLE_KEY and STRIPE_PRICE_LOOKUP.');
+        throw new Error('Stripe is not configured. Please set a live STRIPE_PUBLISHABLE_KEY and STRIPE_PRICE_LOOKUP.');
+    }
+    if (stripeSettings.publishableKey.startsWith('pk_test_')) {
+        throw new Error('Stripe publishable key is in test mode. Configure a live pk_live_ key to match production checkout.');
     }
     await loadStripeJs();
     if (!window.Stripe) {
@@ -858,7 +873,7 @@ function createCartModal() {
                         <h3>Contact</h3>
                         <button type="button" id="login-btn" onclick="window.location.href='/account/login';">Log in</button>
                     </div>
-                    <input type="email" name="contact_email" placeholder="Enter an email" required>
+                    <input type="email" name="contact_email" placeholder="Enter an email">
                     <p class="email-warning empty-cart-message" style="display:none;">Please provide your contact email for this order.</p>
                     <h3>Delivery</h3>
                     <p>This will also be used as your billing address for this order.</p>
@@ -1546,11 +1561,6 @@ function setupFinalForm(form) {
             if (cardWarning) cardWarning.style.display = 'none';
         } else if (cardWarning) {
             cardWarning.style.display = 'none';
-        }
-        if (emailInput && emailInput.value.trim() === '') {
-            if (emailWarning) emailWarning.style.display = 'block';
-            firstInvalid = firstInvalid || emailInput;
-            valid = false;
         }
         if (!valid) {
             highlightField(firstInvalid);

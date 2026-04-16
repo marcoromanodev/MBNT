@@ -1,5 +1,5 @@
 {
-  "publishableKey": "${STRIPE_PUBLISHABLE_KEY}",
+  "publishableKey": "pk_live_51TMeEa6vAbsTB4QVTasJRtaEMgTI683GLL2rPYlW8rlJpq6f2YtReDI339OBuwgbSiEDNieWPzYiIkunzjeD4sJb006WwAL9eH",
   "checkoutEndpoint": "https://maybenot-stripe-api.onrender.com/api/stripe/create-checkout-session",
   "successUrl": "/success.html",
   "cancelUrl": "/cart.html",
