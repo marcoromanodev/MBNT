@@ -297,22 +297,56 @@ function buildStripeLineItems() {
     return { lineItems, missing };
 }
 
+function buildCheckoutEndpointCandidates(primaryEndpoint) {
+    const configured = normalizeCheckoutUrl(primaryEndpoint, '');
+    const fallbacks = [
+        '/api/stripe/create-checkout-session',
+        '/api/create-checkout-session',
+        '/.netlify/functions/create-checkout-session',
+        '/create-checkout-session'
+    ].map((path) => normalizeCheckoutUrl(path, ''));
+
+    return [...new Set([configured, ...fallbacks].filter(Boolean))];
+}
+
+async function postCheckoutSession(endpoint, payload) {
+    return fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
+}
+
 async function startServerCheckout(method, lineItems) {
+    const requestPayload = {
+        method,
+        lineItems,
+        cart,
+        successUrl: stripeSettings.successUrl,
+        cancelUrl: stripeSettings.cancelUrl
+    };
+    const endpointCandidates = buildCheckoutEndpointCandidates(stripeSettings.checkoutEndpoint);
     let response;
-    try {
-        response = await fetch(stripeSettings.checkoutEndpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                method,
-                lineItems,
-                cart,
-                successUrl: stripeSettings.successUrl,
-                cancelUrl: stripeSettings.cancelUrl
-            })
-        });
-    } catch (_) {
-        const endpoint = stripeSettings.checkoutEndpoint || '(missing endpoint)';
+    let endpointUsed = endpointCandidates[0] || stripeSettings.checkoutEndpoint || '';
+    let networkError = null;
+
+    for (const endpoint of endpointCandidates) {
+        endpointUsed = endpoint;
+        try {
+            response = await postCheckoutSession(endpoint, requestPayload);
+        } catch (err) {
+            networkError = err;
+            continue;
+        }
+
+        if (response.status === 404 || response.status === 405) {
+            continue;
+        }
+        break;
+    }
+
+    if (!response) {
+        const endpoint = endpointUsed || '(missing endpoint)';
         throw new Error(`Network error calling checkout endpoint (${endpoint}). Verify the endpoint is reachable from this site, uses HTTPS in production, and allows this origin (CORS).`);
     }
 
@@ -332,7 +366,11 @@ async function startServerCheckout(method, lineItems) {
     if (!response.ok) {
         const status = `${response.status} ${response.statusText}`.trim();
         const fallbackDetail = rawText ? ` ${rawText.slice(0, 180)}` : '';
-        throw new Error(payload.error || `Unable to create Stripe Checkout session (${status}).${fallbackDetail}`);
+        const endpointHint = endpointUsed ? ` Endpoint: ${endpointUsed}.` : '';
+        if ((response.status === 404 || response.status === 405) && networkError) {
+            throw new Error(`Unable to create Stripe Checkout session (${status}).${endpointHint} ${networkError.message || ''}`.trim());
+        }
+        throw new Error(payload.error || `Unable to create Stripe Checkout session (${status}).${endpointHint}${fallbackDetail}`);
     }
 
     if (payload.url) {
