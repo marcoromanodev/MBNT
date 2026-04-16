@@ -90,6 +90,9 @@ function toFormBody(params) {
   form.append('mode', params.mode);
   form.append('success_url', params.success_url);
   form.append('cancel_url', params.cancel_url);
+  if (params.customer_email) {
+    form.append('customer_email', params.customer_email);
+  }
   return form;
 }
 
@@ -177,12 +180,19 @@ async function handleCreateCheckoutSession(req, res) {
 
   const successUrl = typeof body.successUrl === 'string' && body.successUrl ? body.successUrl : defaultSuccessUrl;
   const cancelUrl = typeof body.cancelUrl === 'string' && body.cancelUrl ? body.cancelUrl : defaultCancelUrl;
+  const customerEmail = typeof body.customerEmail === 'string' ? body.customerEmail.trim().toLowerCase() : '';
+  if (!customerEmail) {
+    return jsonResponse(res, 400, { error: 'customerEmail is required.' }, requestOrigin);
+  }
 
   const payload = {
     line_items: lineItems,
     mode: 'payment',
-    success_url: successUrl,
-    cancel_url: cancelUrl
+    success_url: successUrl.includes('?')
+      ? `${successUrl}&session_id={CHECKOUT_SESSION_ID}`
+      : `${successUrl}?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: cancelUrl,
+    customer_email: customerEmail
   };
 
   try {
@@ -251,6 +261,10 @@ async function handleCreatePaymentIntent(req, res) {
       requestOrigin
     );
   }
+  const customerEmail = typeof body.customerEmail === 'string' ? body.customerEmail.trim().toLowerCase() : '';
+  if (!customerEmail) {
+    return jsonResponse(res, 400, { error: 'customerEmail is required.' }, requestOrigin);
+  }
 
   try {
     const priceCache = new Map();
@@ -284,6 +298,8 @@ async function handleCreatePaymentIntent(req, res) {
     params.set('amount', String(amount));
     params.set('currency', currency);
     params.set('automatic_payment_methods[enabled]', 'true');
+    params.set('receipt_email', customerEmail);
+    params.set('metadata[customer_email]', customerEmail);
 
     const paymentIntent = await stripeApiRequest('/v1/payment_intents', {
       method: 'POST',
