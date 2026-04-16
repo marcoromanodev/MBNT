@@ -10,19 +10,19 @@ if (!stripeSecretKey) {
 const configPath = process.env.STRIPE_CONFIG_PATH || 'stripe-config.json';
 
 const catalog = [
-  { key: 't-shirt', name: 'T-Shirt', unitAmount: 3000 },
-  { key: 'hoodie', name: 'Hoodie', unitAmount: 7000 },
-  { key: 'shorts', name: 'Shorts', unitAmount: 5000 },
-  { key: 'joggers', name: 'Joggers', unitAmount: 6000 },
-  { key: 'hat', name: 'Hat', unitAmount: 4000 },
-  { key: 'truckerhat', name: 'Trucker Hat', unitAmount: 5000 },
-  { key: 'socks', name: 'Socks', unitAmount: 2000 },
-  { key: 'backpack', name: 'Backpack', unitAmount: 6000 },
-  { key: 'dufflebag', name: 'Duffle Bag', unitAmount: 8000 },
-  { key: 'american-denim', name: 'American Denim', unitAmount: 9000 },
-  { key: 'skateboard1', name: 'Skateboard 1', unitAmount: 10000 },
-  { key: 'skateboard2', name: 'Skateboard 2', unitAmount: 10000 },
-  { key: 'skateboard3', name: 'Skateboard 3', unitAmount: 10000 }
+  { key: 't-shirt', name: 'T-Shirt', unitAmount: 3000, aliases: ['T Shirt', 'Tee'] },
+  { key: 'hoodie', name: 'Hoodie', unitAmount: 7000, aliases: [] },
+  { key: 'shorts', name: 'Shorts', unitAmount: 5000, aliases: [] },
+  { key: 'joggers', name: 'Joggers', unitAmount: 7000, aliases: [] },
+  { key: 'hat', name: 'Hat -Baseball Cap', unitAmount: 4000, aliases: ['Baseball Cap', 'Hat'] },
+  { key: 'truckerhat', name: 'Trucker Hat', unitAmount: 5000, aliases: ['Trucker'] },
+  { key: 'socks', name: 'Socks', unitAmount: 2000, aliases: [] },
+  { key: 'backpack', name: 'Backpack', unitAmount: 6000, aliases: [] },
+  { key: 'dufflebag', name: 'Duffle Bag', unitAmount: 8000, aliases: ['Duffel Bag'] },
+  { key: 'american-denim', name: 'American Denim Jeans', unitAmount: 9000, aliases: ['American Denim', 'Jeans'] },
+  { key: 'skateboard1', name: 'Skateboard 1', unitAmount: 10000, aliases: [] },
+  { key: 'skateboard2', name: 'Skateboard 2', unitAmount: 10000, aliases: ['Stakeboard 2'] },
+  { key: 'skateboard3', name: 'Skateboard 3', unitAmount: 10000, aliases: [] }
 ];
 
 function formBody(data) {
@@ -72,12 +72,23 @@ function normalizeName(value) {
     .replace(/[^a-z0-9]/g, '');
 }
 
+function findByAliases(aliases, productsByName) {
+  for (const alias of aliases || []) {
+    const match = productsByName.get(normalizeName(alias));
+    if (match) return match;
+  }
+  return null;
+}
+
 async function ensureProduct(item, productsByKey, productsByName) {
   const byKey = productsByKey.get(item.key);
   if (byKey) return byKey;
 
   const byName = productsByName.get(normalizeName(item.name));
   if (byName) return byName;
+
+  const byAlias = findByAliases(item.aliases, productsByName);
+  if (byAlias) return byAlias;
 
   const created = await stripeRequest('/products', {
     method: 'POST',

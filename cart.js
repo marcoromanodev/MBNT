@@ -45,11 +45,12 @@ const defaultStripeSettings = {
 
 const stripeSettings = { ...defaultStripeSettings };
 const stripeProductAliases = {
-    hat: ['baseball-cap', 'baseballcap', 'hats', 'cap'],
+    hat: ['baseball-cap', 'baseballcap', 'hat-baseball-cap', 'hats', 'cap'],
     truckerhat: ['trucker-hat', 'trucker'],
     't-shirt': ['tshirt', 'tee', 'shirt'],
     'american-denim': ['americandenim', 'denim', 'jeans'],
-    dufflebag: ['duffle-bag', 'duffelbag', 'duffel-bag']
+    dufflebag: ['duffle-bag', 'duffelbag', 'duffel-bag'],
+    skateboard2: ['stakeboard2', 'stakeboard-2']
 };
 
 function buildStripeLookupAliasMap() {
