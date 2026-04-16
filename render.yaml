@@ -1,11 +1,13 @@
 services:
   - type: web
     name: maybenot-stripe-api
+    branch: work
     runtime: node
     plan: starter
     rootDir: .
     buildCommand: "npm install"
-    startCommand: "npm start"
+    startCommand: "node stripe-checkout-server.mjs"
+    healthCheckPath: /api/stripe/health
     autoDeploy: true
     envVars:
       - key: NODE_VERSION
