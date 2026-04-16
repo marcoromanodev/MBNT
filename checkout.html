@@ -797,7 +797,7 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
         const payBtn = document.getElementById('final-order-submit');
         const paymentMsg = document.getElementById('payment-message');
 
-        const getSelectedPaymentMethod = () => document.querySelector('input[name="payment-method"]:checked')?.value || 'credit';
+        const getSelectedPaymentMethod = () => document.querySelector('input[name="payment-method"]:checked')?.value;
         const requiresContactEmail = () => getSelectedPaymentMethod() === 'credit';
 
 

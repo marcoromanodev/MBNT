@@ -1387,6 +1387,8 @@ function setupFinalForm(form) {
     const emailInput = form.querySelector('input[name="contact_email"]');
     const emailWarning = form.querySelector('.email-warning');
     const creditRadio = form.querySelector('input[name="payment-method"][value="credit"]');
+    const getSelectedPaymentMethod = () => form.querySelector('input[name="payment-method"]:checked')?.value;
+    const requiresContactEmail = () => getSelectedPaymentMethod() === 'credit';
     const addressInputs = form.querySelectorAll('input[name="first_name"], input[name="last_name"], input[name="address"], input[name="city"], input[name="state"], input[name="zip"]');
     const fieldWarnings = {};
     form.querySelectorAll('.field-warning').forEach(p => { fieldWarnings[p.dataset.field] = p; });
@@ -1397,6 +1399,8 @@ function setupFinalForm(form) {
     form.querySelectorAll('input[name="payment-method"]').forEach(input => {
         input.addEventListener('change', () => {
             paymentMsg.innerHTML = '';
+            if (emailInput) emailInput.required = requiresContactEmail();
+            if (!requiresContactEmail() && emailWarning) emailWarning.style.display = 'none';
             if (creditFields) {
                 creditFields.style.display = input.value === 'credit' ? 'block' : 'none';
                 if (input.value !== 'credit' && cardWarning) cardWarning.style.display = 'none';
@@ -1434,6 +1438,7 @@ function setupFinalForm(form) {
         if (warn) warn.style.display = 'none';
     }));
     if (emailInput) {
+        emailInput.required = requiresContactEmail();
         emailInput.addEventListener('input', () => {
             if (emailWarning) emailWarning.style.display = 'none';
         });
