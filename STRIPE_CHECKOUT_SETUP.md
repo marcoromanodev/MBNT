@@ -1,17 +1,14 @@
 # Stripe one-time Checkout integration
 
-This project now includes a server-side Stripe Checkout flow that follows the blueprint:
+This project now includes a server-side Stripe Checkout flow:
 
-1. `POST /v1/products` with:
-   - `name=Example Product`
-   - `default_price_data[currency]=usd`
-   - `default_price_data[unit_amount]=2000`
-2. `POST /v1/checkout/sessions` with:
-   - `line_items[0][price]=<default_price from product creation>`
-   - `line_items[0][quantity]=1`
+1. Frontend sends `lineItems` (or `cart`) to `POST /api/stripe/create-checkout-session`.
+2. Server validates Stripe price IDs (`price_...`) and quantity values.
+3. Server calls `POST /v1/checkout/sessions` with:
+   - `line_items`
    - `mode=payment`
    - `success_url` and `cancel_url`
-3. Receive `checkout.session.completed` at a webhook endpoint.
+4. Server returns JSON `{ id, url }` to the browser.
 
 ## Environment variables
 
@@ -26,15 +23,27 @@ Get the key values from your Stripe Dashboard.
 Optional overrides:
 
 - `PORT=4242`
-- `STRIPE_STORE_PATH=stripe-runtime-store.json`
 - `STRIPE_SUCCESS_URL=https://your-site.example/success.html`
 - `STRIPE_CANCEL_URL=https://your-site.example/cart.html`
+- `STRIPE_ALLOWED_ORIGIN=https://your-site.example`
 
 ## Endpoint configuration tips
 
 - In production, point `checkoutEndpoint` to an HTTPS URL on the same origin as your storefront (for example `/api/stripe/create-checkout-session`).
 - Avoid `http://localhost:4242/...` in production `stripe-config.json`; that causes browser network errors like `TypeError: Failed to fetch` for real users.
 - If frontend and API are on different origins, allow the storefront origin with CORS on your checkout-session API route.
+- This repo no longer relies on Netlify Functions or Netlify redirects for checkout-session creation.
+
+## Hosting note for maybenot.com (GitHub Pages)
+
+GitHub Pages serves static files only, so it cannot execute `POST /api/stripe/create-checkout-session` by itself.
+Run `stripe-checkout-server.mjs` on the platform that serves your production domain requests, and route:
+
+- `POST /api/stripe/create-checkout-session`
+- `POST /api/stripe/webhook`
+- `GET /api/stripe/health`
+
+to that Node process.
 
 ## Run
 
@@ -47,13 +56,6 @@ Server routes:
 - `POST /api/stripe/create-checkout-session`
 - `POST /api/stripe/webhook`
 - `GET /api/stripe/health`
-
-Data persisted to `stripe-runtime-store.json`:
-
-- `product_id`
-- `default_price_id`
-- created checkout sessions
-- completed checkout sessions from webhook events
 
 ## Local webhook forwarding (Stripe CLI)
 
