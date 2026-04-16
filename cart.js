@@ -300,10 +300,7 @@ function buildStripeLineItems() {
 function buildCheckoutEndpointCandidates(primaryEndpoint) {
     const configured = normalizeCheckoutUrl(primaryEndpoint, '');
     const fallbacks = [
-        '/api/stripe/create-checkout-session',
-        '/api/create-checkout-session',
-        '/.netlify/functions/create-checkout-session',
-        '/create-checkout-session'
+        '/api/stripe/create-checkout-session'
     ].map((path) => normalizeCheckoutUrl(path, ''));
 
     return [...new Set([configured, ...fallbacks].filter(Boolean))];
