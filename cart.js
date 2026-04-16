@@ -96,14 +96,20 @@ async function loadStripeConfig() {
     return stripeConfigPromise;
 }
 
+const unsupportedMethodNotices = {
+    'Shop Pay': 'Shop Pay is not directly supported in this checkout. Opening Stripe Checkout with available payment methods.',
+    PayPal: 'PayPal is not directly supported in this checkout. Opening Stripe Checkout with available payment methods.',
+    Venmo: 'Venmo is not directly supported in this checkout. Opening Stripe Checkout with available payment methods.'
+};
+
 const paymentHandlers = {
-    'Shop Pay': () => alert('Shop Pay integration pending.'),
-    'Apple Pay': () => alert('Apple Pay integration pending.'),
-    'PayPal': () => alert('PayPal integration pending.'),
-    'Google Pay': () => alert('Google Pay integration pending.'),
-    'Klarna': () => alert('Klarna integration pending.'),
-    'Venmo': () => alert('Venmo integration pending.'),
-    Stripe: () => startStripeCheckout()
+    'Shop Pay': () => startStripeCheckout('Shop Pay'),
+    'Apple Pay': () => startStripeCheckout('Apple Pay'),
+    'PayPal': () => startStripeCheckout('PayPal'),
+    'Google Pay': () => startStripeCheckout('Google Pay'),
+    'Klarna': () => startStripeCheckout('Klarna'),
+    'Venmo': () => startStripeCheckout('Venmo'),
+    Stripe: () => startStripeCheckout('Stripe')
 };
 
 async function handlePayment(method) {
@@ -169,10 +175,15 @@ function buildStripeLineItems() {
     return { lineItems, missing };
 }
 
-async function startStripeCheckout() {
+async function startStripeCheckout(method = 'Stripe') {
     if (!cart.length) {
         alert('Your cart is empty.');
         return;
+    }
+
+    const unsupportedMessage = unsupportedMethodNotices[method];
+    if (unsupportedMessage) {
+        alert(unsupportedMessage);
     }
 
     await loadStripeConfig();
