@@ -30,6 +30,12 @@ Optional overrides:
 - `STRIPE_SUCCESS_URL=https://your-site.example/success.html`
 - `STRIPE_CANCEL_URL=https://your-site.example/cart.html`
 
+## Endpoint configuration tips
+
+- In production, point `checkoutEndpoint` to an HTTPS URL on the same origin as your storefront (for example `/api/stripe/create-checkout-session`).
+- Avoid `http://localhost:4242/...` in production `stripe-config.json`; that causes browser network errors like `TypeError: Failed to fetch` for real users.
+- If frontend and API are on different origins, allow the storefront origin with CORS on your checkout-session API route.
+
 ## Run
 
 ```bash
