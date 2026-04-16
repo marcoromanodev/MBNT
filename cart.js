@@ -70,6 +70,19 @@ function buildStripeLookupAliasMap() {
 
 const stripeLookupAliasMap = buildStripeLookupAliasMap();
 
+function normalizeCheckoutUrl(url, fallback) {
+    if (typeof url !== 'string' || !url.trim()) return fallback;
+    try {
+        const resolvedUrl = new URL(url, window.location.origin);
+        if (resolvedUrl.protocol === 'http:' || resolvedUrl.protocol === 'https:') {
+            return resolvedUrl.toString();
+        }
+    } catch (_) {
+        // Fall through to fallback when URL parsing fails
+    }
+    return fallback;
+}
+
 function canonicalizeStripeProductKey(key) {
     const normalized = toSlug(key).replace(/-/g, '');
     if (!normalized) return '';
@@ -99,8 +112,14 @@ function applyStripeSettings(overrides = {}) {
     if (overrides.publishableKey) {
         stripeSettings.publishableKey = overrides.publishableKey;
     }
-    stripeSettings.successUrl = overrides.successUrl || stripeSettings.successUrl || defaultStripeSettings.successUrl;
-    stripeSettings.cancelUrl = overrides.cancelUrl || stripeSettings.cancelUrl || defaultStripeSettings.cancelUrl;
+    stripeSettings.successUrl = normalizeCheckoutUrl(
+        overrides.successUrl || stripeSettings.successUrl || defaultStripeSettings.successUrl,
+        defaultStripeSettings.successUrl
+    );
+    stripeSettings.cancelUrl = normalizeCheckoutUrl(
+        overrides.cancelUrl || stripeSettings.cancelUrl || defaultStripeSettings.cancelUrl,
+        defaultStripeSettings.cancelUrl
+    );
     stripeSettings.priceLookup = {
         ...defaultPriceLookup,
         ...normalizePriceLookupMap(overrides.priceLookup || {}),
