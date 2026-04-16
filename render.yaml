@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: maybenot-stripe-api
+    runtime: node
+    plan: starter
+    rootDir: .
+    buildCommand: "npm install"
+    startCommand: "npm start"
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: STRIPE_ALLOWED_ORIGINS
+        value: https://maybenot.com,https://www.maybenot.com
+      - key: STRIPE_SUCCESS_URL
+        value: https://maybenot.com/success.html
+      - key: STRIPE_CANCEL_URL
+        value: https://maybenot.com/cart.html
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
