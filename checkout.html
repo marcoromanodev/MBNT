@@ -564,7 +564,7 @@
                 <h3>Contact</h3>
                 <button type="button" id="login-btn" onclick="window.location.href='/account/login';">Log in</button>
             </div>
-            <input type="email" name="contact_email" placeholder="Enter an email" required>
+            <input type="email" name="contact_email" placeholder="Enter an email">
             <p class="email-warning empty-cart-message" style="display:none;">Please provide your contact email for this order.</p>
             <h3>Delivery</h3>
             <p>This will also be used as your billing address for this order.</p>
@@ -797,9 +797,15 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
         const payBtn = document.getElementById('final-order-submit');
         const paymentMsg = document.getElementById('payment-message');
 
+        const getSelectedPaymentMethod = () => document.querySelector('input[name="payment-method"]:checked')?.value || 'credit';
+        const requiresContactEmail = () => getSelectedPaymentMethod() === 'credit';
+
+
         document.querySelectorAll('input[name="payment-method"]').forEach(input => {
             input.addEventListener('change', () => {
                 if (paymentMsg) paymentMsg.innerHTML = '';
+                if (emailInput) emailInput.required = requiresContactEmail();
+                if (!requiresContactEmail() && emailWarning) emailWarning.style.display = 'none';
                 switch (input.value) {
                     case 'apple':
                         payBtn.textContent = 'Pay with Apple Pay';
@@ -862,6 +868,7 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
                 if (rememberWarning) rememberWarning.style.display = 'none';
             });
             const finalForm = document.getElementById('final-form');
+            if (emailInput) emailInput.required = requiresContactEmail();
             if (finalForm) {
                 finalForm.addEventListener('submit', e => {
                     let valid = true;
@@ -902,14 +909,16 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
                     } else if (cardWarning) {
                         cardWarning.style.display = 'none';
                     }
-                    if (emailInput && emailInput.value.trim() === '') {
+                    if (requiresContactEmail() && emailInput && emailInput.value.trim() === '') {
                         if (emailWarning) emailWarning.style.display = 'block';
                         firstInvalid = firstInvalid || emailInput;
                         valid = false;
+                    } else if (emailWarning) {
+                        emailWarning.style.display = 'none';
                     }
                     const cardMissing = Array.from(cardInputs).some(inp => inp.value.trim() === '');
                     const addressMissing = Array.from(addressInputs).some(inp => inp.value.trim() === '');
-                    const emailMissing = emailInput && emailInput.value.trim() === '';
+                    const emailMissing = requiresContactEmail() && emailInput && emailInput.value.trim() === '';
                     const phoneMissing = remember && remember.checked && phoneInput.value.trim() === '';
                     if (!valid) {
                         e.preventDefault();
