@@ -39,6 +39,7 @@ const defaultStripeSettings = {
     publishableKey: window.STRIPE_PUBLISHABLE_KEY || 'pk_test_REPLACE_WITH_YOUR_PUBLISHABLE_KEY',
     successUrl: window.STRIPE_SUCCESS_URL || `${window.location.origin}/success.html`,
     cancelUrl: window.STRIPE_CANCEL_URL || `${window.location.origin}/cart.html`,
+    checkoutEndpoint: window.STRIPE_CHECKOUT_ENDPOINT || '',
     priceLookup: { ...defaultPriceLookup, ...(window.STRIPE_PRICE_LOOKUP || {}) }
 };
 
@@ -112,6 +113,10 @@ function applyStripeSettings(overrides = {}) {
     if (overrides.publishableKey) {
         stripeSettings.publishableKey = overrides.publishableKey;
     }
+    stripeSettings.checkoutEndpoint = normalizeCheckoutUrl(
+        overrides.checkoutEndpoint || stripeSettings.checkoutEndpoint || defaultStripeSettings.checkoutEndpoint,
+        ''
+    );
     stripeSettings.successUrl = normalizeCheckoutUrl(
         overrides.successUrl || stripeSettings.successUrl || defaultStripeSettings.successUrl,
         defaultStripeSettings.successUrl
@@ -144,6 +149,7 @@ async function loadStripeConfig() {
     if (window.STRIPE_PUBLISHABLE_KEY || window.STRIPE_PRICE_LOOKUP) {
         applyStripeSettings({
             publishableKey: window.STRIPE_PUBLISHABLE_KEY,
+            checkoutEndpoint: window.STRIPE_CHECKOUT_ENDPOINT,
             successUrl: window.STRIPE_SUCCESS_URL,
             cancelUrl: window.STRIPE_CANCEL_URL,
             priceLookup: window.STRIPE_PRICE_LOOKUP
@@ -156,6 +162,7 @@ async function loadStripeConfig() {
             .then(res => (res.ok ? res.json() : {}))
             .then(config => {
                 window.STRIPE_PUBLISHABLE_KEY = config.publishableKey || '';
+                window.STRIPE_CHECKOUT_ENDPOINT = config.checkoutEndpoint || '';
                 window.STRIPE_SUCCESS_URL = config.successUrl || '';
                 window.STRIPE_CANCEL_URL = config.cancelUrl || '';
                 window.STRIPE_PRICE_LOOKUP = {
@@ -165,6 +172,7 @@ async function loadStripeConfig() {
 
                 applyStripeSettings({
                     publishableKey: window.STRIPE_PUBLISHABLE_KEY,
+                    checkoutEndpoint: window.STRIPE_CHECKOUT_ENDPOINT,
                     successUrl: window.STRIPE_SUCCESS_URL,
                     cancelUrl: window.STRIPE_CANCEL_URL,
                     priceLookup: window.STRIPE_PRICE_LOOKUP
@@ -280,6 +288,44 @@ function buildStripeLineItems() {
     return { lineItems, missing };
 }
 
+async function startServerCheckout(method, lineItems) {
+    const response = await fetch(stripeSettings.checkoutEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            method,
+            lineItems,
+            cart,
+            successUrl: stripeSettings.successUrl,
+            cancelUrl: stripeSettings.cancelUrl
+        })
+    });
+
+    let payload = {};
+    try {
+        payload = await response.json();
+    } catch (_) {
+        payload = {};
+    }
+
+    if (!response.ok) {
+        throw new Error(payload.error || 'Unable to create Stripe Checkout session.');
+    }
+
+    if (payload.url) {
+        window.location.assign(payload.url);
+        return;
+    }
+
+    if (!payload.id) {
+        throw new Error('Checkout session response is missing "url" or "id".');
+    }
+
+    const stripe = await getStripe();
+    const { error } = await stripe.redirectToCheckout({ sessionId: payload.id });
+    if (error) throw error;
+}
+
 async function startStripeCheckout(method = 'Stripe') {
     if (!cart.length) {
         alert('Your cart is empty.');
@@ -303,6 +349,16 @@ async function startStripeCheckout(method = 'Stripe') {
         return;
     }
 
+    if (stripeSettings.checkoutEndpoint) {
+        try {
+            await startServerCheckout(method, lineItems);
+            return;
+        } catch (err) {
+            alert(err.message || 'Unable to start server-side checkout.');
+            return;
+        }
+    }
+
     const stripe = await getStripe();
     const { error } = await stripe.redirectToCheckout({
         lineItems,
@@ -311,7 +367,13 @@ async function startStripeCheckout(method = 'Stripe') {
         cancelUrl: stripeSettings.cancelUrl
     });
     if (error) {
-        alert(error.message || 'Unable to start Stripe Checkout.');
+        const errorMessage = error.message || 'Unable to start Stripe Checkout.';
+        const isClientOnlyDisabled = /client-only integration is not enabled/i.test(errorMessage);
+        if (isClientOnlyDisabled) {
+            alert('Stripe blocked this checkout because "Checkout client-only integration" is off for the account tied to your publishable key. This is separate from Apple Pay. Enable it in Dashboard → Settings → Checkout, or set STRIPE_CHECKOUT_ENDPOINT / checkoutEndpoint in stripe-config.json to use a server-created Checkout Session.');
+            return;
+        }
+        alert(errorMessage);
     }
 }
 
