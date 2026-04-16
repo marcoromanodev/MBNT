@@ -328,20 +328,22 @@ async function startServerCheckout(method, lineItems) {
     const endpointCandidates = buildCheckoutEndpointCandidates(stripeSettings.checkoutEndpoint);
     let response;
     let endpointUsed = endpointCandidates[0] || stripeSettings.checkoutEndpoint || '';
-    let networkError = null;
+    const attemptedEndpoints = [];
 
     for (const endpoint of endpointCandidates) {
         endpointUsed = endpoint;
         try {
             response = await postCheckoutSession(endpoint, requestPayload);
         } catch (err) {
-            networkError = err;
+            attemptedEndpoints.push(`${endpoint} (network error)`);
             continue;
         }
 
         if (response.status === 404 || response.status === 405) {
+            attemptedEndpoints.push(`${endpoint} (${response.status})`);
             continue;
         }
+        attemptedEndpoints.push(`${endpoint} (${response.status})`);
         break;
     }
 
@@ -367,8 +369,11 @@ async function startServerCheckout(method, lineItems) {
         const status = `${response.status} ${response.statusText}`.trim();
         const fallbackDetail = rawText ? ` ${rawText.slice(0, 180)}` : '';
         const endpointHint = endpointUsed ? ` Endpoint: ${endpointUsed}.` : '';
-        if ((response.status === 404 || response.status === 405) && networkError) {
-            throw new Error(`Unable to create Stripe Checkout session (${status}).${endpointHint} ${networkError.message || ''}`.trim());
+        const attemptedHint = attemptedEndpoints.length ? ` Tried: ${attemptedEndpoints.join(', ')}.` : '';
+        if (response.status === 404 || response.status === 405) {
+            throw new Error(
+                `Unable to create Stripe Checkout session (${status}).${endpointHint}${attemptedHint} Ensure your server exposes POST /api/stripe/create-checkout-session in production.`
+            );
         }
         throw new Error(payload.error || `Unable to create Stripe Checkout session (${status}).${endpointHint}${fallbackDetail}`);
     }
