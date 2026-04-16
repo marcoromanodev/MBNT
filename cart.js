@@ -190,7 +190,7 @@ async function startStripeCheckout(method = 'Stripe') {
 
     const { lineItems, missing } = buildStripeLineItems();
     if (missing.length) {
-        alert(`Stripe price IDs missing for: ${missing.join(', ')}. Please configure STRIPE_PRICE_LOOKUP.`);
+        alert(`Stripe price IDs missing for: ${missing.join(', ')}. Checkout requires real price_... IDs in stripe-config.json (or data-price-id on cart items).`);
         return;
     }
     if (!lineItems.length) {
