@@ -5,23 +5,55 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 const port = Number(process.env.PORT || 4242);
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY || '';
 const webhookSigningSecret = process.env.STRIPE_WEBHOOK_SECRET || '';
-const allowedOrigin = process.env.STRIPE_ALLOWED_ORIGIN || '*';
+
+const defaultAllowedOrigins = [
+  'https://maybenot.com',
+  'https://www.maybenot.com',
+  'http://localhost:4242',
+  'http://127.0.0.1:4242'
+];
+
+const configuredAllowedOrigins = (process.env.STRIPE_ALLOWED_ORIGINS || process.env.STRIPE_ALLOWED_ORIGIN || '')
+  .split(',')
+  .map((value) => value.trim())
+  .filter(Boolean);
+
+const allowedOrigins = configuredAllowedOrigins.length ? configuredAllowedOrigins : defaultAllowedOrigins;
 
 const defaultSuccessUrl = process.env.STRIPE_SUCCESS_URL || 'https://maybenot.com/success.html';
 const defaultCancelUrl = process.env.STRIPE_CANCEL_URL || 'https://maybenot.com/cart.html';
 
-function corsHeaders() {
-  return {
-    'Access-Control-Allow-Origin': allowedOrigin,
-    'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Stripe-Signature'
-  };
+function getAllowedOrigin(requestOrigin) {
+  if (!requestOrigin) {
+    return allowedOrigins[0] || 'https://maybenot.com';
+  }
+
+  if (allowedOrigins.includes('*')) {
+    return '*';
+  }
+
+  return allowedOrigins.includes(requestOrigin) ? requestOrigin : '';
 }
 
-function jsonResponse(res, statusCode, payload) {
+function corsHeaders(requestOrigin) {
+  const allowedOrigin = getAllowedOrigin(requestOrigin);
+  const headers = {
+    'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Stripe-Signature',
+    Vary: 'Origin'
+  };
+
+  if (allowedOrigin) {
+    headers['Access-Control-Allow-Origin'] = allowedOrigin;
+  }
+
+  return headers;
+}
+
+function jsonResponse(res, statusCode, payload, requestOrigin = '') {
   res.writeHead(statusCode, {
     'Content-Type': 'application/json; charset=utf-8',
-    ...corsHeaders()
+    ...corsHeaders(requestOrigin)
   });
   res.end(`${JSON.stringify(payload)}\n`);
 }
@@ -99,8 +131,10 @@ async function readBody(req) {
 }
 
 async function handleCreateCheckoutSession(req, res) {
+  const requestOrigin = req.headers.origin || '';
+
   if (!stripeSecretKey) {
-    return jsonResponse(res, 500, { error: 'Missing STRIPE_SECRET_KEY.' });
+    return jsonResponse(res, 500, { error: 'Missing STRIPE_SECRET_KEY.' }, requestOrigin);
   }
 
   const rawBody = await readBody(req);
@@ -108,12 +142,17 @@ async function handleCreateCheckoutSession(req, res) {
   try {
     body = rawBody ? JSON.parse(rawBody) : {};
   } catch {
-    return jsonResponse(res, 400, { error: 'Invalid JSON body.' });
+    return jsonResponse(res, 400, { error: 'Invalid JSON body.' }, requestOrigin);
   }
 
   const lineItems = sanitizeLineItems(body);
   if (!lineItems.length) {
-    return jsonResponse(res, 400, { error: 'Request must include lineItems or cart with valid Stripe price IDs.' });
+    return jsonResponse(
+      res,
+      400,
+      { error: 'Request must include lineItems or cart with valid Stripe price IDs.' },
+      requestOrigin
+    );
   }
 
   const successUrl = typeof body.successUrl === 'string' && body.successUrl ? body.successUrl : defaultSuccessUrl;
@@ -139,33 +178,45 @@ async function handleCreateCheckoutSession(req, res) {
     const stripePayload = await response.json();
     if (!response.ok) {
       const message = stripePayload?.error?.message || 'Stripe session creation failed.';
-      return jsonResponse(res, response.status, { error: message });
+      return jsonResponse(res, response.status, { error: message }, requestOrigin);
     }
 
-    return jsonResponse(res, 200, {
-      id: stripePayload.id,
-      url: stripePayload.url
-    });
+    return jsonResponse(
+      res,
+      200,
+      {
+        id: stripePayload.id,
+        url: stripePayload.url
+      },
+      requestOrigin
+    );
   } catch (error) {
-    return jsonResponse(res, 500, { error: error.message || 'Unable to create checkout session.' });
+    return jsonResponse(res, 500, { error: error.message || 'Unable to create checkout session.' }, requestOrigin);
   }
 }
 
 async function handleStripeWebhook(req, res) {
+  const requestOrigin = req.headers.origin || '';
   const signatureHeader = req.headers['stripe-signature'];
   const rawBody = await readBody(req);
 
   if (!verifyStripeSignature(rawBody, signatureHeader)) {
-    return jsonResponse(res, 400, { error: 'Webhook signature verification failed.' });
+    return jsonResponse(res, 400, { error: 'Webhook signature verification failed.' }, requestOrigin);
   }
 
-  return jsonResponse(res, 200, { received: true });
+  return jsonResponse(res, 200, { received: true }, requestOrigin);
 }
 
 const server = createServer(async (req, res) => {
+  const requestOrigin = req.headers.origin || '';
   try {
     if (req.method === 'OPTIONS') {
-      res.writeHead(204, corsHeaders());
+      const responseOrigin = getAllowedOrigin(requestOrigin);
+      if (requestOrigin && !responseOrigin) {
+        return jsonResponse(res, 403, { error: 'Origin not allowed by CORS.' }, requestOrigin);
+      }
+
+      res.writeHead(204, corsHeaders(requestOrigin));
       res.end();
       return;
     }
@@ -179,12 +230,21 @@ const server = createServer(async (req, res) => {
     }
 
     if (req.method === 'GET' && req.url === '/api/stripe/health') {
-      return jsonResponse(res, 200, { ok: true });
+      return jsonResponse(
+        res,
+        200,
+        {
+          ok: true,
+          hasStripeSecretKey: Boolean(stripeSecretKey),
+          allowedOrigins
+        },
+        requestOrigin
+      );
     }
 
-    return jsonResponse(res, 404, { error: 'Not found.' });
+    return jsonResponse(res, 404, { error: 'Not found.' }, requestOrigin);
   } catch (error) {
-    return jsonResponse(res, 500, { error: error.message || 'Internal server error.' });
+    return jsonResponse(res, 500, { error: error.message || 'Internal server error.' }, requestOrigin);
   }
 });
 

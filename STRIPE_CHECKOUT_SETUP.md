@@ -1,6 +1,6 @@
 # Stripe one-time Checkout integration
 
-This project now includes a server-side Stripe Checkout flow:
+This project now uses a production-hosted server-side Stripe Checkout flow:
 
 1. Frontend sends `lineItems` (or `cart`) to `POST /api/stripe/create-checkout-session`.
 2. Server validates Stripe price IDs (`price_...`) and quantity values.
@@ -10,45 +10,80 @@ This project now includes a server-side Stripe Checkout flow:
    - `success_url` and `cancel_url`
 4. Server returns JSON `{ id, url }` to the browser.
 
-## Environment variables
+## Production backend URL
 
-Set these before running:
+- **Checkout API base:** `https://maybenot-stripe-api.onrender.com`
+- **Create session endpoint:** `https://maybenot-stripe-api.onrender.com/api/stripe/create-checkout-session`
+- **Health endpoint:** `https://maybenot-stripe-api.onrender.com/api/stripe/health`
 
-- `STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}`
-- `STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY}`
-- `STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}`
+`stripe-config.json` is now configured to call that exact create-session endpoint.
 
-Get the key values from your Stripe Dashboard.
+## Hosting / deployment
 
-Optional overrides:
+- Render blueprint is included in `render.yaml`.
+- Runtime/start metadata is included in `package.json`.
+- The backend entrypoint is `stripe-checkout-server.mjs`.
+
+Deploy with Render Blueprint from this repo and service name `maybenot-stripe-api`.
+
+## Required environment variables
+
+Set these in your production host (Render service environment):
+
+- `STRIPE_SECRET_KEY` (required)
+- `STRIPE_WEBHOOK_SECRET` (required for webhook signature verification)
+- `STRIPE_ALLOWED_ORIGINS=https://maybenot.com,https://www.maybenot.com`
+- `STRIPE_SUCCESS_URL=https://maybenot.com/success.html`
+- `STRIPE_CANCEL_URL=https://maybenot.com/cart.html`
+
+Optional:
 
 - `PORT=4242`
-- `STRIPE_SUCCESS_URL=https://your-site.example/success.html`
-- `STRIPE_CANCEL_URL=https://your-site.example/cart.html`
-- `STRIPE_ALLOWED_ORIGIN=https://your-site.example`
 
-## Endpoint configuration tips
+## CORS
 
-- In production, point `checkoutEndpoint` to an HTTPS URL on the same origin as your storefront (for example `/api/stripe/create-checkout-session`).
-- Avoid `http://localhost:4242/...` in production `stripe-config.json`; that causes browser network errors like `TypeError: Failed to fetch` for real users.
-- If frontend and API are on different origins, allow the storefront origin with CORS on your checkout-session API route.
-- This repo no longer relies on Netlify Functions or Netlify redirects for checkout-session creation.
+The server now enforces origin allowlisting and includes `https://maybenot.com` and `https://www.maybenot.com` by default.
 
-## Hosting note for maybenot.com (GitHub Pages)
+To customize allowed origins, set `STRIPE_ALLOWED_ORIGINS` as a comma-separated list.
 
-GitHub Pages serves static files only, so it cannot execute `POST /api/stripe/create-checkout-session` by itself.
-Run `stripe-checkout-server.mjs` on the platform that serves your production domain requests, and route:
+## Verify deployed environment
 
-- `POST /api/stripe/create-checkout-session`
-- `POST /api/stripe/webhook`
-- `GET /api/stripe/health`
-
-to that Node process.
-
-## Run
+After deployment, run:
 
 ```bash
-node stripe-checkout-server.mjs
+curl -i https://maybenot-stripe-api.onrender.com/api/stripe/health
+```
+
+Expected response includes:
+
+- `"ok": true`
+- `"hasStripeSecretKey": true`
+- `"allowedOrigins"` containing `https://maybenot.com`
+
+Then validate checkout-session route against the deployed host:
+
+```bash
+curl -i -X POST https://maybenot-stripe-api.onrender.com/api/stripe/create-checkout-session \
+  -H 'Content-Type: application/json' \
+  -H 'Origin: https://maybenot.com' \
+  --data '{
+    "lineItems": [{"price": "price_1TMrxb6vAbsTB4QVVI8wB6tb", "quantity": 1}],
+    "successUrl": "https://maybenot.com/success.html",
+    "cancelUrl": "https://maybenot.com/cart.html"
+  }'
+```
+
+Expected response:
+
+- HTTP `200`
+- JSON containing `id` and `url`
+
+If `STRIPE_SECRET_KEY` is missing, the endpoint returns `500` with `Missing STRIPE_SECRET_KEY.`.
+
+## Local run
+
+```bash
+npm start
 ```
 
 Server routes:

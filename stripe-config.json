@@ -1,6 +1,6 @@
 {
   "publishableKey": "${STRIPE_PUBLISHABLE_KEY}",
-  "checkoutEndpoint": "/api/stripe/create-checkout-session",
+  "checkoutEndpoint": "https://maybenot-stripe-api.onrender.com/api/stripe/create-checkout-session",
   "successUrl": "/success.html",
   "cancelUrl": "/cart.html",
   "priceLookup": {

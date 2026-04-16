@@ -1,0 +1,12 @@
+{
+  "name": "mbnt-stripe-checkout-backend",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node stripe-checkout-server.mjs"
+  }
+}
