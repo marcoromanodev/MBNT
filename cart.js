@@ -877,17 +877,17 @@ function createCartModal() {
                     <p class="email-warning empty-cart-message" style="display:none;">Please provide your contact email for this order.</p>
                     <h3>Delivery</h3>
                     <p>This will also be used as your billing address for this order.</p>
-                    <input type="text" name="first_name" placeholder="Enter a first name" required>
+                    <input type="text" name="first_name" placeholder="Enter a first name">
                     <p class="field-warning empty-cart-message" data-field="first_name" style="display:none;">Please enter a first name.</p>
-                    <input type="text" name="last_name" placeholder="Enter a last name" required>
+                    <input type="text" name="last_name" placeholder="Enter a last name">
                     <p class="field-warning empty-cart-message" data-field="last_name" style="display:none;">Please enter a last name.</p>
-                    <input type="text" name="address" placeholder="Enter an address" required>
+                    <input type="text" name="address" placeholder="Enter an address">
                     <p class="field-warning empty-cart-message" data-field="address" style="display:none;">Please enter an address.</p>
-                    <input type="text" name="city" placeholder="Enter a city" required>
+                    <input type="text" name="city" placeholder="Enter a city">
                     <p class="field-warning empty-cart-message" data-field="city" style="display:none;">Please enter a city.</p>
-                    <input type="text" name="state" placeholder="Enter a state" required>
+                    <input type="text" name="state" placeholder="Enter a state">
                     <p class="field-warning empty-cart-message" data-field="state" style="display:none;">Please enter a state.</p>
-                    <input type="text" name="zip" placeholder="Enter a ZIP / postal code" required>
+                    <input type="text" name="zip" placeholder="Enter a ZIP / postal code">
                     <p class="field-warning empty-cart-message" data-field="zip" style="display:none;">Please enter a ZIP / postal code.</p>
                     <h3>Shipping method</h3>
                     <p class="shipping-placeholder">Enter your shipping address to view available shipping methods.</p>
@@ -1388,7 +1388,7 @@ function setupFinalForm(form) {
     const emailWarning = form.querySelector('.email-warning');
     const creditRadio = form.querySelector('input[name="payment-method"][value="credit"]');
     const getSelectedPaymentMethod = () => form.querySelector('input[name="payment-method"]:checked')?.value;
-    const requiresContactEmail = () => getSelectedPaymentMethod() === 'credit';
+    const requiresContactAndDeliveryDetails = () => getSelectedPaymentMethod() === 'credit';
     const addressInputs = form.querySelectorAll('input[name="first_name"], input[name="last_name"], input[name="address"], input[name="city"], input[name="state"], input[name="zip"]');
     const fieldWarnings = {};
     form.querySelectorAll('.field-warning').forEach(p => { fieldWarnings[p.dataset.field] = p; });
@@ -1399,8 +1399,11 @@ function setupFinalForm(form) {
     form.querySelectorAll('input[name="payment-method"]').forEach(input => {
         input.addEventListener('change', () => {
             paymentMsg.innerHTML = '';
-            if (emailInput) emailInput.required = requiresContactEmail();
-            if (!requiresContactEmail() && emailWarning) emailWarning.style.display = 'none';
+            if (emailInput) emailInput.required = requiresContactAndDeliveryDetails();
+            addressInputs.forEach(field => {
+                field.required = requiresContactAndDeliveryDetails();
+            });
+            if (!requiresContactAndDeliveryDetails() && emailWarning) emailWarning.style.display = 'none';
             if (creditFields) {
                 creditFields.style.display = input.value === 'credit' ? 'block' : 'none';
                 if (input.value !== 'credit' && cardWarning) cardWarning.style.display = 'none';
@@ -1438,7 +1441,7 @@ function setupFinalForm(form) {
         if (warn) warn.style.display = 'none';
     }));
     if (emailInput) {
-        emailInput.required = requiresContactEmail();
+        emailInput.required = requiresContactAndDeliveryDetails();
         emailInput.addEventListener('input', () => {
             if (emailWarning) emailWarning.style.display = 'none';
         });
@@ -1552,16 +1555,22 @@ function setupFinalForm(form) {
             firstInvalid = firstInvalid || phoneInput;
             valid = false;
         }
-        addressInputs.forEach(inp => {
-            const fw = fieldWarnings[inp.name];
-            if (inp.value.trim() === '') {
-                if (fw) fw.style.display = 'block';
-                firstInvalid = firstInvalid || inp;
-                valid = false;
-            } else if (fw) {
-                fw.style.display = 'none';
-            }
-        });
+        if (requiresContactAndDeliveryDetails()) {
+            addressInputs.forEach(inp => {
+                const fw = fieldWarnings[inp.name];
+                if (inp.value.trim() === '') {
+                    if (fw) fw.style.display = 'block';
+                    firstInvalid = firstInvalid || inp;
+                    valid = false;
+                } else if (fw) {
+                    fw.style.display = 'none';
+                }
+            });
+        } else {
+            Object.values(fieldWarnings).forEach(w => {
+                if (w) w.style.display = 'none';
+            });
+        }
         if (creditRadio && creditRadio.checked) {
             if (cardWarning) cardWarning.style.display = 'none';
         } else if (cardWarning) {

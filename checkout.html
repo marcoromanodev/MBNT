@@ -568,17 +568,17 @@
             <p class="email-warning empty-cart-message" style="display:none;">Please provide your contact email for this order.</p>
             <h3>Delivery</h3>
             <p>This will also be used as your billing address for this order.</p>
-            <input type="text" name="first_name" placeholder="Enter a first name" required>
+            <input type="text" name="first_name" placeholder="Enter a first name">
             <p class="field-warning empty-cart-message" data-field="first_name" style="display:none;">Please enter a first name.</p>
-            <input type="text" name="last_name" placeholder="Enter a last name" required>
+            <input type="text" name="last_name" placeholder="Enter a last name">
             <p class="field-warning empty-cart-message" data-field="last_name" style="display:none;">Please enter a last name.</p>
-            <input type="text" name="address" placeholder="Enter an address" required>
+            <input type="text" name="address" placeholder="Enter an address">
             <p class="field-warning empty-cart-message" data-field="address" style="display:none;">Please enter an address.</p>
-            <input type="text" name="city" placeholder="Enter a city" required>
+            <input type="text" name="city" placeholder="Enter a city">
             <p class="field-warning empty-cart-message" data-field="city" style="display:none;">Please enter a city.</p>
-            <input type="text" name="state" placeholder="Enter a state" required>
+            <input type="text" name="state" placeholder="Enter a state">
             <p class="field-warning empty-cart-message" data-field="state" style="display:none;">Please enter a state.</p>
-            <input type="text" name="zip" placeholder="Enter a ZIP / postal code" required>
+            <input type="text" name="zip" placeholder="Enter a ZIP / postal code">
             <p class="field-warning empty-cart-message" data-field="zip" style="display:none;">Please enter a ZIP / postal code.</p>
             <h3>Shipping method</h3>
             <p class="shipping-placeholder">Enter your shipping address to view available shipping methods.</p>
@@ -798,14 +798,17 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
         const paymentMsg = document.getElementById('payment-message');
 
         const getSelectedPaymentMethod = () => document.querySelector('input[name="payment-method"]:checked')?.value;
-        const requiresContactEmail = () => getSelectedPaymentMethod() === 'credit';
+        const requiresContactAndDeliveryDetails = () => getSelectedPaymentMethod() === 'credit';
 
 
         document.querySelectorAll('input[name="payment-method"]').forEach(input => {
             input.addEventListener('change', () => {
                 if (paymentMsg) paymentMsg.innerHTML = '';
-                if (emailInput) emailInput.required = requiresContactEmail();
-                if (!requiresContactEmail() && emailWarning) emailWarning.style.display = 'none';
+                if (emailInput) emailInput.required = requiresContactAndDeliveryDetails();
+                addressInputs.forEach(field => {
+                    field.required = requiresContactAndDeliveryDetails();
+                });
+                if (!requiresContactAndDeliveryDetails() && emailWarning) emailWarning.style.display = 'none';
                 switch (input.value) {
                     case 'apple':
                         payBtn.textContent = 'Pay with Apple Pay';
@@ -868,7 +871,7 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
                 if (rememberWarning) rememberWarning.style.display = 'none';
             });
             const finalForm = document.getElementById('final-form');
-            if (emailInput) emailInput.required = requiresContactEmail();
+            if (emailInput) emailInput.required = requiresContactAndDeliveryDetails();
             if (finalForm) {
                 finalForm.addEventListener('submit', e => {
                     let valid = true;
@@ -878,16 +881,22 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
                         firstInvalid = firstInvalid || phoneInput;
                         valid = false;
                     }
-                    addressInputs.forEach(inp => {
-                        const warn = fieldWarnings[inp.name];
-                        if (inp.value.trim() === '') {
-                            if (warn) warn.style.display = 'block';
-                            firstInvalid = firstInvalid || inp;
-                            valid = false;
-                        } else if (warn) {
-                            warn.style.display = 'none';
-                        }
-                    });
+                    if (requiresContactAndDeliveryDetails()) {
+                        addressInputs.forEach(inp => {
+                            const warn = fieldWarnings[inp.name];
+                            if (inp.value.trim() === '') {
+                                if (warn) warn.style.display = 'block';
+                                firstInvalid = firstInvalid || inp;
+                                valid = false;
+                            } else if (warn) {
+                                warn.style.display = 'none';
+                            }
+                        });
+                    } else {
+                        Object.values(fieldWarnings).forEach(warn => {
+                            if (warn) warn.style.display = 'none';
+                        });
+                    }
                     if (creditRadio && creditRadio.checked) {
                         let cardValid = true;
                         cardInputs.forEach(inp => {
@@ -909,7 +918,7 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
                     } else if (cardWarning) {
                         cardWarning.style.display = 'none';
                     }
-                    if (requiresContactEmail() && emailInput && emailInput.value.trim() === '') {
+                    if (requiresContactAndDeliveryDetails() && emailInput && emailInput.value.trim() === '') {
                         if (emailWarning) emailWarning.style.display = 'block';
                         firstInvalid = firstInvalid || emailInput;
                         valid = false;
@@ -917,8 +926,8 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
                         emailWarning.style.display = 'none';
                     }
                     const cardMissing = Array.from(cardInputs).some(inp => inp.value.trim() === '');
-                    const addressMissing = Array.from(addressInputs).some(inp => inp.value.trim() === '');
-                    const emailMissing = requiresContactEmail() && emailInput && emailInput.value.trim() === '';
+                    const addressMissing = requiresContactAndDeliveryDetails() && Array.from(addressInputs).some(inp => inp.value.trim() === '');
+                    const emailMissing = requiresContactAndDeliveryDetails() && emailInput && emailInput.value.trim() === '';
                     const phoneMissing = remember && remember.checked && phoneInput.value.trim() === '';
                     if (!valid) {
                         e.preventDefault();
