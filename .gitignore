@@ -1,0 +1,4 @@
+stripe-runtime-store.json
+.env
+.env.*
+node_modules/
