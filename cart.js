@@ -21,19 +21,18 @@ const stateTaxRates = {
 const defaultTaxRate = stateTaxRates['IL'];
 
 const defaultPriceLookup = {
-    't-shirt': 'price_REPLACE_TSHIRT',
-    hoodie: 'price_REPLACE_HOODIE',
-    shorts: 'price_REPLACE_SHORTS',
-    joggers: 'price_REPLACE_JOGGERS',
-    hat: 'price_REPLACE_HAT',
-    truckerhat: 'price_REPLACE_TRUCKER_HAT',
-    socks: 'price_REPLACE_SOCKS',
-    backpack: 'price_REPLACE_BACKPACK',
-    dufflebag: 'price_REPLACE_DUFFLEBAG',
-    'american-denim': 'price_REPLACE_AMERICAN_DENIM',
-    skateboard1: 'price_REPLACE_SKATEBOARD1',
-    skateboard2: 'price_REPLACE_SKATEBOARD2',
-    skateboard3: 'price_REPLACE_SKATEBOARD3'
+    't-shirt': 'price_1TMrxb6vAbsTB4QVVI8wB6tb',
+    hoodie: 'price_1TMrwq6vAbsTB4QVGhANJDBO',
+    shorts: 'price_1TMs0e6vAbsTB4QV0IU5JIPS',
+    joggers: 'price_1TMryV6vAbsTB4QVd9G1WVH1',
+    hat: 'price_1TMrw26vAbsTB4QVfnxBgAmB',
+    truckerhat: 'price_1TMs6P6vAbsTB4QVIB0j7b7k',
+    socks: 'price_1TMs9R6vAbsTB4QVRn8SawXZ',
+    dufflebag: 'price_1TMs4N6vAbsTB4QV2N9UmUs1',
+    'american-denim': 'price_1TMs366vAbsTB4QVlEHmGj1A',
+    skateboard1: 'price_1TMsAJ6vAbsTB4QVof4P9O6J',
+    skateboard2: 'price_1TMsB66vAbsTB4QVgdK0paRD',
+    skateboard3: 'price_1TMsBv6vAbsTB4QVwwDsrvmn'
 };
 
 const defaultStripeSettings = {
