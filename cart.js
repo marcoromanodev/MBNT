@@ -44,6 +44,13 @@ const defaultStripeSettings = {
 };
 
 const stripeSettings = { ...defaultStripeSettings };
+const stripeProductAliases = {
+    hat: ['baseball-cap', 'baseballcap', 'hats', 'cap'],
+    truckerhat: ['trucker-hat', 'trucker'],
+    't-shirt': ['tshirt', 'tee', 'shirt'],
+    'american-denim': ['americandenim', 'denim', 'jeans'],
+    dufflebag: ['duffle-bag', 'duffelbag', 'duffel-bag']
+};
 
 function applyStripeSettings(overrides = {}) {
     if (overrides.publishableKey) {
@@ -56,6 +63,17 @@ function applyStripeSettings(overrides = {}) {
         ...(overrides.priceLookup || {}),
         ...(window.STRIPE_PRICE_LOOKUP || {})
     };
+}
+
+function readInlinePriceLookup(config = {}) {
+    const knownKeys = Object.keys(defaultPriceLookup);
+    return knownKeys.reduce((lookup, key) => {
+        const value = config[key];
+        if (typeof value === 'string' && value) {
+            lookup[key] = value;
+        }
+        return lookup;
+    }, {});
 }
 
 applyStripeSettings();
@@ -79,7 +97,10 @@ async function loadStripeConfig() {
                 window.STRIPE_PUBLISHABLE_KEY = config.publishableKey || '';
                 window.STRIPE_SUCCESS_URL = config.successUrl || '';
                 window.STRIPE_CANCEL_URL = config.cancelUrl || '';
-                window.STRIPE_PRICE_LOOKUP = config.priceLookup || {};
+                window.STRIPE_PRICE_LOOKUP = {
+                    ...(config.priceLookup || {}),
+                    ...readInlinePriceLookup(config)
+                };
 
                 applyStripeSettings({
                     publishableKey: window.STRIPE_PUBLISHABLE_KEY,
@@ -158,13 +179,36 @@ function normalizeProductKey(item) {
     return (item.name || item.product || '').toLowerCase();
 }
 
+function toSlug(value) {
+    return String(value || '')
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+}
+
+function getPriceLookupCandidates(key) {
+    const slug = toSlug(key);
+    if (!slug) return [];
+    const compact = slug.replace(/-/g, '');
+    const singular = slug.endsWith('s') ? slug.slice(0, -1) : '';
+    const plural = slug.endsWith('s') ? '' : `${slug}s`;
+    const aliases = stripeProductAliases[slug] || [];
+    return [...new Set([slug, compact, singular, plural, ...aliases].filter(Boolean))];
+}
+
 function buildStripeLineItems() {
     const lineItems = [];
     const missing = [];
     cart.forEach(item => {
         const key = normalizeProductKey(item);
         const directPrice = item.stripePriceId && item.stripePriceId.startsWith('price_') ? item.stripePriceId : '';
-        const priceId = directPrice || stripeSettings.priceLookup[key] || (key && stripeSettings.priceLookup[key.toLowerCase()]);
+        const candidates = getPriceLookupCandidates(key);
+        const lookedUpPriceId = candidates.reduce((matched, candidate) => {
+            if (matched) return matched;
+            return stripeSettings.priceLookup[candidate] || '';
+        }, '');
+        const priceId = directPrice || lookedUpPriceId;
         const validPriceId = priceId && !priceId.includes('REPLACE') ? priceId : '';
         if (!validPriceId) {
             missing.push(key || 'unknown item');
