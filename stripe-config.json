@@ -1,8 +1,8 @@
 {
   "publishableKey": "${STRIPE_PUBLISHABLE_KEY}",
-  "checkoutEndpoint": "http://localhost:4242/api/stripe/create-checkout-session",
-  "successUrl": "http://localhost:4242/success.html",
-  "cancelUrl": "http://localhost:4242/cart.html",
+  "checkoutEndpoint": "/api/stripe/create-checkout-session",
+  "successUrl": "/success.html",
+  "cancelUrl": "/cart.html",
   "priceLookup": {
     "t-shirt": "price_1TMrxb6vAbsTB4QVVI8wB6tb",
     "hoodie": "price_1TMrwq6vAbsTB4QVGhANJDBO",

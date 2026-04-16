@@ -289,17 +289,23 @@ function buildStripeLineItems() {
 }
 
 async function startServerCheckout(method, lineItems) {
-    const response = await fetch(stripeSettings.checkoutEndpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            method,
-            lineItems,
-            cart,
-            successUrl: stripeSettings.successUrl,
-            cancelUrl: stripeSettings.cancelUrl
-        })
-    });
+    let response;
+    try {
+        response = await fetch(stripeSettings.checkoutEndpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                method,
+                lineItems,
+                cart,
+                successUrl: stripeSettings.successUrl,
+                cancelUrl: stripeSettings.cancelUrl
+            })
+        });
+    } catch (_) {
+        const endpoint = stripeSettings.checkoutEndpoint || '(missing endpoint)';
+        throw new Error(`Network error calling checkout endpoint (${endpoint}). Verify the endpoint is reachable from this site, uses HTTPS in production, and allows this origin (CORS).`);
+    }
 
     let payload = {};
     try {
