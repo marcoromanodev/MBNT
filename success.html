@@ -29,10 +29,18 @@
 </head>
 <body>
     <h1>Thanks for your order!</h1>
-    <p>Your payment was received successfully. Check your email for a receipt and order details.</p>
+    <p>Your payment was received successfully. A confirmation email was sent to the address you entered at checkout.</p>
+    <p id="order-reference" style="font-weight:bold;"></p>
     <div class="actions">
         <a href="shop.html">Continue shopping</a>
         <a href="contact.html">Contact support</a>
     </div>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const orderRef = params.get('session_id') || params.get('payment_intent');
+        if (orderRef) {
+            document.getElementById('order-reference').textContent = `Order reference: ${orderRef}`;
+        }
+    </script>
 </body>
 </html>

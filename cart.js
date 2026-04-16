@@ -216,23 +216,23 @@ const unsupportedMethodNotices = {
 };
 
 const paymentHandlers = {
-    'Shop Pay': () => startStripeCheckout('Shop Pay'),
-    'Apple Pay': () => startStripeCheckout('Apple Pay'),
-    'PayPal': () => startStripeCheckout('PayPal'),
-    'Google Pay': () => startStripeCheckout('Google Pay'),
-    'Klarna': () => startStripeCheckout('Klarna'),
-    'Venmo': () => startStripeCheckout('Venmo'),
-    Stripe: () => startStripeCheckout('Stripe')
+    'Shop Pay': (customerEmail) => startStripeCheckout('Shop Pay', customerEmail),
+    'Apple Pay': (customerEmail) => startStripeCheckout('Apple Pay', customerEmail),
+    'PayPal': (customerEmail) => startStripeCheckout('PayPal', customerEmail),
+    'Google Pay': (customerEmail) => startStripeCheckout('Google Pay', customerEmail),
+    'Klarna': (customerEmail) => startStripeCheckout('Klarna', customerEmail),
+    'Venmo': (customerEmail) => startStripeCheckout('Venmo', customerEmail),
+    Stripe: (customerEmail) => startStripeCheckout('Stripe', customerEmail)
 };
 
-async function handlePayment(method) {
+async function handlePayment(method, customerEmail = '') {
     const handler = paymentHandlers[method];
     if (!handler) {
         alert(`${method} payment not implemented.`);
         return;
     }
     try {
-        await handler();
+        await handler(customerEmail);
     } catch (err) {
         alert(err.message || `${method} payment failed.`);
     }
@@ -327,11 +327,12 @@ async function postCheckoutSession(endpoint, payload) {
     });
 }
 
-async function startServerCheckout(method, lineItems) {
+async function startServerCheckout(method, lineItems, customerEmail = '') {
     const requestPayload = {
         method,
         lineItems,
         cart,
+        customerEmail,
         successUrl: stripeSettings.successUrl,
         cancelUrl: stripeSettings.cancelUrl
     };
@@ -472,8 +473,12 @@ async function ensureEmbeddedPaymentReady(form) {
     if (missing.length) {
         throw new Error(`Stripe price IDs missing for: ${missing.join(', ')}.`);
     }
+    const contactEmail = form.querySelector('input[name="contact_email"]')?.value?.trim() || '';
+    if (!contactEmail) {
+        throw new Error('Please provide your contact email for this order.');
+    }
 
-    const lineItemsSignature = JSON.stringify(lineItems);
+    const lineItemsSignature = JSON.stringify({ lineItems, contactEmail: contactEmail.toLowerCase() });
     const shouldReuse = (
         stripeEmbeddedState.elements &&
         stripeEmbeddedState.lineItemsSignature === lineItemsSignature &&
@@ -488,7 +493,7 @@ async function ensureEmbeddedPaymentReady(form) {
     const intentResponse = await fetch(paymentIntentEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ lineItems, cart })
+        body: JSON.stringify({ lineItems, cart, customerEmail: contactEmail })
     });
     const intentPayload = await intentResponse.json().catch(() => ({}));
     if (!intentResponse.ok || !intentPayload.clientSecret) {
@@ -547,7 +552,7 @@ async function submitEmbeddedPayment(form, paymentMsg) {
     window.location.assign(successUrl.toString());
 }
 
-async function startStripeCheckout(method = 'Stripe') {
+async function startStripeCheckout(method = 'Stripe', customerEmail = '') {
     if (!cart.length) {
         alert('Your cart is empty.');
         return;
@@ -572,7 +577,7 @@ async function startStripeCheckout(method = 'Stripe') {
 
     if (stripeSettings.checkoutEndpoint) {
         try {
-            await startServerCheckout(method, lineItems);
+            await startServerCheckout(method, lineItems, customerEmail);
             return;
         } catch (err) {
             alert(err.message || 'Unable to start server-side checkout.');
@@ -1399,11 +1404,11 @@ function setupFinalForm(form) {
     form.querySelectorAll('input[name="payment-method"]').forEach(input => {
         input.addEventListener('change', () => {
             paymentMsg.innerHTML = '';
-            if (emailInput) emailInput.required = requiresContactAndDeliveryDetails();
+            if (emailInput) emailInput.required = true;
             addressInputs.forEach(field => {
                 field.required = requiresContactAndDeliveryDetails();
             });
-            if (!requiresContactAndDeliveryDetails() && emailWarning) emailWarning.style.display = 'none';
+            if (emailWarning) emailWarning.style.display = 'none';
             if (creditFields) {
                 creditFields.style.display = input.value === 'credit' ? 'block' : 'none';
                 if (input.value !== 'credit' && cardWarning) cardWarning.style.display = 'none';
@@ -1441,7 +1446,7 @@ function setupFinalForm(form) {
         if (warn) warn.style.display = 'none';
     }));
     if (emailInput) {
-        emailInput.required = requiresContactAndDeliveryDetails();
+        emailInput.required = true;
         emailInput.addEventListener('input', () => {
             if (emailWarning) emailWarning.style.display = 'none';
         });
@@ -1550,6 +1555,14 @@ function setupFinalForm(form) {
         e.preventDefault();
         let valid = true;
         let firstInvalid = null;
+        const contactEmail = emailInput ? emailInput.value.trim() : '';
+        if (!contactEmail) {
+            if (emailWarning) emailWarning.style.display = 'block';
+            firstInvalid = firstInvalid || emailInput;
+            valid = false;
+        } else if (emailWarning) {
+            emailWarning.style.display = 'none';
+        }
         if (remember && remember.checked && phoneInput && phoneInput.value.trim() === '') {
             if (warn) warn.style.display = 'block';
             firstInvalid = firstInvalid || phoneInput;
@@ -1600,7 +1613,7 @@ function setupFinalForm(form) {
             shop: 'Shop Pay',
             klarna: 'Klarna'
         };
-        handlePayment(methodMap[selectedPayment] || 'Stripe');
+        handlePayment(methodMap[selectedPayment] || 'Stripe', contactEmail);
         const modal = form.closest('#cart-modal');
         if (modal) {
             closeCart();
