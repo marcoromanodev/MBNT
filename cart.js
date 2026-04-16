@@ -76,6 +76,25 @@ function canonicalizeStripeProductKey(key) {
     return stripeLookupAliasMap[normalized] || '';
 }
 
+function normalizePriceLookupMap(config = {}) {
+    return Object.entries(config).reduce((lookup, [rawKey, value]) => {
+        if (typeof value !== 'string' || !value) return lookup;
+
+        const canonicalKey = canonicalizeStripeProductKey(rawKey);
+        if (canonicalKey) {
+            lookup[canonicalKey] = value;
+        }
+
+        const slugKey = toSlug(rawKey);
+        if (slugKey) {
+            lookup[slugKey] = value;
+            lookup[slugKey.replace(/-/g, '')] = value;
+        }
+
+        return lookup;
+    }, {});
+}
+
 function applyStripeSettings(overrides = {}) {
     if (overrides.publishableKey) {
         stripeSettings.publishableKey = overrides.publishableKey;
@@ -84,8 +103,8 @@ function applyStripeSettings(overrides = {}) {
     stripeSettings.cancelUrl = overrides.cancelUrl || stripeSettings.cancelUrl || defaultStripeSettings.cancelUrl;
     stripeSettings.priceLookup = {
         ...defaultPriceLookup,
-        ...(overrides.priceLookup || {}),
-        ...(window.STRIPE_PRICE_LOOKUP || {})
+        ...normalizePriceLookupMap(overrides.priceLookup || {}),
+        ...normalizePriceLookupMap(window.STRIPE_PRICE_LOOKUP || {})
     };
 }
 
