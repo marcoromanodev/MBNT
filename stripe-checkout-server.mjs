@@ -7,6 +7,7 @@ const port = Number(process.env.PORT || 4242);
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY || '';
 const webhookSigningSecret = process.env.STRIPE_WEBHOOK_SECRET || '';
 const storePath = process.env.STRIPE_STORE_PATH || 'stripe-runtime-store.json';
+const allowedOrigin = process.env.STRIPE_ALLOWED_ORIGIN || '*';
 
 const defaultSuccessUrl =
   process.env.STRIPE_SUCCESS_URL ||
@@ -16,7 +17,12 @@ const defaultCancelUrl =
   'https://dashboard.stripe.com/workbench/blueprints/one-time-payment/checkout-chapter?confirmation-redirect=create-checkout-session';
 
 function jsonResponse(res, statusCode, payload) {
-  res.writeHead(statusCode, { 'Content-Type': 'application/json; charset=utf-8' });
+  res.writeHead(statusCode, {
+    'Content-Type': 'application/json; charset=utf-8',
+    'Access-Control-Allow-Origin': allowedOrigin,
+    'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Stripe-Signature'
+  });
   res.end(`${JSON.stringify(payload)}\n`);
 }
 
@@ -173,16 +179,26 @@ async function handleCreateCheckoutSession(req, res) {
 
   const store = await loadStore();
   const { defaultPriceId } = await ensureExampleProduct(store);
-
-  const session = await stripeRequest('/v1/checkout/sessions', {
-    method: 'POST',
-    params: {
-      line_items: [
+  const incomingLineItems = Array.isArray(body.lineItems) ? body.lineItems : [];
+  const normalizedLineItems = incomingLineItems
+    .map((item) => ({
+      price: typeof item?.price === 'string' ? item.price : '',
+      quantity: Number.isFinite(Number(item?.quantity)) ? Math.max(1, Number(item.quantity)) : 1
+    }))
+    .filter((item) => item.price.startsWith('price_'));
+  const lineItems = normalizedLineItems.length
+    ? normalizedLineItems
+    : [
         {
           price: defaultPriceId,
           quantity: 1
         }
-      ],
+      ];
+
+  const session = await stripeRequest('/v1/checkout/sessions', {
+    method: 'POST',
+    params: {
+      line_items: lineItems,
       mode: 'payment',
       success_url: body.successUrl || defaultSuccessUrl,
       cancel_url: body.cancelUrl || defaultCancelUrl
@@ -236,6 +252,16 @@ async function handleStripeWebhook(req, res) {
 
 const server = createServer(async (req, res) => {
   try {
+    if (req.method === 'OPTIONS') {
+      res.writeHead(204, {
+        'Access-Control-Allow-Origin': allowedOrigin,
+        'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Stripe-Signature'
+      });
+      res.end();
+      return;
+    }
+
     if (req.method === 'POST' && req.url === '/api/stripe/create-checkout-session') {
       return await handleCreateCheckoutSession(req, res);
     }

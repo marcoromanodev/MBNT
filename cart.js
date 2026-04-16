@@ -84,6 +84,14 @@ function normalizeCheckoutUrl(url, fallback) {
     return fallback;
 }
 
+function sanitizeConfigString(value) {
+    if (typeof value !== 'string') return '';
+    const trimmed = value.trim();
+    if (!trimmed) return '';
+    if (/^\$\{[^}]+\}$/.test(trimmed)) return '';
+    return trimmed;
+}
+
 function canonicalizeStripeProductKey(key) {
     const normalized = toSlug(key).replace(/-/g, '');
     if (!normalized) return '';
@@ -110,8 +118,9 @@ function normalizePriceLookupMap(config = {}) {
 }
 
 function applyStripeSettings(overrides = {}) {
-    if (overrides.publishableKey) {
-        stripeSettings.publishableKey = overrides.publishableKey;
+    const publishableKey = sanitizeConfigString(overrides.publishableKey);
+    if (publishableKey) {
+        stripeSettings.publishableKey = publishableKey;
     }
     stripeSettings.checkoutEndpoint = normalizeCheckoutUrl(
         overrides.checkoutEndpoint || stripeSettings.checkoutEndpoint || defaultStripeSettings.checkoutEndpoint,
@@ -161,10 +170,10 @@ async function loadStripeConfig() {
         stripeConfigPromise = fetch('stripe-config.json')
             .then(res => (res.ok ? res.json() : {}))
             .then(config => {
-                window.STRIPE_PUBLISHABLE_KEY = config.publishableKey || '';
-                window.STRIPE_CHECKOUT_ENDPOINT = config.checkoutEndpoint || '';
-                window.STRIPE_SUCCESS_URL = config.successUrl || '';
-                window.STRIPE_CANCEL_URL = config.cancelUrl || '';
+                window.STRIPE_PUBLISHABLE_KEY = sanitizeConfigString(config.publishableKey);
+                window.STRIPE_CHECKOUT_ENDPOINT = sanitizeConfigString(config.checkoutEndpoint);
+                window.STRIPE_SUCCESS_URL = sanitizeConfigString(config.successUrl);
+                window.STRIPE_CANCEL_URL = sanitizeConfigString(config.cancelUrl);
                 window.STRIPE_PRICE_LOOKUP = {
                     ...(config.priceLookup || {}),
                     ...readInlinePriceLookup(config)
@@ -308,14 +317,22 @@ async function startServerCheckout(method, lineItems) {
     }
 
     let payload = {};
+    let rawText = '';
     try {
         payload = await response.json();
     } catch (_) {
+        try {
+            rawText = await response.text();
+        } catch (_) {
+            rawText = '';
+        }
         payload = {};
     }
 
     if (!response.ok) {
-        throw new Error(payload.error || 'Unable to create Stripe Checkout session.');
+        const status = `${response.status} ${response.statusText}`.trim();
+        const fallbackDetail = rawText ? ` ${rawText.slice(0, 180)}` : '';
+        throw new Error(payload.error || `Unable to create Stripe Checkout session (${status}).${fallbackDetail}`);
     }
 
     if (payload.url) {
