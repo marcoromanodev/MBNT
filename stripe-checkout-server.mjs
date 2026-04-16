@@ -5,6 +5,9 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 const port = Number(process.env.PORT || 4242);
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY || '';
 const webhookSigningSecret = process.env.STRIPE_WEBHOOK_SECRET || '';
+const renderGitCommit = process.env.RENDER_GIT_COMMIT || '';
+const renderGitBranch = process.env.RENDER_GIT_BRANCH || '';
+const renderServiceName = process.env.RENDER_SERVICE_NAME || '';
 
 const defaultAllowedOrigins = [
   'https://maybenot.com',
@@ -209,6 +212,8 @@ async function handleStripeWebhook(req, res) {
 
 const server = createServer(async (req, res) => {
   const requestOrigin = req.headers.origin || '';
+  const requestUrl = new URL(req.url || '/', `http://${req.headers.host || 'localhost'}`);
+  const pathname = requestUrl.pathname.replace(/\/+$/, '') || '/';
   try {
     if (req.method === 'OPTIONS') {
       const responseOrigin = getAllowedOrigin(requestOrigin);
@@ -221,22 +226,25 @@ const server = createServer(async (req, res) => {
       return;
     }
 
-    if (req.method === 'POST' && req.url === '/api/stripe/create-checkout-session') {
+    if (req.method === 'POST' && pathname === '/api/stripe/create-checkout-session') {
       return await handleCreateCheckoutSession(req, res);
     }
 
-    if (req.method === 'POST' && req.url === '/api/stripe/webhook') {
+    if (req.method === 'POST' && pathname === '/api/stripe/webhook') {
       return await handleStripeWebhook(req, res);
     }
 
-    if (req.method === 'GET' && req.url === '/api/stripe/health') {
+    if (req.method === 'GET' && pathname === '/api/stripe/health') {
       return jsonResponse(
         res,
         200,
         {
           ok: true,
           hasStripeSecretKey: Boolean(stripeSecretKey),
-          allowedOrigins
+          allowedOrigins,
+          service: renderServiceName || null,
+          branch: renderGitBranch || null,
+          commit: renderGitCommit || null
         },
         requestOrigin
       );

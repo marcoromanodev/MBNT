@@ -299,11 +299,7 @@ function buildStripeLineItems() {
 
 function buildCheckoutEndpointCandidates(primaryEndpoint) {
     const configured = normalizeCheckoutUrl(primaryEndpoint, '');
-    const fallbacks = [
-        '/api/stripe/create-checkout-session'
-    ].map((path) => normalizeCheckoutUrl(path, ''));
-
-    return [...new Set([configured, ...fallbacks].filter(Boolean))];
+    return configured ? [configured] : [];
 }
 
 async function postCheckoutSession(endpoint, payload) {
@@ -323,6 +319,11 @@ async function startServerCheckout(method, lineItems) {
         cancelUrl: stripeSettings.cancelUrl
     };
     const endpointCandidates = buildCheckoutEndpointCandidates(stripeSettings.checkoutEndpoint);
+    if (!endpointCandidates.length) {
+        throw new Error(
+            'Stripe checkout endpoint is not configured. Set checkoutEndpoint in stripe-config.json to your Render API URL.'
+        );
+    }
     let response;
     let endpointUsed = endpointCandidates[0] || stripeSettings.checkoutEndpoint || '';
     const attemptedEndpoints = [];

@@ -23,6 +23,8 @@ This project now uses a production-hosted server-side Stripe Checkout flow:
 - Render blueprint is included in `render.yaml`.
 - Runtime/start metadata is included in `package.json`.
 - The backend entrypoint is `stripe-checkout-server.mjs`.
+- Blueprint deploys from branch `work` and starts with `node stripe-checkout-server.mjs`.
+- Render health check path is `/api/stripe/health`.
 
 Deploy with Render Blueprint from this repo and service name `maybenot-stripe-api`.
 
@@ -59,6 +61,8 @@ Expected response includes:
 - `"ok": true`
 - `"hasStripeSecretKey": true`
 - `"allowedOrigins"` containing `https://maybenot.com`
+- `"branch"` matching Render deploy branch (expected `work`)
+- `"commit"` matching Render's deployed commit SHA
 
 Then validate checkout-session route against the deployed host:
 
