@@ -1,5 +1,6 @@
 {
   "publishableKey": "pk_live_51TMeEa6vAbsTB4QVTasJRtaEMgTI683GLL2rPYlW8rlJpq6f2YtReDI339OBuwgbSiEDNieWPzYiIkunzjeD4sJb006WwAL9eH",
+  "checkoutEndpoint": "",
   "successUrl": "/success.html",
   "cancelUrl": "/cart.html",
   "priceLookup": {
