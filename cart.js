@@ -29,6 +29,7 @@ const defaultPriceLookup = {
     truckerhat: 'price_1TMs6P6vAbsTB4QVIB0j7b7k',
     socks: 'price_1TMs9R6vAbsTB4QVRn8SawXZ',
     dufflebag: 'price_1TMs4N6vAbsTB4QV2N9UmUs1',
+    backpack: 'price_1TMwLe6vAbsTB4QVyFZu293b',
     'american-denim': 'price_1TMs366vAbsTB4QVlEHmGj1A',
     skateboard1: 'price_1TMsAJ6vAbsTB4QVof4P9O6J',
     skateboard2: 'price_1TMsB66vAbsTB4QVgdK0paRD',
@@ -50,6 +51,7 @@ const stripeProductAliases = {
     't-shirt': ['tshirt', 'tee', 'shirt'],
     'american-denim': ['americandenim', 'denim', 'jeans'],
     dufflebag: ['duffle-bag', 'duffelbag', 'duffel-bag'],
+    backpack: ['back-pack', 'back-packs', 'backpacks'],
     skateboard2: ['stakeboard2', 'stakeboard-2']
 };
 
@@ -388,6 +390,146 @@ async function startServerCheckout(method, lineItems) {
     const stripe = await getStripe();
     const { error } = await stripe.redirectToCheckout({ sessionId: payload.id });
     if (error) throw error;
+}
+
+function buildPaymentIntentEndpoint(checkoutEndpoint) {
+    const normalized = normalizeCheckoutUrl(checkoutEndpoint, '');
+    if (!normalized) return '';
+    try {
+        const url = new URL(normalized);
+        url.pathname = '/api/stripe/create-payment-intent';
+        url.search = '';
+        url.hash = '';
+        return url.toString();
+    } catch (_) {
+        return '';
+    }
+}
+
+const stripeEmbeddedState = {
+    stripe: null,
+    elements: null,
+    paymentElement: null,
+    clientSecret: '',
+    lineItemsSignature: '',
+    mountedForm: null
+};
+
+function clearEmbeddedPaymentState() {
+    if (stripeEmbeddedState.paymentElement) {
+        stripeEmbeddedState.paymentElement.unmount();
+    }
+    stripeEmbeddedState.elements = null;
+    stripeEmbeddedState.paymentElement = null;
+    stripeEmbeddedState.clientSecret = '';
+    stripeEmbeddedState.lineItemsSignature = '';
+    stripeEmbeddedState.mountedForm = null;
+}
+
+async function ensureEmbeddedPaymentReady(form) {
+    await loadStripeConfig();
+    const paymentIntentEndpoint = buildPaymentIntentEndpoint(stripeSettings.checkoutEndpoint);
+    if (!paymentIntentEndpoint) {
+        throw new Error('Stripe payment intent endpoint is not configured. Set checkoutEndpoint in stripe-config.json to your Render API URL.');
+    }
+
+    const creditFields = form.querySelector('.credit-card-fields');
+    if (!creditFields) {
+        throw new Error('Payment form container is missing.');
+    }
+
+    let elementContainer = creditFields.querySelector('.stripe-payment-element');
+    if (!elementContainer) {
+        elementContainer = document.createElement('div');
+        elementContainer.className = 'stripe-payment-element';
+        creditFields.appendChild(elementContainer);
+    }
+
+    let status = creditFields.querySelector('.stripe-payment-status');
+    if (!status) {
+        status = document.createElement('div');
+        status.className = 'stripe-payment-status';
+        creditFields.appendChild(status);
+    }
+    status.textContent = 'Loading secure payment form...';
+
+    const { lineItems, missing } = buildStripeLineItems();
+    if (missing.length) {
+        throw new Error(`Stripe price IDs missing for: ${missing.join(', ')}.`);
+    }
+
+    const lineItemsSignature = JSON.stringify(lineItems);
+    const shouldReuse = (
+        stripeEmbeddedState.elements &&
+        stripeEmbeddedState.lineItemsSignature === lineItemsSignature &&
+        stripeEmbeddedState.mountedForm === form
+    );
+    if (shouldReuse) {
+        status.textContent = '';
+        return stripeEmbeddedState;
+    }
+
+    clearEmbeddedPaymentState();
+    const intentResponse = await fetch(paymentIntentEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lineItems, cart })
+    });
+    const intentPayload = await intentResponse.json().catch(() => ({}));
+    if (!intentResponse.ok || !intentPayload.clientSecret) {
+        throw new Error(intentPayload.error || 'Unable to initialize Stripe Payment Element.');
+    }
+
+    const stripe = await getStripe();
+    const elements = stripe.elements({
+        clientSecret: intentPayload.clientSecret,
+        appearance: {
+            theme: 'stripe',
+            variables: {
+                colorText: '#000000',
+                fontFamily: "'Courier New', Courier, monospace"
+            }
+        }
+    });
+
+    const paymentElement = elements.create('payment', { layout: 'tabs' });
+    paymentElement.mount(elementContainer);
+    status.textContent = '';
+
+    stripeEmbeddedState.stripe = stripe;
+    stripeEmbeddedState.elements = elements;
+    stripeEmbeddedState.paymentElement = paymentElement;
+    stripeEmbeddedState.clientSecret = intentPayload.clientSecret;
+    stripeEmbeddedState.lineItemsSignature = lineItemsSignature;
+    stripeEmbeddedState.mountedForm = form;
+    return stripeEmbeddedState;
+}
+
+async function submitEmbeddedPayment(form, paymentMsg) {
+    const state = await ensureEmbeddedPaymentReady(form);
+    const { error, paymentIntent } = await state.stripe.confirmPayment({
+        elements: state.elements,
+        confirmParams: {
+            return_url: normalizeCheckoutUrl(stripeSettings.successUrl, `${window.location.origin}/success.html`)
+        },
+        redirect: 'if_required'
+    });
+
+    if (error) {
+        throw new Error(error.message || 'Unable to confirm payment.');
+    }
+
+    if (!paymentIntent || !['succeeded', 'processing', 'requires_capture'].includes(paymentIntent.status)) {
+        throw new Error('Payment is not complete yet. Please follow any additional prompts and try again.');
+    }
+
+    if (paymentMsg) {
+        paymentMsg.innerHTML = '<div>Payment received. Redirecting...</div>';
+    }
+    localStorage.setItem('cart', '[]');
+    const successUrl = new URL(normalizeCheckoutUrl(stripeSettings.successUrl, `${window.location.origin}/success.html`), window.location.origin);
+    successUrl.searchParams.set('payment_intent', paymentIntent.id);
+    window.location.assign(successUrl.toString());
 }
 
 async function startStripeCheckout(method = 'Stripe') {
@@ -757,16 +899,9 @@ function createCartModal() {
                         </label>
                     </div>
                     <div class="credit-card-fields" style="display:none;">
-                        <input type="text" name="card_number" placeholder="Enter a card number">
-                        <p class="field-warning empty-cart-message" data-field="card_number" style="display:none;">Please enter a card number.</p>
-                        <input type="text" name="exp_date" placeholder="Enter a valid expiration date">
-                        <p class="field-warning empty-cart-message" data-field="exp_date" style="display:none;">Please enter an expiration date.</p>
-                        <input type="text" name="cvv" placeholder="Enter the CVV or security code on your card">
-                        <p class="field-warning empty-cart-message" data-field="cvv" style="display:none;">Please enter the CVV or security code.</p>
-                        <input type="text" name="card_name" placeholder="Enter your name exactly as it’s written on your card">
-                        <p class="field-warning empty-cart-message" data-field="card_name" style="display:none;">Please enter the name on your card.</p>
+                        <div class="stripe-payment-element" aria-label="Secure payment form"></div>
                     </div>
-                    <p class="card-warning empty-cart-message" style="display:none;">Please complete the card details.</p>
+                    <p class="card-warning empty-cart-message" style="display:none;">Please complete your secure payment details.</p>
                     <div class="payment-option">
                         <input type="radio" name="payment-method" id="cart-pay-apple" value="apple">
                         <label for="cart-pay-apple">
@@ -941,6 +1076,8 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
             .shop-logo img{width:100%;height:auto;object-fit:contain;filter:grayscale(100%);}
             .checkout-domain{margin-top:5px;}
             .credit-card-fields input{width:100%;}
+            .stripe-payment-element{width:100%;min-height:52px;padding:10px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;background:#fff;}
+            .stripe-payment-status{margin-top:8px;font-size:0.8rem;text-align:left;}
             .payment-option{display:flex;align-items:center;border:1px solid #ccc;padding:10px;margin:5px 0;cursor:pointer;width:100%;box-sizing:border-box;gap:10px;flex-wrap:wrap;}
             .payment-option input{margin:0;flex-shrink:0;width:auto;padding:0;}
             .payment-option label{display:flex;align-items:center;justify-content:space-between;flex:1;cursor:pointer;gap:10px;flex-wrap:wrap;width:100%;}
@@ -1231,7 +1368,6 @@ function setupFinalForm(form) {
     const payBtn = form.querySelector('#final-order-submit');
     const paymentMsg = form.querySelector('#payment-message');
     const creditFields = form.querySelector('.credit-card-fields');
-    const cardInputs = creditFields ? creditFields.querySelectorAll('input') : [];
     const cardWarning = form.querySelector('.card-warning');
     const emailInput = form.querySelector('input[name="contact_email"]');
     const emailWarning = form.querySelector('.email-warning');
@@ -1249,6 +1385,14 @@ function setupFinalForm(form) {
             if (creditFields) {
                 creditFields.style.display = input.value === 'credit' ? 'block' : 'none';
                 if (input.value !== 'credit' && cardWarning) cardWarning.style.display = 'none';
+            }
+            if (input.value === 'credit') {
+                ensureEmbeddedPaymentReady(form).catch(err => {
+                    if (cardWarning) {
+                        cardWarning.textContent = err.message || 'Unable to load secure payment form.';
+                        cardWarning.style.display = 'block';
+                    }
+                });
             }
             switch (input.value) {
                 case 'apple':
@@ -1270,12 +1414,6 @@ function setupFinalForm(form) {
             }
         });
     });
-
-    cardInputs.forEach(inp => inp.addEventListener('input', () => {
-        if (cardWarning) cardWarning.style.display = 'none';
-        const warn = fieldWarnings[inp.name];
-        if (warn) warn.style.display = 'none';
-    }));
     addressInputs.forEach(inp => inp.addEventListener('input', () => {
         const warn = fieldWarnings[inp.name];
         if (warn) warn.style.display = 'none';
@@ -1405,23 +1543,7 @@ function setupFinalForm(form) {
             }
         });
         if (creditRadio && creditRadio.checked) {
-            let cardValid = true;
-            cardInputs.forEach(inp => {
-                const fw = fieldWarnings[inp.name];
-                if (inp.value.trim() === '') {
-                    if (fw) fw.style.display = 'block';
-                    firstInvalid = firstInvalid || inp;
-                    cardValid = false;
-                    valid = false;
-                } else if (fw) {
-                    fw.style.display = 'none';
-                }
-            });
-            if (!cardValid && cardWarning) {
-                cardWarning.style.display = 'block';
-            } else if (cardWarning) {
-                cardWarning.style.display = 'none';
-            }
+            if (cardWarning) cardWarning.style.display = 'none';
         } else if (cardWarning) {
             cardWarning.style.display = 'none';
         }
@@ -1437,7 +1559,24 @@ function setupFinalForm(form) {
         if (phoneInput && phoneInput.value.trim() && !phoneInput.value.startsWith('+1')) {
             phoneInput.value = '+1' + phoneInput.value;
         }
-        handlePayment('Stripe');
+        const selectedPayment = form.querySelector('input[name="payment-method"]:checked')?.value || 'credit';
+        if (selectedPayment === 'credit') {
+            submitEmbeddedPayment(form, paymentMsg).catch(err => {
+                if (cardWarning) {
+                    cardWarning.textContent = err.message || 'Unable to complete payment.';
+                    cardWarning.style.display = 'block';
+                }
+            });
+            return;
+        }
+
+        const methodMap = {
+            apple: 'Apple Pay',
+            paypal: 'PayPal',
+            shop: 'Shop Pay',
+            klarna: 'Klarna'
+        };
+        handlePayment(methodMap[selectedPayment] || 'Stripe');
         const modal = form.closest('#cart-modal');
         if (modal) {
             closeCart();
@@ -1549,7 +1688,7 @@ function setupCartPage() {
     if (!page) return;
     populateCartPage();
     page.querySelector('#cart-checkout').addEventListener('click', () => {
-        window.location.href = 'checkout.html';
+        showFinalPage(page);
     });
     page.querySelectorAll('.pay-btn').forEach(btn => {
         btn.addEventListener('pointerdown', () => {
@@ -1562,10 +1701,7 @@ function setupCartPage() {
     });
     const finalForm = page.querySelector('#final-form');
     if (finalForm) {
-        finalForm.addEventListener('submit', e => {
-            e.preventDefault();
-            handlePayment('Stripe');
-        });
+        setupFinalForm(finalForm);
     }
     const checkoutForm = page.querySelector('#checkout-form');
     if (checkoutForm) {
@@ -1679,7 +1815,7 @@ function ensureCartCounter() {
     if (!document.getElementById('cart-counter-style')) {
         const style = document.createElement('style');
         style.id = 'cart-counter-style';
-        style.textContent = '.header-container{position:sticky;top:0;z-index:1000;} .logo-container{height:10vh;} .time{margin-top:-5px;} .cart-counter{font-size:0.7rem;text-align:center;font-weight:600;cursor:pointer;display:inline-block;outline:2px solid transparent;padding:2px;} .cart-counter:hover,.cart-counter:focus,.cart-counter:active{outline-color:red;} .header-line{border-top:1px solid #000;width:100%;} .product-item{position:relative;aspect-ratio:1/1;} .product-grid .product-item:hover,.product-grid .product-item:focus-within{z-index:10;} .product-item img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;object-position:center;filter:drop-shadow(0 4px 10px rgba(0,0,0,0.5));} .product-info{top:0;left:0;width:100%;height:100%;} .payment-icons{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;justify-content:center;justify-items:center;margin:10px auto;max-width:260px;width:100%;} .pay-btn{outline:2px solid transparent;} .pay-btn:hover,.pay-btn:focus,.pay-btn:active,.pay-btn.selected{outline-color:red;} .pay-btn.paypal{background:#ffc439;width:80px;height:40px;padding:0;margin-top:10px;align-self:center;} .pay-btn.paypal img{width:100%;height:100%;object-fit:contain;} .payment-icons img[alt="Apple Pay"]{width:120px;} .payment-icons img.klarna-logo{width:140px;} .payment-option{display:flex;align-items:center;border:1px solid #ccc;padding:10px;margin:5px 0;cursor:pointer;width:100%;box-sizing:border-box;gap:10px;flex-wrap:wrap;} .payment-option input{margin:0;flex-shrink:0;width:auto;padding:0;} .payment-option label{display:flex;align-items:center;justify-content:space-between;flex:1;cursor:pointer;gap:10px;flex-wrap:wrap;width:100%;} .payment-label{flex:1;min-width:0;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;} .payment-label .subtext{font-size:0.8em;} .payment-option.shop-pay .payment-label{white-space:normal;display:flex;flex-direction:column;align-items:flex-start;overflow:visible;text-overflow:unset;} .payment-option.shop-pay .payment-label .subtext{white-space:normal;margin-top:2px;} .payment-logos{margin-left:10px;display:flex;align-items:center;gap:5px;flex-wrap:wrap;max-width:100%;position:relative;} .payment-logos img{height:20px;max-width:100%;} .payment-logos img[alt="Apple Pay"]{height:30px;} .payment-logos img.klarna-logo{height:40px;} .payment-logos img[alt="Visa"],.payment-logos img[alt="Mastercard"],.payment-logos img[alt="American Express"]{height:20px;width:32px;object-fit:contain;} .more-logos{margin-left:5px;cursor:pointer;color:#000;font-weight:600;} .more-logos-box{display:none;position:absolute;bottom:100%;left:0;right:auto;transform:translateX(0);background:#fff;padding:5px;z-index:10;border:1px solid #ccc;box-shadow:0 2px 8px rgba(0,0,0,0.15);} .more-logos-box img{width:32px;height:20px;margin:0 2px;object-fit:contain;} .summary-label{background:#000;color:#fff;font-size:1em;display:inline-block;padding:10px;margin:0;margin-left:0;} .redirect-icon{text-align:center;font-size:2rem;} .paypal-inline{height:1em;vertical-align:middle;filter:brightness(0) invert(1);} .empty-cart-message{text-align:center;color:#000;} a,button{transition:all 0.3s ease;} button:hover,button:focus,button:active{border:2px solid red;color:red;background:#fff;} .color-option{border:1px solid #000;} .color-option.selected,.color-option:hover,.color-option:focus,.color-option:active{border:2px solid red !important;} @media (max-width:480px){.payment-option{flex-wrap:wrap;}.payment-option label{flex-direction:row;align-items:center;flex-wrap:wrap;width:100%;}.payment-logos{margin-left:10px;justify-content:flex-start;position:relative;}.payment-option.shop-pay .payment-label .subtext{font-size:0.6em;}}';
+        style.textContent = '.header-container{position:sticky;top:0;z-index:1000;} .logo-container{height:10vh;} .time{margin-top:-5px;} .cart-counter{font-size:0.7rem;text-align:center;font-weight:600;cursor:pointer;display:inline-block;outline:2px solid transparent;padding:2px;} .cart-counter:hover,.cart-counter:focus,.cart-counter:active{outline-color:red;} .header-line{border-top:1px solid #000;width:100%;} .product-item{position:relative;aspect-ratio:1/1;} .product-grid .product-item:hover,.product-grid .product-item:focus-within{z-index:10;} .product-item img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;object-position:center;filter:drop-shadow(0 4px 10px rgba(0,0,0,0.5));} .product-info{top:0;left:0;width:100%;height:100%;} .payment-icons{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;justify-content:center;justify-items:center;margin:10px auto;max-width:260px;width:100%;} .pay-btn{outline:2px solid transparent;} .pay-btn:hover,.pay-btn:focus,.pay-btn:active,.pay-btn.selected{outline-color:red;} .pay-btn.paypal{background:#ffc439;width:80px;height:40px;padding:0;margin-top:10px;align-self:center;} .pay-btn.paypal img{width:100%;height:100%;object-fit:contain;} .payment-icons img[alt="Apple Pay"]{width:120px;} .payment-icons img.klarna-logo{width:140px;} .payment-option{display:flex;align-items:center;border:1px solid #ccc;padding:10px;margin:5px 0;cursor:pointer;width:100%;box-sizing:border-box;gap:10px;flex-wrap:wrap;} .payment-option input{margin:0;flex-shrink:0;width:auto;padding:0;} .payment-option label{display:flex;align-items:center;justify-content:space-between;flex:1;cursor:pointer;gap:10px;flex-wrap:wrap;width:100%;} .payment-label{flex:1;min-width:0;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;} .payment-label .subtext{font-size:0.8em;} .payment-option.shop-pay .payment-label{white-space:normal;display:flex;flex-direction:column;align-items:flex-start;overflow:visible;text-overflow:unset;} .payment-option.shop-pay .payment-label .subtext{white-space:normal;margin-top:2px;} .payment-logos{margin-left:10px;display:flex;align-items:center;gap:5px;flex-wrap:wrap;max-width:100%;position:relative;} .payment-logos img{height:20px;max-width:100%;} .payment-logos img[alt="Apple Pay"]{height:30px;} .payment-logos img.klarna-logo{height:40px;} .payment-logos img[alt="Visa"],.payment-logos img[alt="Mastercard"],.payment-logos img[alt="American Express"]{height:20px;width:32px;object-fit:contain;} .more-logos{margin-left:5px;cursor:pointer;color:#000;font-weight:600;} .more-logos-box{display:none;position:absolute;bottom:100%;left:0;right:auto;transform:translateX(0);background:#fff;padding:5px;z-index:10;border:1px solid #ccc;box-shadow:0 2px 8px rgba(0,0,0,0.15);} .more-logos-box img{width:32px;height:20px;margin:0 2px;object-fit:contain;} .summary-label{background:#000;color:#fff;font-size:1em;display:inline-block;padding:10px;margin:0;margin-left:0;} .redirect-icon{text-align:center;font-size:2rem;} .paypal-inline{height:1em;vertical-align:middle;filter:brightness(0) invert(1);} .stripe-payment-element{width:100%;min-height:52px;padding:10px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;background:#fff;} .stripe-payment-status{margin-top:8px;font-size:0.8rem;text-align:left;} .empty-cart-message{text-align:center;color:#000;} a,button{transition:all 0.3s ease;} button:hover,button:focus,button:active{border:2px solid red;color:red;background:#fff;} .color-option{border:1px solid #000;} .color-option.selected,.color-option:hover,.color-option:focus,.color-option:active{border:2px solid red !important;} @media (max-width:480px){.payment-option{flex-wrap:wrap;}.payment-option label{flex-direction:row;align-items:center;flex-wrap:wrap;width:100%;}.payment-logos{margin-left:10px;justify-content:flex-start;position:relative;}.payment-option.shop-pay .payment-label .subtext{font-size:0.6em;}}';
         document.head.appendChild(style);
     }
 }

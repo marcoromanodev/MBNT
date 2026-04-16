@@ -371,6 +371,20 @@
         .credit-card-fields input {
             width: 100%;
         }
+        .stripe-payment-element {
+            width: 100%;
+            min-height: 52px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            background: #fff;
+        }
+        .stripe-payment-status {
+            margin-top: 8px;
+            font-size: 0.8rem;
+            text-align: left;
+        }
         .payment-option {
             display: flex;
             align-items: center;
@@ -538,7 +552,7 @@
         <div><strong>Total</strong><strong class="total">$0.00</strong></div>
     </div>
     <div class="cart-buttons">
-        <button id="cart-checkout" onclick="window.location.href='checkout.html'">CHECKOUT</button>
+        <button id="cart-checkout">CHECKOUT</button>
     </div>
     <div class="or">OR</div>
     <div class="express-checkout">
@@ -608,6 +622,8 @@
             <p class="field-warning empty-cart-message" data-field="address" style="display:none;">Please enter an address.</p>
             <input type="text" name="city" placeholder="Enter a city" required>
             <p class="field-warning empty-cart-message" data-field="city" style="display:none;">Please enter a city.</p>
+            <input type="text" name="state" placeholder="Enter a state" required>
+            <p class="field-warning empty-cart-message" data-field="state" style="display:none;">Please enter a state.</p>
             <input type="text" name="zip" placeholder="Enter a ZIP / postal code" required>
             <p class="field-warning empty-cart-message" data-field="zip" style="display:none;">Please enter a ZIP / postal code.</p>
             <h3>Shipping method</h3>
@@ -634,16 +650,9 @@
                 </label>
             </div>
             <div class="credit-card-fields" style="display:none;">
-                <input type="text" name="card_number" placeholder="Enter a card number">
-                <p class="field-warning empty-cart-message" data-field="card_number" style="display:none;">Please enter a card number.</p>
-                <input type="text" name="exp_date" placeholder="Enter a valid expiration date">
-                <p class="field-warning empty-cart-message" data-field="exp_date" style="display:none;">Please enter an expiration date.</p>
-                <input type="text" name="cvv" placeholder="Enter the CVV or security code on your card">
-                <p class="field-warning empty-cart-message" data-field="cvv" style="display:none;">Please enter the CVV or security code.</p>
-                <input type="text" name="card_name" placeholder="Enter your name exactly as it’s written on your card">
-                <p class="field-warning empty-cart-message" data-field="card_name" style="display:none;">Please enter the name on your card.</p>
+                <div class="stripe-payment-element" aria-label="Secure payment form"></div>
             </div>
-            <p class="card-warning empty-cart-message" style="display:none;">Please complete the card details.</p>
+            <p class="card-warning empty-cart-message" style="display:none;">Please complete your secure payment details.</p>
             <div class="payment-option">
                 <input type="radio" name="payment-method" id="cart2-pay-apple" value="apple">
                 <label for="cart2-pay-apple">

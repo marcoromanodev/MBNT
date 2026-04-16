@@ -93,6 +93,23 @@ function toFormBody(params) {
   return form;
 }
 
+async function stripeApiRequest(path, options = {}) {
+  const response = await fetch(`https://api.stripe.com${path}`, {
+    method: options.method || 'GET',
+    headers: {
+      Authorization: `Bearer ${stripeSecretKey}`,
+      ...(options.contentType ? { 'Content-Type': options.contentType } : {})
+    },
+    body: options.body
+  });
+  const payload = await response.json();
+  if (!response.ok) {
+    const message = payload?.error?.message || 'Stripe API request failed.';
+    throw new Error(message);
+  }
+  return payload;
+}
+
 function parseStripeSignatureHeader(headerValue = '') {
   return headerValue.split(',').reduce(
     (acc, part) => {
@@ -210,6 +227,84 @@ async function handleStripeWebhook(req, res) {
   return jsonResponse(res, 200, { received: true }, requestOrigin);
 }
 
+async function handleCreatePaymentIntent(req, res) {
+  const requestOrigin = req.headers.origin || '';
+
+  if (!stripeSecretKey) {
+    return jsonResponse(res, 500, { error: 'Missing STRIPE_SECRET_KEY.' }, requestOrigin);
+  }
+
+  const rawBody = await readBody(req);
+  let body;
+  try {
+    body = rawBody ? JSON.parse(rawBody) : {};
+  } catch {
+    return jsonResponse(res, 400, { error: 'Invalid JSON body.' }, requestOrigin);
+  }
+
+  const lineItems = sanitizeLineItems(body);
+  if (!lineItems.length) {
+    return jsonResponse(
+      res,
+      400,
+      { error: 'Request must include lineItems or cart with valid Stripe price IDs.' },
+      requestOrigin
+    );
+  }
+
+  try {
+    const priceCache = new Map();
+    let currency = '';
+    let amount = 0;
+
+    for (const item of lineItems) {
+      if (!priceCache.has(item.price)) {
+        const price = await stripeApiRequest(`/v1/prices/${encodeURIComponent(item.price)}`);
+        priceCache.set(item.price, price);
+      }
+      const priceData = priceCache.get(item.price);
+      const unitAmount = Number(priceData?.unit_amount || 0);
+      if (!unitAmount) {
+        throw new Error(`Stripe price ${item.price} is missing unit_amount.`);
+      }
+      if (!currency) {
+        currency = String(priceData.currency || 'usd').toLowerCase();
+      }
+      if (currency !== String(priceData.currency || '').toLowerCase()) {
+        throw new Error('Cart contains mixed currencies, which is not supported.');
+      }
+      amount += unitAmount * item.quantity;
+    }
+
+    if (!amount || !currency) {
+      throw new Error('Unable to calculate payment amount from Stripe prices.');
+    }
+
+    const params = new URLSearchParams();
+    params.set('amount', String(amount));
+    params.set('currency', currency);
+    params.set('automatic_payment_methods[enabled]', 'true');
+
+    const paymentIntent = await stripeApiRequest('/v1/payment_intents', {
+      method: 'POST',
+      contentType: 'application/x-www-form-urlencoded',
+      body: params
+    });
+
+    return jsonResponse(
+      res,
+      200,
+      {
+        id: paymentIntent.id,
+        clientSecret: paymentIntent.client_secret
+      },
+      requestOrigin
+    );
+  } catch (error) {
+    return jsonResponse(res, 500, { error: error.message || 'Unable to create payment intent.' }, requestOrigin);
+  }
+}
+
 const server = createServer(async (req, res) => {
   const requestOrigin = req.headers.origin || '';
   const requestUrl = new URL(req.url || '/', `http://${req.headers.host || 'localhost'}`);
@@ -228,6 +323,10 @@ const server = createServer(async (req, res) => {
 
     if (req.method === 'POST' && pathname === '/api/stripe/create-checkout-session') {
       return await handleCreateCheckoutSession(req, res);
+    }
+
+    if (req.method === 'POST' && pathname === '/api/stripe/create-payment-intent') {
+      return await handleCreatePaymentIntent(req, res);
     }
 
     if (req.method === 'POST' && pathname === '/api/stripe/webhook') {
