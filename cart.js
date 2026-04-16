@@ -52,6 +52,30 @@ const stripeProductAliases = {
     dufflebag: ['duffle-bag', 'duffelbag', 'duffel-bag']
 };
 
+function buildStripeLookupAliasMap() {
+    const aliasMap = {};
+    const register = (alias, canonical) => {
+        const normalized = toSlug(alias).replace(/-/g, '');
+        if (normalized) aliasMap[normalized] = canonical;
+    };
+
+    Object.keys(defaultPriceLookup).forEach(canonical => {
+        register(canonical, canonical);
+        const aliases = stripeProductAliases[canonical] || [];
+        aliases.forEach(alias => register(alias, canonical));
+    });
+
+    return aliasMap;
+}
+
+const stripeLookupAliasMap = buildStripeLookupAliasMap();
+
+function canonicalizeStripeProductKey(key) {
+    const normalized = toSlug(key).replace(/-/g, '');
+    if (!normalized) return '';
+    return stripeLookupAliasMap[normalized] || '';
+}
+
 function applyStripeSettings(overrides = {}) {
     if (overrides.publishableKey) {
         stripeSettings.publishableKey = overrides.publishableKey;
@@ -66,12 +90,11 @@ function applyStripeSettings(overrides = {}) {
 }
 
 function readInlinePriceLookup(config = {}) {
-    const knownKeys = Object.keys(defaultPriceLookup);
-    return knownKeys.reduce((lookup, key) => {
-        const value = config[key];
-        if (typeof value === 'string' && value) {
-            lookup[key] = value;
-        }
+    return Object.entries(config).reduce((lookup, [rawKey, value]) => {
+        if (typeof value !== 'string' || !value) return lookup;
+        const canonicalKey = canonicalizeStripeProductKey(rawKey);
+        if (!canonicalKey) return lookup;
+        lookup[canonicalKey] = value;
         return lookup;
     }, {});
 }
