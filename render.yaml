@@ -1,7 +1,7 @@
 services:
   - type: web
     name: maybenot-stripe-api
-    branch: work
+    branch: main
     runtime: node
     plan: starter
     rootDir: .
