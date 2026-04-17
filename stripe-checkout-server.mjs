@@ -90,6 +90,9 @@ function toFormBody(params) {
   form.append('mode', params.mode);
   form.append('success_url', params.success_url);
   form.append('cancel_url', params.cancel_url);
+  if (params.customer_creation) {
+    form.append('customer_creation', params.customer_creation);
+  }
   if (params.customer_email) {
     form.append('customer_email', params.customer_email);
   }
@@ -181,9 +184,6 @@ async function handleCreateCheckoutSession(req, res) {
   const successUrl = typeof body.successUrl === 'string' && body.successUrl ? body.successUrl : defaultSuccessUrl;
   const cancelUrl = typeof body.cancelUrl === 'string' && body.cancelUrl ? body.cancelUrl : defaultCancelUrl;
   const customerEmail = typeof body.customerEmail === 'string' ? body.customerEmail.trim().toLowerCase() : '';
-  if (!customerEmail) {
-    return jsonResponse(res, 400, { error: 'customerEmail is required.' }, requestOrigin);
-  }
 
   const payload = {
     line_items: lineItems,
@@ -192,6 +192,7 @@ async function handleCreateCheckoutSession(req, res) {
       ? `${successUrl}&session_id={CHECKOUT_SESSION_ID}`
       : `${successUrl}?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: cancelUrl,
+    customer_creation: 'always',
     customer_email: customerEmail
   };
 
@@ -222,6 +223,41 @@ async function handleCreateCheckoutSession(req, res) {
     );
   } catch (error) {
     return jsonResponse(res, 500, { error: error.message || 'Unable to create checkout session.' }, requestOrigin);
+  }
+}
+
+async function handleVerifyReturn(req, res, requestUrl) {
+  const requestOrigin = req.headers.origin || '';
+  if (!stripeSecretKey) {
+    return jsonResponse(res, 500, { error: 'Missing STRIPE_SECRET_KEY.' }, requestOrigin);
+  }
+
+  const sessionId = (requestUrl.searchParams.get('session_id') || '').trim();
+  const paymentIntentId = (requestUrl.searchParams.get('payment_intent') || '').trim();
+  if (!sessionId && !paymentIntentId) {
+    return jsonResponse(res, 400, { error: 'session_id or payment_intent is required.' }, requestOrigin);
+  }
+
+  try {
+    if (sessionId) {
+      const session = await stripeApiRequest(`/v1/checkout/sessions/${encodeURIComponent(sessionId)}`);
+      const paid = session.payment_status === 'paid' || session.status === 'complete';
+      const email = session.customer_details?.email || session.customer_email || '';
+      return jsonResponse(res, 200, { paid, source: 'checkout_session', id: session.id, email }, requestOrigin);
+    }
+
+    const paymentIntent = await stripeApiRequest(`/v1/payment_intents/${encodeURIComponent(paymentIntentId)}`);
+    const paidStatuses = new Set(['succeeded', 'processing', 'requires_capture']);
+    const paid = paidStatuses.has(String(paymentIntent.status || '').toLowerCase());
+    const email = paymentIntent.receipt_email || paymentIntent.metadata?.customer_email || '';
+    return jsonResponse(
+      res,
+      200,
+      { paid, source: 'payment_intent', id: paymentIntent.id, status: paymentIntent.status, email },
+      requestOrigin
+    );
+  } catch (error) {
+    return jsonResponse(res, 500, { error: error.message || 'Unable to verify Stripe return status.' }, requestOrigin);
   }
 }
 
@@ -347,6 +383,10 @@ const server = createServer(async (req, res) => {
 
     if (req.method === 'POST' && pathname === '/api/stripe/webhook') {
       return await handleStripeWebhook(req, res);
+    }
+
+    if (req.method === 'GET' && pathname === '/api/stripe/verify-return') {
+      return await handleVerifyReturn(req, res, requestUrl);
     }
 
     if (req.method === 'GET' && pathname === '/api/stripe/health') {

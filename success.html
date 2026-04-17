@@ -16,8 +16,47 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             text-align: center;
+        }
+        .header-container {
+            width: 100%;
+            padding: 10px 10px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .logo-container {
+            position: relative;
+            width: 20vw;
+            height: 15vh;
+            min-width: 90px;
+            min-height: 70px;
+        }
+        .logo-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            z-index: 10;
+        }
+        .logo-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .header-line {
+            border-top: 1px solid #000;
+            width: 100%;
+            margin-top: 6px;
+        }
+        .success-content {
+            width: 100%;
+            max-width: 520px;
+            padding: 20px;
+            margin: auto 0;
         }
         h1 { margin-bottom: 10px; }
         p { max-width: 420px; line-height: 1.4; }
@@ -25,22 +64,98 @@
         .actions { margin-top: 20px; display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; }
         .actions a { padding: 10px 14px; border: 1px solid #000; background: #fff; }
         .actions a:hover { background: red; color: #fff; }
+        .full-site-link {
+            margin: 20px 0 30px;
+        }
     </style>
 </head>
 <body>
-    <h1>Thanks for your order!</h1>
-    <p>Your payment was received successfully. A confirmation email was sent to the address you entered at checkout.</p>
-    <p id="order-reference" style="font-weight:bold;"></p>
-    <div class="actions">
-        <a href="shop.html">Continue shopping</a>
-        <a href="contact.html">Contact support</a>
+    <header class="header-container">
+        <div class="logo-container">
+            <iframe
+                id="logo-frame"
+                src="https://www.vectary.com/viewer/v1/?model=8b9281ad-097b-4408-88e2-ef824efa63eb&env=studio3&turntable=1"
+                frameborder="0"
+                aria-label="Maybe Not logo"
+            ></iframe>
+            <div class="logo-overlay" aria-hidden="true"></div>
+        </div>
+        <div class="header-line"></div>
+    </header>
+    <main class="success-content">
+        <h1>Thanks for your order!</h1>
+        <p id="confirmation-message">Verifying your payment status…</p>
+        <p id="order-reference" style="font-weight:bold;"></p>
+        <div class="actions">
+            <a href="shop.html">Continue shopping</a>
+            <a href="contact.html">Contact support</a>
+        </div>
+    </main>
+    <div class="full-site-link" id="full-site-link">
+        <a href="index.html">View Full Site</a>
     </div>
     <script>
         const params = new URLSearchParams(window.location.search);
-        const orderRef = params.get('session_id') || params.get('payment_intent');
-        if (orderRef) {
-            document.getElementById('order-reference').textContent = `Order reference: ${orderRef}`;
+        const sessionId = params.get('session_id');
+        const paymentIntentId = params.get('payment_intent');
+        const reference = sessionId || paymentIntentId;
+        const confirmationMessage = document.getElementById('confirmation-message');
+        const orderReference = document.getElementById('order-reference');
+
+        function getCheckoutApiBase(checkoutEndpoint) {
+            if (!checkoutEndpoint) return '';
+            try {
+                const parsed = new URL(checkoutEndpoint, window.location.origin);
+                return parsed.origin;
+            } catch (_) {
+                return '';
+            }
         }
+
+        async function loadStripeConfig() {
+            try {
+                const response = await fetch('stripe-config.json', { cache: 'no-store' });
+                if (!response.ok) return {};
+                return await response.json();
+            } catch (_) {
+                return {};
+            }
+        }
+
+        async function verifyAndRender() {
+            if (!reference) {
+                window.location.replace('cart.html');
+                return;
+            }
+
+            const config = await loadStripeConfig();
+            const apiBase = getCheckoutApiBase(config.checkoutEndpoint || '');
+            if (!apiBase) {
+                window.location.replace('cart.html');
+                return;
+            }
+
+            const verifyUrl = new URL('/api/stripe/verify-return', apiBase);
+            if (sessionId) verifyUrl.searchParams.set('session_id', sessionId);
+            if (paymentIntentId) verifyUrl.searchParams.set('payment_intent', paymentIntentId);
+
+            try {
+                const response = await fetch(verifyUrl.toString(), { credentials: 'omit' });
+                const payload = await response.json().catch(() => ({}));
+                if (!response.ok || !payload.paid) {
+                    window.location.replace('cart.html');
+                    return;
+                }
+
+                const emailNote = payload.email ? ` A confirmation email was sent to ${payload.email}.` : '';
+                confirmationMessage.textContent = `Your payment was received successfully.${emailNote}`;
+                orderReference.textContent = `Order reference: ${payload.id || reference}`;
+            } catch (_) {
+                window.location.replace('cart.html');
+            }
+        }
+
+        verifyAndRender();
     </script>
 </body>
 </html>
