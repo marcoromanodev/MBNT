@@ -298,9 +298,6 @@ async function handleCreatePaymentIntent(req, res) {
     );
   }
   const customerEmail = typeof body.customerEmail === 'string' ? body.customerEmail.trim().toLowerCase() : '';
-  if (!customerEmail) {
-    return jsonResponse(res, 400, { error: 'customerEmail is required.' }, requestOrigin);
-  }
 
   try {
     const priceCache = new Map();
@@ -334,8 +331,10 @@ async function handleCreatePaymentIntent(req, res) {
     params.set('amount', String(amount));
     params.set('currency', currency);
     params.set('automatic_payment_methods[enabled]', 'true');
-    params.set('receipt_email', customerEmail);
-    params.set('metadata[customer_email]', customerEmail);
+    if (customerEmail) {
+      params.set('receipt_email', customerEmail);
+      params.set('metadata[customer_email]', customerEmail);
+    }
 
     const paymentIntent = await stripeApiRequest('/v1/payment_intents', {
       method: 'POST',

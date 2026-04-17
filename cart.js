@@ -474,11 +474,8 @@ async function ensureEmbeddedPaymentReady(form) {
         throw new Error(`Stripe price IDs missing for: ${missing.join(', ')}.`);
     }
     const contactEmail = form.querySelector('input[name="contact_email"]')?.value?.trim() || '';
-    if (!contactEmail) {
-        throw new Error('Please provide your contact email for this order.');
-    }
-
-    const lineItemsSignature = JSON.stringify({ lineItems, contactEmail: contactEmail.toLowerCase() });
+    const normalizedEmail = contactEmail.toLowerCase();
+    const lineItemsSignature = JSON.stringify({ lineItems, contactEmail: normalizedEmail });
     const shouldReuse = (
         stripeEmbeddedState.elements &&
         stripeEmbeddedState.lineItemsSignature === lineItemsSignature &&
@@ -493,7 +490,7 @@ async function ensureEmbeddedPaymentReady(form) {
     const intentResponse = await fetch(paymentIntentEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ lineItems, cart, customerEmail: contactEmail })
+        body: JSON.stringify({ lineItems, cart, customerEmail: normalizedEmail })
     });
     const intentPayload = await intentResponse.json().catch(() => ({}));
     if (!intentResponse.ok || !intentPayload.clientSecret) {
