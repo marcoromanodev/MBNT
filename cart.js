@@ -1404,7 +1404,7 @@ function setupFinalForm(form) {
     form.querySelectorAll('input[name="payment-method"]').forEach(input => {
         input.addEventListener('change', () => {
             paymentMsg.innerHTML = '';
-            if (emailInput) emailInput.required = true;
+            if (emailInput) emailInput.required = requiresContactAndDeliveryDetails();
             addressInputs.forEach(field => {
                 field.required = requiresContactAndDeliveryDetails();
             });
@@ -1446,7 +1446,7 @@ function setupFinalForm(form) {
         if (warn) warn.style.display = 'none';
     }));
     if (emailInput) {
-        emailInput.required = true;
+        emailInput.required = requiresContactAndDeliveryDetails();
         emailInput.addEventListener('input', () => {
             if (emailWarning) emailWarning.style.display = 'none';
         });
@@ -1555,8 +1555,9 @@ function setupFinalForm(form) {
         e.preventDefault();
         let valid = true;
         let firstInvalid = null;
+        const requiresDetails = requiresContactAndDeliveryDetails();
         const contactEmail = emailInput ? emailInput.value.trim() : '';
-        if (!contactEmail) {
+        if (requiresDetails && !contactEmail) {
             if (emailWarning) emailWarning.style.display = 'block';
             firstInvalid = firstInvalid || emailInput;
             valid = false;
@@ -1568,7 +1569,7 @@ function setupFinalForm(form) {
             firstInvalid = firstInvalid || phoneInput;
             valid = false;
         }
-        if (requiresContactAndDeliveryDetails()) {
+        if (requiresDetails) {
             addressInputs.forEach(inp => {
                 const fw = fieldWarnings[inp.name];
                 if (inp.value.trim() === '') {
