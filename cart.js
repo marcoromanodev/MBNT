@@ -549,6 +549,105 @@ async function submitEmbeddedPayment(form, paymentMsg) {
     window.location.assign(successUrl.toString());
 }
 
+async function startApplePayPayment(lineItems, customerEmail = '') {
+    const paymentIntentEndpoint = buildPaymentIntentEndpoint(stripeSettings.checkoutEndpoint);
+    if (!paymentIntentEndpoint) {
+        throw new Error('Apple Pay requires the Stripe payment intent endpoint. Set checkoutEndpoint in stripe-config.json.');
+    }
+
+    const stripe = await getStripe();
+    const intentResponse = await fetch(paymentIntentEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lineItems, cart, customerEmail: (customerEmail || '').trim().toLowerCase() })
+    });
+    const intentPayload = await intentResponse.json().catch(() => ({}));
+    if (!intentResponse.ok || !intentPayload.clientSecret) {
+        throw new Error(intentPayload.error || 'Unable to initialize Apple Pay payment.');
+    }
+
+    const paymentIntentResult = await stripe.retrievePaymentIntent(intentPayload.clientSecret);
+    const paymentIntent = paymentIntentResult?.paymentIntent;
+    if (!paymentIntent?.amount || !paymentIntent?.currency) {
+        throw new Error('Unable to determine payment amount for Apple Pay.');
+    }
+
+    const paymentRequest = stripe.paymentRequest({
+        country: 'US',
+        currency: String(paymentIntent.currency).toLowerCase(),
+        total: {
+            label: 'MaybeNot Order',
+            amount: Number(paymentIntent.amount)
+        },
+        requestPayerName: true,
+        requestPayerEmail: true
+    });
+
+    const availability = await paymentRequest.canMakePayment();
+    if (!availability || !availability.applePay) {
+        throw new Error('Apple Pay is not available on this device/browser. Please choose another payment method.');
+    }
+
+    await new Promise((resolve, reject) => {
+        let completed = false;
+        const finalize = (callback) => {
+            if (completed) return;
+            completed = true;
+            callback();
+        };
+
+        paymentRequest.on('paymentmethod', async (event) => {
+            try {
+                const initialConfirm = await stripe.confirmCardPayment(
+                    intentPayload.clientSecret,
+                    { payment_method: event.paymentMethod.id },
+                    { handleActions: false }
+                );
+
+                if (initialConfirm.error) {
+                    event.complete('fail');
+                    finalize(() => reject(new Error(initialConfirm.error.message || 'Apple Pay confirmation failed.')));
+                    return;
+                }
+
+                let confirmedIntent = initialConfirm.paymentIntent;
+                if (confirmedIntent?.status === 'requires_action') {
+                    const actionResult = await stripe.confirmCardPayment(intentPayload.clientSecret);
+                    if (actionResult.error) {
+                        event.complete('fail');
+                        finalize(() => reject(new Error(actionResult.error.message || 'Apple Pay authentication failed.')));
+                        return;
+                    }
+                    confirmedIntent = actionResult.paymentIntent;
+                }
+
+                if (!confirmedIntent || !['succeeded', 'processing', 'requires_capture'].includes(confirmedIntent.status)) {
+                    event.complete('fail');
+                    finalize(() => reject(new Error('Apple Pay payment did not complete.')));
+                    return;
+                }
+
+                event.complete('success');
+                localStorage.setItem('cart', '[]');
+                const successUrl = new URL(
+                    normalizeCheckoutUrl(stripeSettings.successUrl, `${window.location.origin}/success.html`),
+                    window.location.origin
+                );
+                successUrl.searchParams.set('payment_intent', confirmedIntent.id);
+                window.location.assign(successUrl.toString());
+                finalize(resolve);
+            } catch (error) {
+                event.complete('fail');
+                finalize(() => reject(new Error(error.message || 'Apple Pay payment failed.')));
+            }
+        });
+
+        paymentRequest.show().catch((error) => {
+            finalize(() => reject(new Error(error.message || 'Unable to open Apple Pay sheet.')));
+        });
+    });
+}
+
 async function startStripeCheckout(method = 'Stripe', customerEmail = '') {
     if (!cart.length) {
         alert('Your cart is empty.');
@@ -569,6 +668,11 @@ async function startStripeCheckout(method = 'Stripe', customerEmail = '') {
     }
     if (!lineItems.length) {
         alert('Unable to start checkout without items.');
+        return;
+    }
+
+    if (method === 'Apple Pay') {
+        await startApplePayPayment(lineItems, customerEmail);
         return;
     }
 
