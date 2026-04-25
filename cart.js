@@ -648,9 +648,19 @@ async function startApplePayPayment(lineItems, customerEmail = '') {
             }
         });
 
-        paymentRequest.show().catch((error) => {
+        let showResult;
+        try {
+            showResult = paymentRequest.show();
+        } catch (error) {
             finalize(() => reject(new Error(error.message || 'Unable to open Apple Pay sheet.')));
-        });
+            return;
+        }
+
+        if (showResult && typeof showResult.catch === 'function') {
+            showResult.catch((error) => {
+                finalize(() => reject(new Error(error.message || 'Unable to open Apple Pay sheet.')));
+            });
+        }
     });
 }
 
