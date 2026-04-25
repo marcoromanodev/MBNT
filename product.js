@@ -12,8 +12,9 @@ function initSliders() {
     let index = 0;
     const img = slider.querySelector('img');
     if (img) {
-      img.style.width = '100%';
-      img.style.height = '100%';
+      const isCamoHatSlider = slider.classList.contains('camo-size-match');
+      img.style.width = isCamoHatSlider ? '72%' : '100%';
+      img.style.height = isCamoHatSlider ? '72%' : '100%';
       img.style.objectFit = 'contain';
       img.style.filter = PRODUCT_SHADOW;
     }
