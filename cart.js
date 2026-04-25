@@ -229,12 +229,14 @@ async function handlePayment(method, customerEmail = '') {
     const handler = paymentHandlers[method];
     if (!handler) {
         alert(`${method} payment not implemented.`);
-        return;
+        return false;
     }
     try {
         await handler(customerEmail);
+        return true;
     } catch (err) {
         alert(err.message || `${method} payment failed.`);
+        return false;
     }
 }
 
@@ -584,8 +586,12 @@ async function startApplePayPayment(lineItems, customerEmail = '') {
     });
 
     const availability = await paymentRequest.canMakePayment();
-    if (!availability || !availability.applePay) {
-        throw new Error('Apple Pay is not available on this device/browser. Please choose another payment method.');
+    const hasSupportedWallet = !!(
+        availability &&
+        (availability.applePay || availability.googlePay || availability.link || availability.browserCard)
+    );
+    if (!hasSupportedWallet) {
+        throw new Error('No supported wallet is available on this device/browser right now. On iPhone, use Safari with Apple Pay set up in Wallet.');
     }
 
     await new Promise((resolve, reject) => {
@@ -1652,7 +1658,7 @@ function setupFinalForm(form) {
             if (warn) warn.style.display = 'none';
         });
     }
-    form.addEventListener('submit', e => {
+    form.addEventListener('submit', async e => {
         e.preventDefault();
         let valid = true;
         let firstInvalid = null;
@@ -1715,10 +1721,12 @@ function setupFinalForm(form) {
             shop: 'Shop Pay',
             klarna: 'Klarna'
         };
-        handlePayment(methodMap[selectedPayment] || 'Stripe', contactEmail);
-        const modal = form.closest('#cart-modal');
-        if (modal) {
-            closeCart();
+        const success = await handlePayment(methodMap[selectedPayment] || 'Stripe', contactEmail);
+        if (success) {
+            const modal = form.closest('#cart-modal');
+            if (modal) {
+                closeCart();
+            }
         }
     });
 }
