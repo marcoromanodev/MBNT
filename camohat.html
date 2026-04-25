@@ -118,6 +118,7 @@
         }
         .image-slider { position:relative; display:flex; justify-content:center; align-items:center; width:80%; max-width:400px; aspect-ratio:1/1; margin:0 auto; overflow:hidden; }
         .image-slider img { width:100%; height:100%; object-fit:contain; }
+        .image-slider.camo-size-match img { width:50%; height:50%; }
         .color-options {
             display: flex;
             gap: 5px;
@@ -145,7 +146,7 @@
 </div>
 </header>
 <div class="product-item" data-product="camohat" data-price="50" data-price-id="camohat" data-selected-color="" data-size="">
-    <div class="image-slider" data-images="camohatcamo.png,camohatorange.png,camohatblack.png">
+    <div class="image-slider camo-size-match" data-images="camohatcamo.png,camohatorange.png,camohatblack.png">
         <button class="prev">&#10094;</button>
         <img id="product-image" src="camohatcamo.png" alt="Camo Hat">
         <button class="next">&#10095;</button>
