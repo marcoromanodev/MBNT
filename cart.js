@@ -591,6 +591,10 @@ async function startApplePayPayment(lineItems, customerEmail = '') {
         (availability.applePay || availability.googlePay || availability.link || availability.browserCard)
     );
     if (!hasSupportedWallet) {
+        if (stripeSettings.checkoutEndpoint) {
+            await startServerCheckout('Apple Pay', lineItems, customerEmail);
+            return;
+        }
         throw new Error('No supported wallet is available on this device/browser right now. On iPhone, use Safari with Apple Pay set up in Wallet.');
     }
 
