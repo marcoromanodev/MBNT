@@ -586,27 +586,30 @@ async function startApplePayPayment(lineItems, customerEmail = '') {
     });
 
     const availability = await paymentRequest.canMakePayment();
-    const hasSupportedWallet = !!(
-        availability &&
-        (availability.applePay || availability.googlePay || availability.link || availability.browserCard)
-    );
-    if (!hasSupportedWallet) {
+    const hasApplePay = Boolean(availability && availability.applePay);
+    if (!hasApplePay) {
         if (stripeSettings.checkoutEndpoint) {
             await startServerCheckout('Apple Pay', lineItems, customerEmail);
             return;
         }
-        throw new Error('No supported wallet is available on this device/browser right now. On iPhone, use Safari with Apple Pay set up in Wallet.');
+        throw new Error('Apple Pay is not available on this device/browser right now. On iPhone, use Safari with Apple Pay set up in Wallet.');
     }
 
     await new Promise((resolve, reject) => {
         let completed = false;
+        let paymentMethodHandler = null;
+        let cancelHandler = null;
         const finalize = (callback) => {
             if (completed) return;
             completed = true;
+            if (typeof paymentRequest.off === 'function') {
+                if (paymentMethodHandler) paymentRequest.off('paymentmethod', paymentMethodHandler);
+                if (cancelHandler) paymentRequest.off('cancel', cancelHandler);
+            }
             callback();
         };
 
-        paymentRequest.on('paymentmethod', async (event) => {
+        paymentMethodHandler = async (event) => {
             try {
                 const initialConfirm = await stripe.confirmCardPayment(
                     intentPayload.clientSecret,
@@ -650,7 +653,13 @@ async function startApplePayPayment(lineItems, customerEmail = '') {
                 event.complete('fail');
                 finalize(() => reject(new Error(error.message || 'Apple Pay payment failed.')));
             }
-        });
+        };
+        paymentRequest.on('paymentmethod', paymentMethodHandler);
+
+        cancelHandler = () => {
+            finalize(() => reject(new Error('Apple Pay payment was canceled.')));
+        };
+        paymentRequest.on('cancel', cancelHandler);
 
         let showResult;
         try {
