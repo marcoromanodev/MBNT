@@ -588,10 +588,6 @@ async function startApplePayPayment(lineItems, customerEmail = '') {
     const availability = await paymentRequest.canMakePayment();
     const hasApplePay = Boolean(availability && availability.applePay);
     if (!hasApplePay) {
-        if (stripeSettings.checkoutEndpoint) {
-            await startServerCheckout('Apple Pay', lineItems, customerEmail);
-            return;
-        }
         throw new Error('Apple Pay is not available on this device/browser right now. On iPhone, use Safari with Apple Pay set up in Wallet.');
     }
 
