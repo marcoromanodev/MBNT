@@ -49,6 +49,10 @@ const stripeProductAliases = {
     hat: ['baseball-cap', 'baseballcap', 'hat-baseball-cap', 'hats', 'cap'],
     truckerhat: ['trucker-hat', 'trucker'],
     't-shirt': ['tshirt', 'tee', 'shirt'],
+    'blank-shirt': ['blankshirt', 'blank-tee'],
+    'blank-shirt-3pack': ['blankshirt3pack', 'blank-shirt-3-pack', 'blank-tee-3pack'],
+    'blank-hoodie': ['blankhoodie'],
+    camohat: ['camo-hat', 'camo'],
     'american-denim': ['americandenim', 'denim', 'jeans'],
     dufflebag: ['duffle-bag', 'duffelbag', 'duffel-bag'],
     backpack: ['back-pack', 'back-packs', 'backpacks'],
@@ -72,7 +76,13 @@ function buildStripeLookupAliasMap() {
 }
 
 const stripeLookupAliasMap = buildStripeLookupAliasMap();
-const activeStripeProductKeys = new Set(Object.keys(defaultPriceLookup));
+const activeStripeProductKeys = new Set([
+    ...Object.keys(defaultPriceLookup),
+    'blank-shirt',
+    'blank-shirt-3pack',
+    'blank-hoodie',
+    'camohat'
+]);
 
 function filterActivePriceLookup(config = {}) {
     return Object.entries(config).reduce((lookup, [rawKey, value]) => {

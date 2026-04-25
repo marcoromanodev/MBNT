@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="T-Shirt product page">
-    <title>T-Shirt - MaybeNot Shop</title>
+    <meta name="description" content="Camo Hat product page">
+    <title>Camo Hat - MaybeNot Shop</title>
     <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="196x196">
     <style>
         body, html {
@@ -27,43 +27,13 @@
             top: 0;
             z-index: 1000;
         }
-        .logo-container {
-            position: relative;
-            width: 20vw;
-            height: 10vh;
-            margin-top: 0;
-        }
-        .logo-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
-            z-index: 10;
-        }
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-        .time {
-            font-size: 0.7rem;
-            text-align: center;
-            margin-top: -5px;
-            font-weight: 600;
-        }
-        .header-line {
-            border-top: 1px solid #000;
-            margin-top: 5px;
-            width: 100%;
-        }
-        .cart-counter {
-            margin-top: 5px;
-            font-size: 0.7rem;
-            text-align: center;
-            font-weight: 600;
-        }
+        .logo-container { position: relative; width: 20vw; height: 10vh; margin-top: 0; }
+        .logo-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: pointer; z-index: 10; }
+        iframe { width: 100%; height: 100%; border: none; }
+        .time { font-size: 0.7rem; text-align: center; margin-top: -5px; font-weight: 600; }
+        .header-line { border-top: 1px solid #000; margin-top:5px; width: 100%; }
+        .cart-counter { margin-top:5px; font-size:0.7rem; text-align:center; font-weight:600; }
+
         /* Mobile Navigation */
         .mobile-nav {
             display: block;
@@ -133,6 +103,13 @@
             color: red;
             background-color: white;
         }
+
+        .cart-counter {
+            margin-top:5px;
+            font-size: 0.7rem;
+            text-align: center;
+            font-weight: 600;
+        }
         .product-item {
             margin-top: 20px;
             display: flex;
@@ -140,7 +117,7 @@
             align-items: center;
         }
         .image-slider { position:relative; display:flex; justify-content:center; align-items:center; width:80%; max-width:400px; aspect-ratio:1/1; margin:0 auto; overflow:hidden; }
-        .image-slider img { width:100%; height:100%; object-fit:cover; }
+        .image-slider img { width:100%; height:100%; object-fit:contain; }
         .color-options {
             display: flex;
             gap: 5px;
@@ -167,31 +144,27 @@
     
 </div>
 </header>
-<div class="product-item" data-product="t-shirt" data-price="30" data-selected-color="" data-size="">
-    <div class="image-slider" data-images="blackshirt.png,whiteshirt.png,grayshirt.png,grayshirtback.png">
+<div class="product-item" data-product="camohat" data-price="50" data-price-id="camohat" data-selected-color="" data-size="">
+    <div class="image-slider" data-images="camohatcamo.png,camohatorange.png,camohatblack.png">
         <button class="prev">&#10094;</button>
-        <img id="product-image" src="blackshirt.png" alt="T-Shirt">
+        <img id="product-image" src="camohatcamo.png" alt="Camo Hat">
         <button class="next">&#10095;</button>
     </div>
-    <h1>T-Shirt</h1>
-    <p>$30</p>
+    <h1>Camo Hat</h1>
+    <p>$50</p>
     <div class="color-options">
-        <span class="color-option" data-color="black" data-image="blackshirt.png" style="background:#000;"></span>
-        <span class="color-option" data-color="white" data-image="whiteshirt.png" style="background:#fff;border:1px solid #000;"></span>
-        <span class="color-option" data-color="gray" data-image="grayshirt.png" style="background:#808080;"></span>
+        <span class="color-option" data-color="camo" data-image="camohatcamo.png" style="background:#4b5d3a;"></span>
+        <span class="color-option" data-color="orange" data-image="camohatorange.png" style="background:#eb7a2f;"></span>
+        <span class="color-option" data-color="black" data-image="camohatblack.png" style="background:#000;"></span>
     </div>
     <div class="size-select">
         <select>
             <option value="">Select Size</option>
-            <option value="S">Small</option>
-            <option value="M">Medium</option>
-            <option value="L">Large</option>
-            <option value="XL">X-Large</option>
-            <option value="XXL">XX-Large</option>
+            <option value="One Size">One Size</option>
         </select>
     </div>
     <div class="product-details">
-        <p>100% heavyweight cotton.</p>
+        <p>Camo hat available in green camo, orange, and black variants.</p>
         <p>All American made cut and sew in house: vertical integration process all American sourcing and printing locally.</p>
         <p>Only national shipping for now.</p>
     </div>
