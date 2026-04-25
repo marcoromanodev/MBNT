@@ -55,6 +55,42 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Rotate product thumbnail images on shop/category grids every 3 seconds
+  const productCarouselImages = {
+    'hoodie.html': ['blackhoodie.png', 'blackhoodieback.png', 'whitehoodie.png', 'whitehoodieback.png', 'grayhoodie.png', 'grayhoodieback.png'],
+    'blankhoodie.html': ['blankblackhoodie.png', 'blankblackhoodieback.png', 'blankwhitehoodie.png', 'blankwhitehoodieback.png', 'blankgrayhoodie.png', 'blankgrayhoodieback.png'],
+    'shirt.html': ['blackshirt.png', 'whiteshirt.png', 'grayshirt.png', 'grayshirtback.png'],
+    'blankshirt.html': ['3packwhiteshirts.png', 'blankblackshirtback.png', 'blankwhiteshirtback.png', 'blankgrayshirt.png', 'blankgrayshirtback.png', '3packblackshirts.png', '3packgrayshirts.png', '3packcomboshirts.png'],
+    'joggers.html': ['blackjoggers.png', 'whitejoggers.png'],
+    'shorts.html': ['blackshorts.png', 'whiteshorts.png'],
+    'americandenim.html': ['blackjeans.png', 'blackjeansback.png', 'bluejeans.png', 'bluejeansback.png'],
+    'dufflebag.html': ['dufflebag1.png', 'dufflebag2.png', 'dufflebag3.png', 'dufflebag4.png', 'dufflebag5.png', 'dufflebag6.png', 'dufflebag7.png', 'dufflebag8.png', 'dufflebag9.png'],
+    'backpack.html': ['backpackblack.png', 'backpackwhite.png', 'backpackwhite2.png'],
+    'hat.html': ['blackhat.png', 'whitehat.png'],
+    'truckerhat.html': ['truckerwhitefront.png', 'truckerwhiteback.png', 'truckerwhitehat.png', 'truckerblackfront.png', 'truckerbackblack.png', 'truckerblackhat.png'],
+    'camohat.html': ['camohatcamo.png', 'camohatorange.png', 'camohatblack.png'],
+    'socks.html': ['blacksocks.png', 'blacksocks2.png'],
+    'skateboard1.html': ['skateboard3v2.png'],
+    'skateboard2.html': ['skateboard4.png'],
+    'skateboard3.html': ['skateboard1.png']
+  };
+
+  document.querySelectorAll('.product-grid .product-item a[href]').forEach(link => {
+    const image = link.querySelector('img');
+    if (!image) return;
+    const href = link.getAttribute('href');
+    const gallery = productCarouselImages[href];
+    if (!gallery || gallery.length < 2) return;
+
+    let index = Math.max(gallery.indexOf(image.getAttribute('src')), 0);
+    image.src = gallery[index];
+
+    setInterval(() => {
+      index = (index + 1) % gallery.length;
+      image.src = gallery[index];
+    }, 3000);
+  });
+
   // Allow long press on the logo to return to the homepage
   const logoOverlay = document.querySelector('.logo-overlay');
   if (logoOverlay) {
