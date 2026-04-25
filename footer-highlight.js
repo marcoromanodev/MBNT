@@ -55,7 +55,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Rotate product thumbnail images on shop/category grids every 3 seconds
+  // Keep Camo Hat as the second product tile on all/new/shop grids
+  if (['all.html', 'new.html', 'shop.html'].includes(current)) {
+    document.querySelectorAll('.product-grid').forEach(grid => {
+      const camoItem = grid.querySelector('.product-item a[href="camohat.html"]')?.closest('.product-item');
+      const firstItem = grid.querySelector('.product-item');
+      if (!camoItem || !firstItem || camoItem === firstItem) return;
+      firstItem.insertAdjacentElement('afterend', camoItem);
+    });
+  }
+
+  // Rotate product thumbnail images on shop/category grids every 5 seconds
   const productCarouselImages = {
     'hoodie.html': ['blackhoodie.png', 'blackhoodieback.png', 'whitehoodie.png', 'whitehoodieback.png', 'grayhoodie.png', 'grayhoodieback.png'],
     'blankhoodie.html': ['blankblackhoodie.png', 'blankblackhoodieback.png', 'blankwhitehoodie.png', 'blankwhitehoodieback.png', 'blankgrayhoodie.png', 'blankgrayhoodieback.png'],
@@ -88,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(() => {
       index = (index + 1) % gallery.length;
       image.src = gallery[index];
-    }, 3000);
+    }, 5000);
   });
 
   // Allow long press on the logo to return to the homepage
