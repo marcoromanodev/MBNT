@@ -42,7 +42,12 @@ function initSliders() {
     product?.querySelectorAll('.color-option').forEach((opt) => {
       opt.addEventListener('click', () => {
         const color = opt.dataset.color || '';
-        images = color ? allImages.filter(src => src.includes(color)) : [...allImages];
+        const explicitImages = opt.dataset.images
+          ? opt.dataset.images.split(',').map(src => src.trim()).filter(Boolean)
+          : [];
+        images = explicitImages.length
+          ? explicitImages
+          : (color ? allImages.filter(src => src.includes(color)) : [...allImages]);
         if (images.length === 0) images = [opt.dataset.image];
         const idx = images.indexOf(opt.dataset.image);
         index = idx !== -1 ? idx : 0;
