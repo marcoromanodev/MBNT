@@ -233,7 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
     { href: 'blankhoodie.html', img: 'blankblackhoodie.png', alt: 'Blank Hoodie' },
     { href: 'truckerhat.html', img: 'truckerwhitefront.png', alt: 'Trucker Hat' },
     { href: 'camohat.html', img: 'camohatcamo.png', alt: 'Camo Hat' },
-    { href: 'blankshirt.html', img: 'blankblackshirtback.png', alt: 'Blank T-Shirt' },
+    { href: 'blankshirt.html', img: 'blankblackshirt.png', alt: 'Blank T-Shirt' },
     { href: 'socks.html', img: 'blacksocks.png', alt: 'Socks' },
     { href: 'shorts.html', img: 'blackshorts.png', alt: 'Shorts' },
     { href: 'joggers.html', img: 'blackjoggers.png', alt: 'Joggers' },

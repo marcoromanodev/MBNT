@@ -69,8 +69,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const productCarouselImages = {
     'hoodie.html': ['blackhoodie.png', 'blackhoodieback.png', 'whitehoodie.png', 'whitehoodieback.png', 'grayhoodie.png', 'grayhoodieback.png'],
     'blankhoodie.html': ['blankblackhoodie.png', 'blankblackhoodieback.png', 'blankwhitehoodie.png', 'blankwhitehoodieback.png', 'blankgrayhoodie.png', 'blankgrayhoodieback.png'],
-    'shirt.html': ['blackshirt.png', 'whiteshirt.png', 'grayshirt.png', 'grayshirtback.png'],
-    'blankshirt.html': ['3packwhiteshirts.png', 'blankblackshirtback.png', 'blankwhiteshirtback.png', 'blankgrayshirt.png', 'blankgrayshirtback.png', '3packblackshirts.png', '3packgrayshirts.png', '3packcomboshirts.png'],
+    'shirt.html': ['blackshirt.png', 'blackshirtback.png', 'whiteshirt.png', 'whiteshirtback.png', 'grayshirt.png', 'grayshirtback.png'],
+    'blankshirt.html': ['blankblackshirt.png', 'blankblackshirtback.png', 'blankwhiteshirt.png', 'blankwhiteshirtback.png', 'blankgrayshirt.png', 'blankgrayshirtback.png', '3packblackshirts.png', '3packwhiteshirts.png', '3packgrayshirts.png', '3packcomboshirts.png'],
     'joggers.html': ['blackjoggers.png', 'whitejoggers.png'],
     'shorts.html': ['blackshorts.png', 'whiteshorts.png'],
     'americandenim.html': ['blackjeans.png', 'blackjeansback.png', 'bluejeans.png', 'bluejeansback.png'],
