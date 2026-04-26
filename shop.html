@@ -168,7 +168,7 @@
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 8px;
             background-color: #f7f7f7; /* Footer background color */
         }
 
@@ -176,8 +176,8 @@
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
-            gap: 15px;
-            padding-bottom: 10px;
+            gap: 10px;
+            padding-bottom: 6px;
         }
 
         .footer-line.extra-padding {
@@ -185,13 +185,13 @@
         }
 
         .footer-line.less-padding {
-            padding-bottom: 25px;
+            padding-bottom: 10px;
         }
 
         .footer-links a {
             color: #000;
             text-decoration: none;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             transition: all 0.3s ease;
         }
 
@@ -282,12 +282,12 @@
             }
 
             footer {
-                position: fixed;
-                bottom: 0;
+                position: static;
                 width: 100%;
                 text-align: center;
                 background-color: #f7f7f7; /* Apply the off-white background color for desktop footer */
-                padding: 20px 0;
+                padding: 8px 0;
+                margin-top: 20px;
             }
 
             footer .footer-links {
@@ -296,15 +296,15 @@
             }
 
             .footer-line {
-                justify-content: space-between;
+                justify-content: center;
                 flex-wrap: wrap;
-                width: 70%;
-                font-size: 0.9rem;
-                letter-spacing: 0.1rem;
+                width: min(90%, 820px);
+                font-size: 0.65rem;
+                letter-spacing: 0.02rem;
             }
 
             .footer-links {
-                padding-bottom: 30px;
+                padding-bottom: 10px;
             }
 
             .full-site-link {
@@ -428,9 +428,7 @@
 </nav>
 
 <footer>
-    <br>
-    <br>
-        <div class="footer-links">
+    <div class="footer-links">
         <div class="footer-line extra-padding">
             <a href="shop.html">shop</a>
             <a href="all.html">view all</a>
@@ -438,8 +436,6 @@
             <a href="soon.html">lookbook</a>
             <a href="news.html">news</a>
         </div>
-        <br>
-        <br>
         <div class="footer-line">
             <a href="random.html">random</a>
             <a href="about.html">about</a>

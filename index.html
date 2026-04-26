@@ -36,6 +36,7 @@
             margin: 0;
             padding: 0;
             text-align: center;
+            z-index: 2;
         }
 
         .logo-overlay {
@@ -56,10 +57,12 @@
         }
 
         .time {
-            margin-top: -90px; /* Adjusted spacing closer to logo */
+            margin-top: 8px;
             font-size: 0.7rem;
             text-align: center;
             font-weight: 600; /* Semi-bold for time */
+            position: relative;
+            z-index: 1;
         }
 
         .header-line {
@@ -214,7 +217,7 @@
             }
 
             .time {
-                margin-top: -110px; /* Move time closer to logo on mobile */
+                margin-top: 8px;
             }
 
             .cookie-banner {
@@ -239,7 +242,7 @@
             }
 
             .time {
-                margin-top: -100px; /* Keep time in place as logo moves up */
+                margin-top: 12px;
             }
 
         .social-icons {
