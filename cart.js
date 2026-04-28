@@ -332,7 +332,22 @@ function buildStripeLineItems() {
 
 function buildCheckoutEndpointCandidates(primaryEndpoint) {
     const configured = normalizeCheckoutUrl(primaryEndpoint, '');
-    return configured ? [configured] : [];
+    if (!configured) return [];
+    const candidates = new Set([configured]);
+
+    try {
+        const url = new URL(configured);
+        if (url.pathname !== '/api/stripe/create-checkout-session') {
+            url.pathname = '/api/stripe/create-checkout-session';
+            url.search = '';
+            url.hash = '';
+            candidates.add(url.toString());
+        }
+    } catch (_) {
+        // Ignore malformed configured endpoint; normalizeCheckoutUrl already handled validation.
+    }
+
+    return [...candidates];
 }
 
 async function postCheckoutSession(endpoint, payload) {
@@ -422,6 +437,24 @@ async function startServerCheckout(method, lineItems, customerEmail = '') {
     const stripe = await getStripe();
     const { error } = await stripe.redirectToCheckout({ sessionId: payload.id });
     if (error) throw error;
+}
+
+async function startClientCheckout(lineItems) {
+    const stripe = await getStripe();
+    const { error } = await stripe.redirectToCheckout({
+        lineItems,
+        mode: 'payment',
+        successUrl: stripeSettings.successUrl,
+        cancelUrl: stripeSettings.cancelUrl
+    });
+    if (!error) return;
+
+    const errorMessage = error.message || 'Unable to start Stripe Checkout.';
+    const isClientOnlyDisabled = /client-only integration is not enabled/i.test(errorMessage);
+    if (isClientOnlyDisabled) {
+        throw new Error('Stripe blocked this checkout because "Checkout client-only integration" is off for this account. Enable it in Stripe Dashboard → Settings → Checkout, or fix the checkoutEndpoint server route.');
+    }
+    throw new Error(errorMessage);
 }
 
 function buildPaymentIntentEndpoint(checkoutEndpoint) {
@@ -731,18 +764,23 @@ async function startStripeCheckout(method = 'Stripe', customerEmail = '') {
             await startApplePayPayment(lineItems, customerEmail);
             return;
         } catch (err) {
+            const applePayFallbackMessage = 'Apple Pay quick sheet is unavailable on this device/browser right now. Redirecting to secure checkout where Apple Pay may still be available.';
+            alert(`${err?.message || 'Unable to start Apple Pay.'} ${applePayFallbackMessage}`);
             if (stripeSettings.checkoutEndpoint) {
-                const fallbackMessage = 'Apple Pay quick sheet is unavailable on this device/browser right now. Redirecting to secure checkout where Apple Pay may still be available.';
-                alert(`${err?.message || 'Unable to start Apple Pay.'} ${fallbackMessage}`);
                 try {
                     await startServerCheckout(method, lineItems, customerEmail);
                     return;
                 } catch (serverErr) {
-                    alert(serverErr.message || 'Unable to start server-side checkout.');
-                    return;
+                    alert(`${serverErr.message || 'Unable to start server-side checkout.'} Trying direct Stripe checkout.`);
                 }
             }
-            throw err;
+            try {
+                await startClientCheckout(lineItems);
+                return;
+            } catch (clientErr) {
+                alert(clientErr.message || 'Unable to start direct Stripe checkout.');
+                return;
+            }
         }
     }
 
@@ -751,26 +789,21 @@ async function startStripeCheckout(method = 'Stripe', customerEmail = '') {
             await startServerCheckout(method, lineItems, customerEmail);
             return;
         } catch (err) {
-            alert(err.message || 'Unable to start server-side checkout.');
-            return;
+            alert(`${err.message || 'Unable to start server-side checkout.'} Trying direct Stripe checkout.`);
+            try {
+                await startClientCheckout(lineItems);
+                return;
+            } catch (clientErr) {
+                alert(clientErr.message || 'Unable to start direct Stripe checkout.');
+                return;
+            }
         }
     }
 
-    const stripe = await getStripe();
-    const { error } = await stripe.redirectToCheckout({
-        lineItems,
-        mode: 'payment',
-        successUrl: stripeSettings.successUrl,
-        cancelUrl: stripeSettings.cancelUrl
-    });
-    if (error) {
-        const errorMessage = error.message || 'Unable to start Stripe Checkout.';
-        const isClientOnlyDisabled = /client-only integration is not enabled/i.test(errorMessage);
-        if (isClientOnlyDisabled) {
-            alert('Stripe blocked this checkout because "Checkout client-only integration" is off for the account tied to your publishable key. This is separate from Apple Pay. Enable it in Dashboard → Settings → Checkout, or set STRIPE_CHECKOUT_ENDPOINT / checkoutEndpoint in stripe-config.json to use a server-created Checkout Session.');
-            return;
-        }
-        alert(errorMessage);
+    try {
+        await startClientCheckout(lineItems);
+    } catch (err) {
+        alert(err.message || 'Unable to start Stripe Checkout.');
     }
 }
 
