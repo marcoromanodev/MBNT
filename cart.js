@@ -600,9 +600,23 @@ async function startApplePayPayment(lineItems, customerEmail = '') {
     });
 
     const availability = await paymentRequest.canMakePayment();
-    const hasApplePay = Boolean(availability && availability.applePay);
+    const nativeApplePayAvailable = typeof window !== 'undefined'
+        && typeof window.ApplePaySession !== 'undefined'
+        && typeof window.ApplePaySession.canMakePayments === 'function'
+        && window.ApplePaySession.canMakePayments();
+    const hasApplePay = Boolean(
+        availability?.applePay
+        || availability?.wallets?.applePay
+        || nativeApplePayAvailable
+    );
     if (!hasApplePay) {
-        throw new Error('Apple Pay is not available on this device/browser right now. On iPhone, use Safari with Apple Pay set up in Wallet.');
+        const isSecureContext = window.location.protocol === 'https:' || window.location.hostname === 'localhost';
+        const baseMessage = 'Apple Pay is unavailable for this checkout right now.';
+        const setupHint = 'If Wallet is already set up, this domain may not be verified for Apple Pay in Stripe yet.';
+        const contextHint = isSecureContext
+            ? setupHint
+            : 'Apple Pay requires HTTPS (or localhost during development).';
+        throw new Error(`${baseMessage} ${contextHint}`);
     }
 
     await new Promise((resolve, reject) => {
@@ -675,13 +689,15 @@ async function startApplePayPayment(lineItems, customerEmail = '') {
         try {
             showResult = paymentRequest.show();
         } catch (error) {
-            finalize(() => reject(new Error(error.message || 'Unable to open Apple Pay sheet.')));
+            const defaultMessage = 'Unable to open Apple Pay sheet. If Wallet is set up, verify this site domain is registered for Apple Pay in Stripe.';
+            finalize(() => reject(new Error(error.message || defaultMessage)));
             return;
         }
 
         if (showResult && typeof showResult.catch === 'function') {
             showResult.catch((error) => {
-                finalize(() => reject(new Error(error.message || 'Unable to open Apple Pay sheet.')));
+                const defaultMessage = 'Unable to open Apple Pay sheet. If Wallet is set up, verify this site domain is registered for Apple Pay in Stripe.';
+                finalize(() => reject(new Error(error.message || defaultMessage)));
             });
         }
     });
