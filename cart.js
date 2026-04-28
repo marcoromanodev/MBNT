@@ -727,8 +727,23 @@ async function startStripeCheckout(method = 'Stripe', customerEmail = '') {
     }
 
     if (method === 'Apple Pay') {
-        await startApplePayPayment(lineItems, customerEmail);
-        return;
+        try {
+            await startApplePayPayment(lineItems, customerEmail);
+            return;
+        } catch (err) {
+            if (stripeSettings.checkoutEndpoint) {
+                const fallbackMessage = 'Apple Pay quick sheet is unavailable on this device/browser right now. Redirecting to secure checkout where Apple Pay may still be available.';
+                alert(`${err?.message || 'Unable to start Apple Pay.'} ${fallbackMessage}`);
+                try {
+                    await startServerCheckout(method, lineItems, customerEmail);
+                    return;
+                } catch (serverErr) {
+                    alert(serverErr.message || 'Unable to start server-side checkout.');
+                    return;
+                }
+            }
+            throw err;
+        }
     }
 
     if (stripeSettings.checkoutEndpoint) {
