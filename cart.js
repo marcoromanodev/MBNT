@@ -633,8 +633,9 @@ async function startApplePayPayment(lineItems, customerEmail = '') {
     });
 
     const availability = await paymentRequest.canMakePayment();
-    const nativeApplePayAvailable = typeof window !== 'undefined'
-        && typeof window.ApplePaySession !== 'undefined'
+    const hasApplePaySession = typeof window !== 'undefined'
+        && typeof window.ApplePaySession !== 'undefined';
+    const nativeApplePayAvailable = hasApplePaySession
         && typeof window.ApplePaySession.canMakePayments === 'function'
         && window.ApplePaySession.canMakePayments();
     const hasApplePay = Boolean(
@@ -644,12 +645,20 @@ async function startApplePayPayment(lineItems, customerEmail = '') {
     );
     if (!hasApplePay) {
         const isSecureContext = window.location.protocol === 'https:' || window.location.hostname === 'localhost';
-        const baseMessage = 'Apple Pay is unavailable for this checkout right now.';
-        const setupHint = 'If Wallet is already set up, this domain may not be verified for Apple Pay in Stripe yet.';
+        const browserHint = hasApplePaySession
+            ? ''
+            : 'Use Safari on iPhone/iPad or Safari on Mac with Apple Pay enabled.';
         const contextHint = isSecureContext
-            ? setupHint
+            ? 'If Wallet is set up, this domain may not be verified for Apple Pay in Stripe yet.'
             : 'Apple Pay requires HTTPS (or localhost during development).';
-        throw new Error(`${baseMessage} ${contextHint}`);
+        const setupHint = 'On your iPhone, open Settings > Wallet & Apple Pay and confirm Apple Pay is ON with at least one active card.';
+        const parts = [
+            'Apple Pay is unavailable for this checkout right now.',
+            browserHint,
+            contextHint,
+            setupHint
+        ].filter(Boolean);
+        throw new Error(parts.join(' '));
     }
 
     await new Promise((resolve, reject) => {
