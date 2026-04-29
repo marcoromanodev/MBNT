@@ -736,6 +736,32 @@ async function startApplePayPayment(lineItems, customerEmail = '') {
     });
 }
 
+
+function activateEmbeddedCardFallback(message) {
+    const activeCheckout = document.querySelector('#cart-modal #final-checkout[style*="display: block"], #cart-modal #final-checkout:not([style*="display: none"])')
+        || document.querySelector('#final-checkout');
+    if (!activeCheckout) {
+        if (message) alert(message);
+        return false;
+    }
+
+    const creditRadio = activeCheckout.querySelector('input[name="payment-method"][value="credit"]');
+    if (creditRadio) {
+        creditRadio.checked = true;
+        creditRadio.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    const form = activeCheckout.querySelector('form.checkout-form');
+    if (form) {
+        ensureEmbeddedPaymentReady(form).catch(() => {});
+    }
+
+    if (message) {
+        alert(message + ' Please continue with secure card checkout below.');
+    }
+    return true;
+}
+
 async function startStripeCheckout(method = 'Stripe', customerEmail = '') {
     if (!cart.length) {
         alert('Your cart is empty.');
@@ -764,8 +790,12 @@ async function startStripeCheckout(method = 'Stripe', customerEmail = '') {
             await startApplePayPayment(lineItems, customerEmail);
             return;
         } catch (err) {
-            const applePayFallbackMessage = 'Apple Pay quick sheet is unavailable on this device/browser right now. Redirecting to secure checkout where Apple Pay may still be available.';
-            alert(`${err?.message || 'Unable to start Apple Pay.'} ${applePayFallbackMessage}`);
+            const applePayFallbackMessage = 'Apple Pay quick sheet is unavailable on this device/browser right now.';
+            const fallbackNotice = `${err?.message || 'Unable to start Apple Pay.'} ${applePayFallbackMessage}`;
+            if (activateEmbeddedCardFallback(fallbackNotice)) {
+                return;
+            }
+            alert(`${fallbackNotice} Redirecting to secure checkout where Apple Pay may still be available.`);
             if (stripeSettings.checkoutEndpoint) {
                 try {
                     await startServerCheckout(method, lineItems, customerEmail);
