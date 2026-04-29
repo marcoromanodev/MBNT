@@ -721,7 +721,9 @@ async function startApplePayPayment(lineItems, customerEmail = '') {
         paymentRequest.on('paymentmethod', paymentMethodHandler);
 
         cancelHandler = () => {
-            finalize(() => reject(new Error('Apple Pay payment was canceled.')));
+            const cancelError = new Error('Apple Pay sheet was canceled before payment was authorized.');
+            cancelError.code = 'APPLE_PAY_CANCELED';
+            finalize(() => reject(cancelError));
         };
         paymentRequest.on('cancel', cancelHandler);
 
@@ -797,6 +799,9 @@ async function startStripeCheckout(method = 'Stripe', customerEmail = '') {
             await startApplePayPayment(lineItems, customerEmail);
             return;
         } catch (err) {
+            if (err?.code === 'APPLE_PAY_CANCELED') {
+                return;
+            }
             const applePayFailureMessage = `${err?.message || 'Unable to start Apple Pay.'} We are not redirecting Apple Pay to hosted checkout; please complete payment from the Apple Pay sheet.`;
             activateEmbeddedCardFallback(applePayFailureMessage);
             return;
