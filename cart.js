@@ -802,7 +802,12 @@ async function startStripeCheckout(method = 'Stripe', customerEmail = '') {
             if (err?.code === 'APPLE_PAY_CANCELED') {
                 throw new Error('Apple Pay was canceled before authorization.');
             }
-            throw new Error(err?.message || 'Unable to start Apple Pay.');
+            const fallbackMessage = err?.message || 'Unable to start Apple Pay.';
+            const switchedToCard = activateEmbeddedCardFallback(fallbackMessage);
+            if (switchedToCard) {
+                return;
+            }
+            throw new Error(fallbackMessage);
         }
     }
 
