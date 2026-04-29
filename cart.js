@@ -1062,12 +1062,12 @@ function createCartModal() {
             <div class="express-checkout">
                 <h3>Express checkout</h3>
                 <div class="payment-icons">
-                    <button class="pay-btn" data-method="Shop Pay"><img src="shoppay.png" alt="Shop Pay"></button>
-                    <button class="pay-btn" data-method="Apple Pay"><img src="applepay.png" alt="Apple Pay"></button>
-                    <button class="pay-btn paypal" data-method="PayPal"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></button>
-                    <button class="pay-btn" data-method="Google Pay"><img src="googlepay.png" alt="Google Pay"></button>
-                    <button class="pay-btn" data-method="Klarna"><img src="klarna.png" alt="Klarna" class="klarna-logo"></button>
-                    <button class="pay-btn" data-method="Venmo"><img src="venmo.png" alt="Venmo"></button>
+                    <button type="button" class="pay-btn" data-method="Shop Pay"><img src="shoppay.png" alt="Shop Pay"></button>
+                    <button type="button" class="pay-btn" data-method="Apple Pay"><img src="applepay.png" alt="Apple Pay"></button>
+                    <button type="button" class="pay-btn paypal" data-method="PayPal"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></button>
+                    <button type="button" class="pay-btn" data-method="Google Pay"><img src="googlepay.png" alt="Google Pay"></button>
+                    <button type="button" class="pay-btn" data-method="Klarna"><img src="klarna.png" alt="Klarna" class="klarna-logo"></button>
+                    <button type="button" class="pay-btn" data-method="Venmo"><img src="venmo.png" alt="Venmo"></button>
                 </div>
             </div>
             <form id="checkout-form" style="display:none;">
@@ -1081,12 +1081,12 @@ function createCartModal() {
                 <button type="button" class="signup-btn">Sign Up</button>
                 <h3>Express checkout</h3>
                 <div class="payment-icons">
-                    <button class="pay-btn" data-method="Shop Pay"><img src="shoppay.png" alt="Shop Pay"></button>
-                    <button class="pay-btn" data-method="Apple Pay"><img src="applepay.png" alt="Apple Pay"></button>
-                    <button class="pay-btn paypal" data-method="PayPal"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></button>
-                    <button class="pay-btn" data-method="Google Pay"><img src="googlepay.png" alt="Google Pay"></button>
-                    <button class="pay-btn" data-method="Klarna"><img src="klarna.png" alt="Klarna" class="klarna-logo"></button>
-                    <button class="pay-btn" data-method="Venmo"><img src="venmo.png" alt="Venmo"></button>
+                    <button type="button" class="pay-btn" data-method="Shop Pay"><img src="shoppay.png" alt="Shop Pay"></button>
+                    <button type="button" class="pay-btn" data-method="Apple Pay"><img src="applepay.png" alt="Apple Pay"></button>
+                    <button type="button" class="pay-btn paypal" data-method="PayPal"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></button>
+                    <button type="button" class="pay-btn" data-method="Google Pay"><img src="googlepay.png" alt="Google Pay"></button>
+                    <button type="button" class="pay-btn" data-method="Klarna"><img src="klarna.png" alt="Klarna" class="klarna-logo"></button>
+                    <button type="button" class="pay-btn" data-method="Venmo"><img src="venmo.png" alt="Venmo"></button>
                 </div>
             </form>
             <div id="final-checkout" style="display:none;">
@@ -1115,12 +1115,12 @@ function createCartModal() {
                     <button type="button" class="signup-btn">Sign Up</button>
                     <h3>Express checkout</h3>
                     <div class="payment-icons">
-                        <button class="pay-btn" data-method="Shop Pay"><img src="shoppay.png" alt="Shop Pay"></button>
-                        <button class="pay-btn" data-method="Apple Pay"><img src="applepay.png" alt="Apple Pay"></button>
-                        <button class="pay-btn paypal" data-method="PayPal"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></button>
-                        <button class="pay-btn" data-method="Google Pay"><img src="googlepay.png" alt="Google Pay"></button>
-                        <button class="pay-btn" data-method="Klarna"><img src="klarna.png" alt="Klarna" class="klarna-logo"></button>
-                        <button class="pay-btn" data-method="Venmo"><img src="venmo.png" alt="Venmo"></button>
+                        <button type="button" class="pay-btn" data-method="Shop Pay"><img src="shoppay.png" alt="Shop Pay"></button>
+                        <button type="button" class="pay-btn" data-method="Apple Pay"><img src="applepay.png" alt="Apple Pay"></button>
+                        <button type="button" class="pay-btn paypal" data-method="PayPal"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></button>
+                        <button type="button" class="pay-btn" data-method="Google Pay"><img src="googlepay.png" alt="Google Pay"></button>
+                        <button type="button" class="pay-btn" data-method="Klarna"><img src="klarna.png" alt="Klarna" class="klarna-logo"></button>
+                        <button type="button" class="pay-btn" data-method="Venmo"><img src="venmo.png" alt="Venmo"></button>
                     </div>
                     <div class="or">OR</div>
                     <div class="contact-header">
