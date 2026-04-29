@@ -1508,7 +1508,9 @@ function setupFinalForm(form) {
     const signupBtn = form.querySelector('.signup-btn');
     const signupPhone = form.querySelector('input[name="signup_phone"]');
 
-    form.querySelectorAll('input[name="payment-method"]').forEach(input => {
+    const paymentMethodInputs = form.querySelectorAll('input[name="payment-method"]');
+
+    paymentMethodInputs.forEach(input => {
         input.addEventListener('change', () => {
             paymentMsg.innerHTML = '';
             if (emailInput) emailInput.required = requiresContactAndDeliveryDetails();
@@ -1548,6 +1550,27 @@ function setupFinalForm(form) {
             }
         });
     });
+
+    form.querySelectorAll('.payment-option').forEach(option => {
+        option.addEventListener('click', (event) => {
+            if (event.target.closest('.more-logos') || event.target.closest('.more-logos-box')) {
+                return;
+            }
+            const radio = option.querySelector('input[name="payment-method"]');
+            if (!radio) return;
+            if (!radio.checked) {
+                radio.checked = true;
+                radio.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+            const applePayGraphic = event.target.closest('img[alt="Apple Pay"]');
+            if (applePayGraphic && radio.value === 'apple') {
+                event.preventDefault();
+                event.stopPropagation();
+                form.requestSubmit();
+            }
+        });
+    });
+
     addressInputs.forEach(inp => inp.addEventListener('input', () => {
         const warn = fieldWarnings[inp.name];
         if (warn) warn.style.display = 'none';
