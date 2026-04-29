@@ -669,17 +669,14 @@ async function startApplePayPayment(lineItems, customerEmail = '') {
         paymentMethodHandler = async (event) => {
             try {
                 const payerEmail = (event?.payerEmail || '').trim().toLowerCase();
-                if (!payerEmail) {
-                    event.complete('fail');
-                    finalize(() => reject(new Error('Apple Pay requires an email address from Wallet. Please select a Wallet card that shares email, then try again.')));
-                    return;
-                }
+                const fallbackEmail = (customerEmail || '').trim().toLowerCase();
+                const receiptEmail = payerEmail || fallbackEmail;
 
                 const initialConfirm = await stripe.confirmCardPayment(
                     intentPayload.clientSecret,
                     {
                         payment_method: event.paymentMethod.id,
-                        receipt_email: payerEmail
+                        ...(receiptEmail ? { receipt_email: receiptEmail } : {})
                     },
                     { handleActions: false }
                 );
