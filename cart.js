@@ -802,12 +802,21 @@ async function startStripeCheckout(method = 'Stripe', customerEmail = '') {
             if (err?.code === 'APPLE_PAY_CANCELED') {
                 throw new Error('Apple Pay was canceled before authorization.');
             }
+
             const fallbackMessage = err?.message || 'Unable to start Apple Pay.';
-            const switchedToCard = activateEmbeddedCardFallback(fallbackMessage);
-            if (switchedToCard) {
-                return;
+            alert(`${fallbackMessage} Continuing to Stripe Checkout.`);
+
+            if (stripeSettings.checkoutEndpoint) {
+                try {
+                    await startServerCheckout('Stripe', lineItems, customerEmail);
+                    return;
+                } catch (serverErr) {
+                    alert(`${serverErr.message || 'Unable to start server-side checkout.'} Trying direct Stripe checkout.`);
+                }
             }
-            throw new Error(fallbackMessage);
+
+            await startClientCheckout(lineItems);
+            return;
         }
     }
 
