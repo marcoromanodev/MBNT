@@ -619,13 +619,6 @@
             </div>
             <p class="card-warning empty-cart-message" style="display:none;">Please complete your secure payment details.</p>
             <div class="payment-option">
-                <input type="radio" name="payment-method" id="pay-apple" value="apple">
-                <label for="pay-apple">
-                    <span class="payment-label">Apple Pay</span>
-                    <span class="payment-logos"><img src="applepay.png" alt="Apple Pay"></span>
-                </label>
-            </div>
-            <div class="payment-option">
                 <input type="radio" name="payment-method" id="pay-paypal" value="paypal">
                 <label for="pay-paypal">
                     <span class="payment-label">PayPal</span>
@@ -812,9 +805,6 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
                 });
                 if (!requiresContactAndDeliveryDetails() && emailWarning) emailWarning.style.display = 'none';
                 switch (input.value) {
-                    case 'apple':
-                        payBtn.textContent = 'Pay with Apple Pay';
-                        break;
                     case 'paypal':
                         payBtn.innerHTML = 'Pay now with <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" class="paypal-inline">';
                         if (paymentMsg) {
