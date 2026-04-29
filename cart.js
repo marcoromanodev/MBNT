@@ -231,6 +231,7 @@ const unsupportedMethodNotices = {
 
 const paymentHandlers = {
     'Shop Pay': (customerEmail) => startStripeCheckout('Shop Pay', customerEmail),
+    'Apple Pay': (customerEmail) => startStripeCheckout('Apple Pay', customerEmail),
     'PayPal': (customerEmail) => startStripeCheckout('PayPal', customerEmail),
     'Google Pay': (customerEmail) => startStripeCheckout('Google Pay', customerEmail),
     'Klarna': (customerEmail) => startStripeCheckout('Klarna', customerEmail),
@@ -1025,6 +1026,13 @@ function createCartModal() {
                     </div>
                     <p class="card-warning empty-cart-message" style="display:none;">Please complete your secure payment details.</p>
                     <div class="payment-option">
+                        <input type="radio" name="payment-method" id="cart-pay-apple" value="apple">
+                        <label for="cart-pay-apple">
+                            <span class="payment-label">Apple Pay</span>
+                            <span class="payment-logos"><img src="applepay.png" alt="Apple Pay"></span>
+                        </label>
+                    </div>
+                    <div class="payment-option">
                         <input type="radio" name="payment-method" id="cart-pay-paypal" value="paypal">
                         <label for="cart-pay-paypal">
                             <span class="payment-label">PayPal</span>
@@ -1110,6 +1118,19 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
         window.location.href = 'cart.html';
     });
     modal.querySelector('#cart-checkout').addEventListener('click', () => showCheckoutForm(modal));
+    modal.querySelectorAll('.pay-btn').forEach(btn => {
+        btn.addEventListener('pointerdown', () => {
+            modal.querySelectorAll('.pay-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+        });
+        btn.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            handlePayment(btn.dataset.method);
+        });
+    });
+
+
     function updateCartTime() {
         const options = {
             timeZone: 'America/Chicago',
@@ -1508,6 +1529,9 @@ function setupFinalForm(form) {
                 });
             }
             switch (input.value) {
+                case 'apple':
+                    payBtn.textContent = 'Pay with Apple Pay';
+                    break;
                 case 'paypal':
                     payBtn.innerHTML = 'Pay now with <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" class="paypal-inline">';
                     paymentMsg.innerHTML = '<div class="redirect-icon">↗</div>After clicking "Pay with PayPal", you will be redirected to PayPal to complete your purchase securely.';
@@ -1692,6 +1716,7 @@ function setupFinalForm(form) {
         }
 
         const methodMap = {
+            apple: 'Apple Pay',
             paypal: 'PayPal',
             shop: 'Shop Pay',
             klarna: 'Klarna'
@@ -1812,6 +1837,17 @@ function setupCartPage() {
     page.querySelector('#cart-checkout').addEventListener('click', () => {
         showFinalPage(page);
     });
+    page.querySelectorAll('.pay-btn').forEach(btn => {
+        btn.addEventListener('pointerdown', () => {
+            page.querySelectorAll('.pay-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+        });
+        btn.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            handlePayment(btn.dataset.method);
+        });
+    });
     const finalForm = page.querySelector('#final-form');
     if (finalForm) {
         setupFinalForm(finalForm);
@@ -1873,6 +1909,17 @@ function setupCheckoutPage() {
         }
     }
     setupFinalForm(finalPage.querySelector('#final-form'));
+    finalPage.querySelectorAll('.pay-btn').forEach(btn => {
+        btn.addEventListener('pointerdown', () => {
+            finalPage.querySelectorAll('.pay-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+        });
+        btn.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            handlePayment(btn.dataset.method);
+        });
+    });
 }
 
 function updateCartCounter() {
