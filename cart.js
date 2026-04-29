@@ -1243,7 +1243,9 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
             modal.querySelectorAll('.pay-btn').forEach(b => b.classList.remove('selected'));
             btn.classList.add('selected');
         });
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
             handlePayment(btn.dataset.method);
         });
     });
@@ -1958,7 +1960,9 @@ function setupCartPage() {
             page.querySelectorAll('.pay-btn').forEach(b => b.classList.remove('selected'));
             btn.classList.add('selected');
         });
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
             handlePayment(btn.dataset.method);
         });
     });
@@ -2028,7 +2032,9 @@ function setupCheckoutPage() {
             finalPage.querySelectorAll('.pay-btn').forEach(b => b.classList.remove('selected'));
             btn.classList.add('selected');
         });
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
             handlePayment(btn.dataset.method);
         });
     });
