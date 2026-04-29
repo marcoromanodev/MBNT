@@ -668,9 +668,19 @@ async function startApplePayPayment(lineItems, customerEmail = '') {
 
         paymentMethodHandler = async (event) => {
             try {
+                const payerEmail = (event?.payerEmail || '').trim().toLowerCase();
+                if (!payerEmail) {
+                    event.complete('fail');
+                    finalize(() => reject(new Error('Apple Pay requires an email address from Wallet. Please select a Wallet card that shares email, then try again.')));
+                    return;
+                }
+
                 const initialConfirm = await stripe.confirmCardPayment(
                     intentPayload.clientSecret,
-                    { payment_method: event.paymentMethod.id },
+                    {
+                        payment_method: event.paymentMethod.id,
+                        receipt_email: payerEmail
+                    },
                     { handleActions: false }
                 );
 
@@ -790,27 +800,9 @@ async function startStripeCheckout(method = 'Stripe', customerEmail = '') {
             await startApplePayPayment(lineItems, customerEmail);
             return;
         } catch (err) {
-            const applePayFallbackMessage = 'Apple Pay quick sheet is unavailable on this device/browser right now.';
-            const fallbackNotice = `${err?.message || 'Unable to start Apple Pay.'} ${applePayFallbackMessage}`;
-            if (activateEmbeddedCardFallback(fallbackNotice)) {
-                return;
-            }
-            alert(`${fallbackNotice} Redirecting to secure checkout where Apple Pay may still be available.`);
-            if (stripeSettings.checkoutEndpoint) {
-                try {
-                    await startServerCheckout(method, lineItems, customerEmail);
-                    return;
-                } catch (serverErr) {
-                    alert(`${serverErr.message || 'Unable to start server-side checkout.'} Trying direct Stripe checkout.`);
-                }
-            }
-            try {
-                await startClientCheckout(lineItems);
-                return;
-            } catch (clientErr) {
-                alert(clientErr.message || 'Unable to start direct Stripe checkout.');
-                return;
-            }
+            const applePayFailureMessage = `${err?.message || 'Unable to start Apple Pay.'} We are not redirecting Apple Pay to hosted checkout; please complete payment from the Apple Pay sheet.`;
+            activateEmbeddedCardFallback(applePayFailureMessage);
+            return;
         }
     }
 
