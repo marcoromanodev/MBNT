@@ -471,6 +471,62 @@ function buildPaymentIntentEndpoint(checkoutEndpoint) {
     }
 }
 
+async function mountExpressCheckout() {
+    const expressContainer = document.getElementById("express-checkout-element");
+    const expressError = document.getElementById("express-error");
+    if (!expressContainer) return;
+    expressContainer.innerHTML = "";
+    if (expressError) expressError.textContent = "";
+    if (!cart || !cart.length) {
+        expressContainer.style.display = "none";
+        return;
+    }
+    try {
+        await loadStripeConfig();
+        const stripe = await getStripe();
+        const { lineItems, missing } = buildStripeLineItems();
+        if (missing.length) throw new Error(`Stripe price IDs missing for: ${missing.join(", ")}.`);
+        const paymentIntentEndpoint = buildPaymentIntentEndpoint(stripeSettings.checkoutEndpoint);
+        if (!paymentIntentEndpoint) throw new Error("Stripe payment intent endpoint is not configured.");
+        const response = await fetch(paymentIntentEndpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ lineItems, cart })
+        });
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok || !payload.clientSecret) throw new Error(payload.error || "Unable to initialize express checkout.");
+        const elements = stripe.elements({
+            clientSecret: payload.clientSecret,
+            appearance: { theme: "stripe", variables: { colorText: "#000000", fontFamily: "'Courier New', Courier, monospace" } }
+        });
+        const expressCheckoutElement = elements.create("expressCheckout", {
+            buttonHeight: 50,
+            buttonTheme: { applePay: "white-outline", googlePay: "white", paypal: "gold" },
+            buttonType: { applePay: "plain", googlePay: "pay", paypal: "paypal" }
+        });
+        expressCheckoutElement.mount("#express-checkout-element");
+        expressCheckoutElement.on("ready", ({ availablePaymentMethods }) => {
+            expressContainer.style.display = availablePaymentMethods ? "block" : "none";
+        });
+        expressCheckoutElement.on("confirm", async () => {
+            if (expressError) expressError.textContent = "";
+            const { error } = await stripe.confirmPayment({
+                elements,
+                confirmParams: {
+                    return_url: new URL(stripeSettings.successUrl || "/success.html", window.location.origin).toString()
+                }
+            });
+            if (error) {
+                if (expressError) expressError.textContent = error.message || "Express checkout failed.";
+                else alert(error.message || "Express checkout failed.");
+            }
+        });
+    } catch (error) {
+        console.error("Express Checkout Error:", error);
+        if (expressError) expressError.textContent = error.message || "Unable to load express checkout.";
+    }
+}
+
 const stripeEmbeddedState = {
     stripe: null,
     elements: null,
@@ -598,163 +654,6 @@ async function submitEmbeddedPayment(form, paymentMsg) {
     window.location.assign(successUrl.toString());
 }
 
-async function startApplePayPayment(lineItems, customerEmail = '') {
-    const paymentIntentEndpoint = buildPaymentIntentEndpoint(stripeSettings.checkoutEndpoint);
-    if (!paymentIntentEndpoint) {
-        throw new Error('Apple Pay requires the Stripe payment intent endpoint. Set checkoutEndpoint in stripe-config.json.');
-    }
-
-    const stripe = await getStripe();
-    const intentResponse = await fetch(paymentIntentEndpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ lineItems, cart, customerEmail: (customerEmail || '').trim().toLowerCase() })
-    });
-    const intentPayload = await intentResponse.json().catch(() => ({}));
-    if (!intentResponse.ok || !intentPayload.clientSecret) {
-        throw new Error(intentPayload.error || 'Unable to initialize Apple Pay payment.');
-    }
-
-    const paymentIntentResult = await stripe.retrievePaymentIntent(intentPayload.clientSecret);
-    const paymentIntent = paymentIntentResult?.paymentIntent;
-    if (!paymentIntent?.amount || !paymentIntent?.currency) {
-        throw new Error('Unable to determine payment amount for Apple Pay.');
-    }
-
-    const paymentRequest = stripe.paymentRequest({
-        country: 'US',
-        currency: String(paymentIntent.currency).toLowerCase(),
-        total: {
-            label: 'MaybeNot Order',
-            amount: Number(paymentIntent.amount)
-        },
-        requestPayerName: true,
-        requestPayerEmail: true
-    });
-
-    const availability = await paymentRequest.canMakePayment();
-    const hasApplePaySession = typeof window !== 'undefined'
-        && typeof window.ApplePaySession !== 'undefined';
-    const nativeApplePayAvailable = hasApplePaySession
-        && typeof window.ApplePaySession.canMakePayments === 'function'
-        && window.ApplePaySession.canMakePayments();
-    const hasApplePay = Boolean(
-        availability?.applePay
-        || availability?.wallets?.applePay
-        || nativeApplePayAvailable
-    );
-    if (!hasApplePay) {
-        const isSecureContext = window.location.protocol === 'https:' || window.location.hostname === 'localhost';
-        const browserHint = hasApplePaySession
-            ? ''
-            : 'Use Safari on iPhone/iPad or Safari on Mac with Apple Pay enabled.';
-        const contextHint = isSecureContext
-            ? 'If Wallet is set up, this domain may not be verified for Apple Pay in Stripe yet.'
-            : 'Apple Pay requires HTTPS (or localhost during development).';
-        const setupHint = 'On your iPhone, open Settings > Wallet & Apple Pay and confirm Apple Pay is ON with at least one active card.';
-        const parts = [
-            'Apple Pay is unavailable for this checkout right now.',
-            browserHint,
-            contextHint,
-            setupHint
-        ].filter(Boolean);
-        throw new Error(parts.join(' '));
-    }
-
-    await new Promise((resolve, reject) => {
-        let completed = false;
-        let paymentMethodHandler = null;
-        let cancelHandler = null;
-        const finalize = (callback) => {
-            if (completed) return;
-            completed = true;
-            if (typeof paymentRequest.off === 'function') {
-                if (paymentMethodHandler) paymentRequest.off('paymentmethod', paymentMethodHandler);
-                if (cancelHandler) paymentRequest.off('cancel', cancelHandler);
-            }
-            callback();
-        };
-
-        paymentMethodHandler = async (event) => {
-            try {
-                const payerEmail = (event?.payerEmail || '').trim().toLowerCase();
-                const fallbackEmail = (customerEmail || '').trim().toLowerCase();
-                const receiptEmail = payerEmail || fallbackEmail;
-
-                const initialConfirm = await stripe.confirmCardPayment(
-                    intentPayload.clientSecret,
-                    {
-                        payment_method: event.paymentMethod.id,
-                        ...(receiptEmail ? { receipt_email: receiptEmail } : {})
-                    },
-                    { handleActions: false }
-                );
-
-                if (initialConfirm.error) {
-                    event.complete('fail');
-                    finalize(() => reject(new Error(initialConfirm.error.message || 'Apple Pay confirmation failed.')));
-                    return;
-                }
-
-                let confirmedIntent = initialConfirm.paymentIntent;
-                if (confirmedIntent?.status === 'requires_action') {
-                    const actionResult = await stripe.confirmCardPayment(intentPayload.clientSecret);
-                    if (actionResult.error) {
-                        event.complete('fail');
-                        finalize(() => reject(new Error(actionResult.error.message || 'Apple Pay authentication failed.')));
-                        return;
-                    }
-                    confirmedIntent = actionResult.paymentIntent;
-                }
-
-                if (!confirmedIntent || !['succeeded', 'processing', 'requires_capture'].includes(confirmedIntent.status)) {
-                    event.complete('fail');
-                    finalize(() => reject(new Error('Apple Pay payment did not complete.')));
-                    return;
-                }
-
-                event.complete('success');
-                localStorage.setItem('cart', '[]');
-                const successUrl = new URL(
-                    normalizeCheckoutUrl(stripeSettings.successUrl, `${window.location.origin}/success.html`),
-                    window.location.origin
-                );
-                successUrl.searchParams.set('payment_intent', confirmedIntent.id);
-                window.location.assign(successUrl.toString());
-                finalize(resolve);
-            } catch (error) {
-                event.complete('fail');
-                finalize(() => reject(new Error(error.message || 'Apple Pay payment failed.')));
-            }
-        };
-        paymentRequest.on('paymentmethod', paymentMethodHandler);
-
-        cancelHandler = () => {
-            const cancelError = new Error('Apple Pay sheet was canceled before payment was authorized.');
-            cancelError.code = 'APPLE_PAY_CANCELED';
-            finalize(() => reject(cancelError));
-        };
-        paymentRequest.on('cancel', cancelHandler);
-
-        let showResult;
-        try {
-            showResult = paymentRequest.show();
-        } catch (error) {
-            const defaultMessage = 'Unable to open Apple Pay sheet. If Wallet is set up, verify this site domain is registered for Apple Pay in Stripe.';
-            finalize(() => reject(new Error(error.message || defaultMessage)));
-            return;
-        }
-
-        if (showResult && typeof showResult.catch === 'function') {
-            showResult.catch((error) => {
-                const defaultMessage = 'Unable to open Apple Pay sheet. If Wallet is set up, verify this site domain is registered for Apple Pay in Stripe.';
-                finalize(() => reject(new Error(error.message || defaultMessage)));
-            });
-        }
-    });
-}
-
-
 function activateEmbeddedCardFallback(message) {
     const activeCheckout = document.querySelector('#cart-modal #final-checkout[style*="display: block"], #cart-modal #final-checkout:not([style*="display: none"])')
         || document.querySelector('#final-checkout');
@@ -802,33 +701,6 @@ async function startStripeCheckout(method = 'Stripe', customerEmail = '') {
         alert('Unable to start checkout without items.');
         return;
     }
-
-    if (method === 'Apple Pay') {
-        try {
-            await startApplePayPayment(lineItems, customerEmail);
-            return;
-        } catch (err) {
-            if (err?.code === 'APPLE_PAY_CANCELED') {
-                throw new Error('Apple Pay was canceled before authorization.');
-            }
-
-            const fallbackMessage = err?.message || 'Unable to start Apple Pay.';
-            alert(`${fallbackMessage} Continuing to Stripe Checkout.`);
-
-            if (stripeSettings.checkoutEndpoint) {
-                try {
-                    await startServerCheckout('Stripe', lineItems, customerEmail);
-                    return;
-                } catch (serverErr) {
-                    alert(`${serverErr.message || 'Unable to start server-side checkout.'} Trying direct Stripe checkout.`);
-                }
-            }
-
-            await startClientCheckout(lineItems);
-            return;
-        }
-    }
-
     if (stripeSettings.checkoutEndpoint) {
         try {
             await startServerCheckout(method, lineItems, customerEmail);
@@ -1060,16 +932,10 @@ function createCartModal() {
             </div>
             <div class="or">OR</div>
             <div class="express-checkout">
-                <h3>Express checkout</h3>
-                <div class="payment-icons">
-                    <button type="button" class="pay-btn" data-method="Shop Pay"><img src="shoppay.png" alt="Shop Pay"></button>
-                    <button type="button" class="pay-btn" data-method="Apple Pay"><img src="applepay.png" alt="Apple Pay"></button>
-                    <button type="button" class="pay-btn paypal" data-method="PayPal"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></button>
-                    <button type="button" class="pay-btn" data-method="Google Pay"><img src="googlepay.png" alt="Google Pay"></button>
-                    <button type="button" class="pay-btn" data-method="Klarna"><img src="klarna.png" alt="Klarna" class="klarna-logo"></button>
-                    <button type="button" class="pay-btn" data-method="Venmo"><img src="venmo.png" alt="Venmo"></button>
-                </div>
-            </div>
+  <h3>Express checkout</h3>
+  <div id="express-checkout-element"></div>
+  <div id="express-error" style="color:red; font-size:12px; margin-top:8px;"></div>
+</div>
             <form id="checkout-form" style="display:none;">
                 <h3>Sign up and know first!</h3>
                 <div class="phone-input">
@@ -1080,14 +946,8 @@ function createCartModal() {
                 <p class="consent-text">By submitting this form, you consent to receive informational (eg, order updates) and/or marketing texts (eg, cart reminders) from maybenot.com including texts sent by autodialer. Consent is not a condition of purchase. Msg & data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available). Privacy Policy & Terms.</p>
                 <button type="button" class="signup-btn">Sign Up</button>
                 <h3>Express checkout</h3>
-                <div class="payment-icons">
-                    <button type="button" class="pay-btn" data-method="Shop Pay"><img src="shoppay.png" alt="Shop Pay"></button>
-                    <button type="button" class="pay-btn" data-method="Apple Pay"><img src="applepay.png" alt="Apple Pay"></button>
-                    <button type="button" class="pay-btn paypal" data-method="PayPal"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></button>
-                    <button type="button" class="pay-btn" data-method="Google Pay"><img src="googlepay.png" alt="Google Pay"></button>
-                    <button type="button" class="pay-btn" data-method="Klarna"><img src="klarna.png" alt="Klarna" class="klarna-logo"></button>
-                    <button type="button" class="pay-btn" data-method="Venmo"><img src="venmo.png" alt="Venmo"></button>
-                </div>
+        <div id="express-checkout-element"></div>
+        <div id="express-error" style="color:red; font-size:12px; margin-top:8px;"></div>
             </form>
             <div id="final-checkout" style="display:none;">
                 <form id="final-form">
@@ -1114,14 +974,8 @@ function createCartModal() {
                     <p class="consent-text">By submitting this form, you consent to receive informational (eg, order updates) and/or marketing texts (eg, cart reminders) from maybenot.com including texts sent by autodialer. Consent is not a condition of purchase. Msg & data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available). Privacy Policy & Terms.</p>
                     <button type="button" class="signup-btn">Sign Up</button>
                     <h3>Express checkout</h3>
-                    <div class="payment-icons">
-                        <button type="button" class="pay-btn" data-method="Shop Pay"><img src="shoppay.png" alt="Shop Pay"></button>
-                        <button type="button" class="pay-btn" data-method="Apple Pay"><img src="applepay.png" alt="Apple Pay"></button>
-                        <button type="button" class="pay-btn paypal" data-method="PayPal"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></button>
-                        <button type="button" class="pay-btn" data-method="Google Pay"><img src="googlepay.png" alt="Google Pay"></button>
-                        <button type="button" class="pay-btn" data-method="Klarna"><img src="klarna.png" alt="Klarna" class="klarna-logo"></button>
-                        <button type="button" class="pay-btn" data-method="Venmo"><img src="venmo.png" alt="Venmo"></button>
-                    </div>
+        <div id="express-checkout-element"></div>
+        <div id="express-error" style="color:red; font-size:12px; margin-top:8px;"></div>
                     <div class="or">OR</div>
                     <div class="contact-header">
                         <h3>Contact</h3>
@@ -1514,6 +1368,7 @@ function showCheckoutForm(root = document.getElementById('cart-modal')) {
     const count = root.querySelector('.item-count');
     if (count) count.style.display = 'none';
     root.querySelector('#checkout-form').style.display = 'block';
+    mountExpressCheckout();
     const footer = root.querySelector('.cart-footer');
     if (footer) footer.style.display = 'block';
     const footerLinks = root.querySelector('.footer-links');
@@ -1597,6 +1452,7 @@ function showFinalPage(root = document.getElementById('cart-modal')) {
     const finalPage = root.querySelector('#final-checkout');
     if (finalPage) {
         finalPage.style.display = 'block';
+        mountExpressCheckout();
         populateOrderSummary(finalPage);
         const bar = finalPage.querySelector('.order-summary-bar');
         const details = finalPage.querySelector('.order-summary-details.top-summary');
@@ -2135,4 +1991,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     setupCartPage();
     setupCheckoutPage();
+    mountExpressCheckout();
 });
