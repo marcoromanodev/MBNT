@@ -593,6 +593,7 @@ async function mountExpressCheckout(container = document, options = {}) {
     if (expressContainer.dataset.expressMounted === 'true' && expressContainer.dataset.expressSignature === signature) return;
     expressContainer.dataset.expressMounted = 'mounting';
     try {
+        await loadStripeConfig();
         const stripe = await getStripe();
         const clientSecret = await getExpressCheckoutClientSecret(container, options);
         const elements = stripe.elements({ clientSecret, appearance: { theme: 'stripe', variables: { colorText: '#000000', fontFamily: "'Courier New', Courier, monospace" } } });
@@ -637,6 +638,7 @@ async function mountWalletExpressCheckout(form, wallet = 'apple') {
     expressContainer.innerHTML = '';
     if (expressError) expressError.textContent = '';
     try {
+        await loadStripeConfig();
         const stripe = await getStripe();
         const clientSecret = await getExpressCheckoutClientSecret(form, { wallet, context: 'wallet-bottom' });
         const elements = stripe.elements({ clientSecret, appearance: { theme: 'stripe', variables: { colorText: '#000000', fontFamily: "'Courier New', Courier, monospace" } } });
@@ -656,6 +658,45 @@ async function mountWalletExpressCheckout(form, wallet = 'apple') {
         if (expressError) expressError.textContent = error.message || 'Unable to load wallet checkout.';
         return false;
     }
+}
+
+function updatePaymentMethodUI(form) {
+    const selected = form.querySelector('input[name="payment-method"]:checked')?.value;
+    const submitButton = form.querySelector('#final-order-submit');
+    const creditFields = form.querySelector('.credit-card-fields');
+    const walletAction = form.querySelector('.wallet-bottom-action');
+
+    const walletMap = {
+        apple: 'apple',
+        google: 'google',
+        amazon: 'amazon'
+    };
+
+    const selectedWallet = walletMap[selected];
+
+    if (selectedWallet) {
+        if (submitButton) submitButton.style.display = 'none';
+        if (creditFields) creditFields.style.display = 'none';
+        if (walletAction) walletAction.style.display = 'block';
+
+        mountWalletExpressCheckout(form, selectedWallet).catch((error) => {
+            console.error('Wallet button mount failed:', error);
+            const err = form.querySelector('.wallet-express-error');
+            if (err) err.textContent = error.message || 'Unable to load wallet button.';
+        });
+        return;
+    }
+
+    if (walletAction) walletAction.style.display = 'none';
+
+    if (selected === 'credit') {
+        if (submitButton) submitButton.style.display = 'block';
+        if (creditFields) creditFields.style.display = 'block';
+        return;
+    }
+
+    if (submitButton) submitButton.style.display = 'block';
+    if (creditFields) creditFields.style.display = 'none';
 }
 
 const stripeEmbeddedState = {
@@ -1722,10 +1763,7 @@ function setupFinalForm(form) {
                 field.required = requiresContactAndDeliveryDetails();
             });
             if (emailWarning) emailWarning.style.display = 'none';
-            if (creditFields) {
-                creditFields.style.display = input.value === 'credit' ? 'block' : 'none';
-                if (input.value !== 'credit' && cardWarning) cardWarning.style.display = 'none';
-            }
+            if (input.value !== 'credit' && cardWarning) cardWarning.style.display = 'none';
             if (input.value === 'credit') {
                 ensureEmbeddedPaymentReady(form).catch(err => {
                     if (cardWarning) {
@@ -1734,16 +1772,12 @@ function setupFinalForm(form) {
                     }
                 });
             }
-            if (walletBottomAction) walletBottomAction.style.display = 'none';
-            payBtn.style.display = 'block';
             payBtn.textContent = 'Pay now';
-            if (['apple', 'google', 'amazon'].includes(input.value)) {
-                mountWalletExpressCheckout(form, input.value).then((mounted) => {
-                    if (mounted) payBtn.style.display = 'none';
-                }).catch(() => {
-                    payBtn.style.display = 'block';
-                });
+            if (walletBottomAction) {
+                const err = walletBottomAction.querySelector('.wallet-express-error');
+                if (err) err.textContent = '';
             }
+            updatePaymentMethodUI(form);
         });
     });
 
@@ -1771,6 +1805,7 @@ function setupFinalForm(form) {
             if (emailWarning) emailWarning.style.display = 'none';
         });
     }
+    updatePaymentMethodUI(form);
     if (signupBtn && signupPhone && emailInput) {
         signupBtn.addEventListener('click', () => {
             const phone = signupPhone.value.trim();
@@ -2218,6 +2253,10 @@ document.addEventListener('DOMContentLoaded', () => {
     setupCheckoutPage();
     const cartPageExpress = document.querySelector('[data-express-context="cart-page"]');
     if (cartPageExpress) {
+        const cartExpressEl = document.querySelector('[data-express-context="cart-page"] .apple-pay-express-element');
+        if (cartExpressEl) {
+            cartExpressEl.innerHTML = '<div style="font-size:12px;color:#666;padding:6px 0;">Loading express checkout...</div>';
+        }
         mountExpressCheckout(document, {
             context: 'cart-page',
             forceEstimate: true
@@ -2227,14 +2266,14 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Cart page Express Checkout mount failed:', error);
         });
         setTimeout(() => {
-            loadStripeConfig().then(() => loadStripeJs()).then(() => { try { getStripe(); } catch (_) {} });
+            loadStripeConfig().then(() => loadStripeJs()).then(() => getStripe()).catch(console.warn);
             prewarmExpressCheckout(document, { context: 'cart-page', forceEstimate: true });
         }, 0);
         return;
     }
 
     setTimeout(() => {
-        loadStripeConfig().then(() => loadStripeJs()).then(() => { try { getStripe(); } catch (_) {} });
+        loadStripeConfig().then(() => loadStripeJs()).then(() => getStripe()).catch(console.warn);
         prewarmExpressCheckout(document);
         mountExpressCheckout(document);
     }, 0);
