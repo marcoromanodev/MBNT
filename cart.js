@@ -485,7 +485,7 @@ function buildPaymentIntentEndpoint(checkoutEndpoint) {
     }
 }
 
-async function mountExpressCheckout(container = document) {
+async function mountExpressCheckout(container = document, options = {}) {
     const expressContainer =
         container.querySelector('.apple-pay-express-element') ||
         container.querySelector('#express-checkout-element');
@@ -512,7 +512,7 @@ async function mountExpressCheckout(container = document) {
         const response = await fetch(paymentIntentEndpoint, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ lineItems, cart })
+            body: JSON.stringify({ lineItems, cart, orderAmountCents: options.orderAmountCents, totals: options.totals })
         });
         const payload = await response.json().catch(() => ({}));
         if (!response.ok || !payload.clientSecret) throw new Error(payload.error || "Unable to initialize express checkout.");
@@ -1125,6 +1125,10 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
                             <div><strong>Total</strong><strong class="total">$0.00</strong></div>
                         </div>
                     </div>
+                    <div class="apple-pay-bottom-action" style="display:none;">
+  <div class="apple-pay-express-element"></div>
+  <div class="apple-pay-express-error" style="color:red; font-size:12px; margin-top:8px;"></div>
+</div>
                     <button id="final-order-submit" type="submit">Pay now</button>
                     <p id="remember-message" style="display:none;">Your info will be saved to a Shop account. By continuing, you agree to Shop’s <a href="https://shop.app/terms-of-service" target="_blank" style="color:red;">Terms of Service</a> and acknowledge the <a href="https://www.shopify.com/legal/privacy/consumers" target="_blank" style="color:red;">Privacy Policy</a>.</p>
                 </form>
@@ -1531,6 +1535,27 @@ function ensureStarStyles() {
     document.head.appendChild(style);
 }
 
+
+function parseCurrencyToNumber(value) {
+    if (!value) return 0;
+    const cleaned = String(value).replace(/[^0-9.\-]/g, '');
+    const amount = Number.parseFloat(cleaned);
+    return Number.isFinite(amount) ? amount : 0;
+}
+
+function getCheckoutTotalsFromForm(form) {
+    if (!form) return null;
+    const checkout = form.closest('#final-checkout');
+    if (!checkout) return null;
+    const summary = checkout.querySelector('.order-summary-details.bottom-summary') || checkout.querySelector('.order-summary-details');
+    if (!summary) return null;
+    const subtotal = parseCurrencyToNumber(summary.querySelector('.subtotal')?.textContent);
+    const tax = parseCurrencyToNumber(summary.querySelector('.tax')?.textContent);
+    const shipping = parseCurrencyToNumber(summary.querySelector('.shipping')?.textContent);
+    const total = subtotal + tax + shipping;
+    return { subtotal, tax, shipping, total };
+}
+
 function setupFinalForm(form) {
     if (!form) return;
     const payBtn = form.querySelector('#final-order-submit');
@@ -1565,8 +1590,12 @@ function setupFinalForm(form) {
             }
             const finalCheckout = form.closest('#final-checkout');
             const applePayExpressWrapper = finalCheckout ? finalCheckout.querySelector('.apple-pay-express-wrapper') : null;
+            const applePayBottomAction = finalCheckout ? finalCheckout.querySelector('.apple-pay-bottom-action') : null;
             if (applePayExpressWrapper) {
                 applePayExpressWrapper.style.display = input.value === 'apple' ? 'block' : 'none';
+            }
+            if (applePayBottomAction) {
+                applePayBottomAction.style.display = input.value === 'apple' ? 'block' : 'none';
             }
             if (input.value === 'credit') {
                 ensureEmbeddedPaymentReady(form).catch(err => {
@@ -1579,7 +1608,11 @@ function setupFinalForm(form) {
             switch (input.value) {
                 case 'apple':
                     payBtn.style.display = 'none';
-                    mountExpressCheckout(form.closest('#final-checkout') || form);
+                    {
+                        const totals = getCheckoutTotalsFromForm(form);
+                        const orderAmountCents = totals ? Math.round(totals.total * 100) : undefined;
+                        mountExpressCheckout(form.closest('#final-checkout') || form, { orderAmountCents, totals });
+                    }
                     break;
                 case 'paypal':
                     payBtn.innerHTML = 'Pay now with <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" class="paypal-inline">';
@@ -1703,6 +1736,8 @@ function setupFinalForm(form) {
     if (finalCheckoutContainer) {
         const applePayExpressWrapper = finalCheckoutContainer.querySelector('.apple-pay-express-wrapper');
         if (applePayExpressWrapper) applePayExpressWrapper.style.display = 'none';
+        const applePayBottomAction = finalCheckoutContainer.querySelector('.apple-pay-bottom-action');
+        if (applePayBottomAction) applePayBottomAction.style.display = 'none';
     }
 
     const remember = form.querySelector('#remember-me');

@@ -298,6 +298,12 @@ async function handleCreatePaymentIntent(req, res) {
     );
   }
   const customerEmail = typeof body.customerEmail === 'string' ? body.customerEmail.trim().toLowerCase() : '';
+  const providedAmount = body.orderAmountCents ?? body.amountCents;
+  const hasProvidedAmount = providedAmount !== undefined && providedAmount !== null && providedAmount !== '';
+  const normalizedProvidedAmount = hasProvidedAmount ? Number(providedAmount) : null;
+  if (hasProvidedAmount && (!Number.isInteger(normalizedProvidedAmount) || normalizedProvidedAmount <= 0)) {
+    return jsonResponse(res, 400, { error: 'orderAmountCents must be a positive integer.' }, requestOrigin);
+  }
 
   try {
     const priceCache = new Map();
@@ -327,14 +333,26 @@ async function handleCreatePaymentIntent(req, res) {
       throw new Error('Unable to calculate payment amount from Stripe prices.');
     }
 
+    const finalAmount = hasProvidedAmount ? normalizedProvidedAmount : amount;
+
     const params = new URLSearchParams();
-    params.set('amount', String(amount));
+    params.set('amount', String(finalAmount));
     params.set('currency', currency);
     params.set('automatic_payment_methods[enabled]', 'true');
     if (customerEmail) {
       params.set('receipt_email', customerEmail);
       params.set('metadata[customer_email]', customerEmail);
     }
+    const totals = body && typeof body.totals === 'object' && body.totals ? body.totals : {};
+    const subtotal = Number(totals.subtotal);
+    const tax = Number(totals.tax);
+    const shipping = Number(totals.shipping);
+    const total = Number(totals.total);
+    if (Number.isFinite(subtotal)) params.set('metadata[subtotal]', subtotal.toFixed(2));
+    if (Number.isFinite(tax)) params.set('metadata[tax]', tax.toFixed(2));
+    if (Number.isFinite(shipping)) params.set('metadata[shipping]', shipping.toFixed(2));
+    if (Number.isFinite(total)) params.set('metadata[total]', total.toFixed(2));
+    if (Array.isArray(body.cart)) params.set('metadata[cart]', JSON.stringify(body.cart).slice(0, 450));
 
     const paymentIntent = await stripeApiRequest('/v1/payment_intents', {
       method: 'POST',
