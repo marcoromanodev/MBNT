@@ -485,14 +485,21 @@ function buildPaymentIntentEndpoint(checkoutEndpoint) {
     }
 }
 
-async function mountExpressCheckout(root = document) {
-    const expressContainer = root.querySelector("#express-checkout-element");
-    const expressError = root.querySelector("#express-error");
+async function mountExpressCheckout(container = document) {
+    const expressContainer =
+        container.querySelector('.apple-pay-express-element') ||
+        container.querySelector('#express-checkout-element');
+    const expressError =
+        container.querySelector('.apple-pay-express-error') ||
+        container.querySelector('#express-error');
     if (!expressContainer) return;
+    if (expressContainer.dataset.expressMounted === "true") return;
     expressContainer.innerHTML = "";
+    expressContainer.dataset.expressMounted = "mounting";
     if (expressError) expressError.textContent = "";
     if (!cart || !cart.length) {
         expressContainer.style.display = "none";
+        delete expressContainer.dataset.expressMounted;
         return;
     }
     try {
@@ -519,6 +526,7 @@ async function mountExpressCheckout(root = document) {
             buttonType: { applePay: "plain", googlePay: "pay", paypal: "paypal" }
         });
         expressCheckoutElement.mount(expressContainer);
+        expressContainer.dataset.expressMounted = "true";
         expressCheckoutElement.on("ready", ({ availablePaymentMethods }) => {
             expressContainer.style.display = availablePaymentMethods ? "block" : "none";
         });
@@ -537,6 +545,7 @@ async function mountExpressCheckout(root = document) {
         });
     } catch (error) {
         console.error("Express Checkout Error:", error);
+        delete expressContainer.dataset.expressMounted;
         if (expressError) expressError.textContent = error.message || "Unable to load express checkout.";
     }
 }
@@ -948,15 +957,17 @@ function createCartModal() {
             <div class="express-checkout">
                 <h3>Express checkout</h3>
                 <div class="payment-icons" aria-label="Express payment options">
-                    <button class="pay-option pay-btn" data-method="Apple Pay" type="button"><img src="/applepay.png" alt="Apple Pay"></button>
+                    <button class="pay-option pay-btn" data-method="express" type="button"><img src="/applepay.png" alt="Apple Pay"></button>
                     <button class="pay-option pay-btn" data-method="Google Pay" type="button"><img src="/googlepay.png" alt="Google Pay"></button>
                     <button class="pay-option pay-btn" data-method="Shop Pay" type="button"><img src="/shoppay.png" alt="Shop Pay"></button>
                     <button class="pay-option pay-btn" data-method="PayPal" type="button"><img src="/paypal.png" alt="PayPal"></button>
                     <button class="pay-option pay-btn" data-method="Klarna" type="button"><img class="klarna-logo" src="/klarna.png" alt="Klarna"></button>
                     <button class="pay-option pay-btn" data-method="Venmo" type="button"><img src="/venmo.png" alt="Venmo"></button>
                 </div>
-                <div id="express-checkout-element"></div>
-                <div id="express-error" style="color:red; font-size:12px; margin-top:8px;"></div>
+                <div class="apple-pay-express-wrapper">
+                    <div class="apple-pay-express-element"></div>
+                    <div class="apple-pay-express-error" style="color:red; font-size:12px; margin-top:8px;"></div>
+                </div>
             </div>
             <form id="checkout-form" style="display:none;">
                 <h3>Sign up and know first!</h3>
@@ -968,8 +979,10 @@ function createCartModal() {
                 <p class="consent-text">By submitting this form, you consent to receive informational (eg, order updates) and/or marketing texts (eg, cart reminders) from maybenot.com including texts sent by autodialer. Consent is not a condition of purchase. Msg & data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available). Privacy Policy & Terms.</p>
                 <button type="button" class="signup-btn">Sign Up</button>
                 <h3>Express checkout</h3>
-        <div id="express-checkout-element"></div>
-        <div id="express-error" style="color:red; font-size:12px; margin-top:8px;"></div>
+        <div class="apple-pay-express-wrapper">
+                    <div class="apple-pay-express-element"></div>
+                    <div class="apple-pay-express-error" style="color:red; font-size:12px; margin-top:8px;"></div>
+                </div>
             </form>
             <div id="final-checkout" style="display:none;">
                 <form id="final-form">
@@ -996,8 +1009,10 @@ function createCartModal() {
                     <p class="consent-text">By submitting this form, you consent to receive informational (eg, order updates) and/or marketing texts (eg, cart reminders) from maybenot.com including texts sent by autodialer. Consent is not a condition of purchase. Msg & data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available). Privacy Policy & Terms.</p>
                     <button type="button" class="signup-btn">Sign Up</button>
                     <h3>Express checkout</h3>
-        <div id="express-checkout-element"></div>
-        <div id="express-error" style="color:red; font-size:12px; margin-top:8px;"></div>
+        <div class="apple-pay-express-wrapper">
+                    <div class="apple-pay-express-element"></div>
+                    <div class="apple-pay-express-error" style="color:red; font-size:12px; margin-top:8px;"></div>
+                </div>
                     <div class="or">OR</div>
                     <div class="contact-header">
                         <h3>Contact</h3>
@@ -1148,6 +1163,10 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
         btn.addEventListener('click', (event) => {
             event.preventDefault();
             event.stopPropagation();
+            if (btn.dataset.method === "express") {
+                mountExpressCheckout(modal);
+                return;
+            }
             handleExpressButtonClick(modal, btn.dataset.method);
         });
     });
@@ -1544,6 +1563,11 @@ function setupFinalForm(form) {
                 creditFields.style.display = input.value === 'credit' ? 'block' : 'none';
                 if (input.value !== 'credit' && cardWarning) cardWarning.style.display = 'none';
             }
+            const finalCheckout = form.closest('#final-checkout');
+            const applePayExpressWrapper = finalCheckout ? finalCheckout.querySelector('.apple-pay-express-wrapper') : null;
+            if (applePayExpressWrapper) {
+                applePayExpressWrapper.style.display = input.value === 'apple' ? 'block' : 'none';
+            }
             if (input.value === 'credit') {
                 ensureEmbeddedPaymentReady(form).catch(err => {
                     if (cardWarning) {
@@ -1554,7 +1578,8 @@ function setupFinalForm(form) {
             }
             switch (input.value) {
                 case 'apple':
-                    payBtn.textContent = 'Pay with Apple Pay';
+                    payBtn.style.display = 'none';
+                    mountExpressCheckout(form.closest('#final-checkout') || form);
                     break;
                 case 'paypal':
                     payBtn.innerHTML = 'Pay now with <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" class="paypal-inline">';
@@ -1568,6 +1593,7 @@ function setupFinalForm(form) {
                     paymentMsg.innerHTML = '<div class="redirect-icon">↗</div>After clicking "Pay now", you will be redirected to Klarna - Flexible payments to complete your purchase securely.';
                     break;
                 default:
+                    payBtn.style.display = 'block';
                     payBtn.textContent = 'Pay now';
             }
         });
@@ -1583,12 +1609,6 @@ function setupFinalForm(form) {
             if (!radio.checked) {
                 radio.checked = true;
                 radio.dispatchEvent(new Event('change', { bubbles: true }));
-            }
-            const applePayGraphic = event.target.closest('img[alt="Apple Pay"]');
-            if (applePayGraphic && radio.value === 'apple') {
-                event.preventDefault();
-                event.stopPropagation();
-                form.requestSubmit();
             }
         });
     });
@@ -1679,6 +1699,11 @@ function setupFinalForm(form) {
     const shippingFields = form.querySelectorAll('input[name="address"], input[name="city"], input[name="state"], input[name="zip"]');
     shippingFields.forEach(f => f.addEventListener('input', () => updateShippingAndTax(form)));
     updateShippingAndTax(form);
+    const finalCheckoutContainer = form.closest('#final-checkout');
+    if (finalCheckoutContainer) {
+        const applePayExpressWrapper = finalCheckoutContainer.querySelector('.apple-pay-express-wrapper');
+        if (applePayExpressWrapper) applePayExpressWrapper.style.display = 'none';
+    }
 
     const remember = form.querySelector('#remember-me');
     const phone = form.querySelector('#phone-container');
@@ -1750,6 +1775,9 @@ function setupFinalForm(form) {
             phoneInput.value = '+1' + phoneInput.value;
         }
         const selectedPayment = form.querySelector('input[name="payment-method"]:checked')?.value || 'credit';
+        if (selectedPayment === 'apple') {
+            return;
+        }
         if (selectedPayment === 'credit') {
             submitEmbeddedPayment(form, paymentMsg).catch(err => {
                 if (cardWarning) {
