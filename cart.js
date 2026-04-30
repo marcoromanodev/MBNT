@@ -231,7 +231,6 @@ const unsupportedMethodNotices = {
 
 const paymentHandlers = {
     'Shop Pay': (customerEmail) => startStripeCheckout('Shop Pay', customerEmail),
-    'Apple Pay': (customerEmail) => startStripeCheckout('Apple Pay', customerEmail),
     'PayPal': (customerEmail) => startStripeCheckout('PayPal', customerEmail),
     'Google Pay': (customerEmail) => startStripeCheckout('Google Pay', customerEmail),
     'Klarna': (customerEmail) => startStripeCheckout('Klarna', customerEmail),
@@ -548,6 +547,16 @@ async function mountExpressCheckout(container = document, options = {}) {
         delete expressContainer.dataset.expressMounted;
         if (expressError) expressError.textContent = error.message || "Unable to load express checkout.";
     }
+}
+
+
+async function mountApplePayBottomAction(form) {
+    const wrapper = form.querySelector('.apple-pay-bottom-action');
+    if (!wrapper) return false;
+    wrapper.style.display = 'block';
+    await mountExpressCheckout(wrapper, getCurrentCheckoutTotalCents(form));
+    const expressContainer = wrapper.querySelector('.apple-pay-express-element');
+    return !!(expressContainer && expressContainer.dataset.expressMounted === 'true' && expressContainer.style.display !== 'none');
 }
 
 const stripeEmbeddedState = {
@@ -1054,6 +1063,27 @@ function createCartModal() {
                         <div class="stripe-payment-element" aria-label="Secure payment form"></div>
                     </div>
                     <p class="card-warning empty-cart-message" style="display:none;">Please complete your secure payment details.</p>
+                    <div class="payment-option">
+                        <input type="radio" name="payment-method" id="cart-pay-apple" value="apple">
+                        <label for="cart-pay-apple">
+                            <span class="payment-label">Apple Pay</span>
+                            <span class="payment-logos"><img src="applepay.png" alt="Apple Pay"></span>
+                        </label>
+                    </div>
+                    <div class="payment-option">
+                        <input type="radio" name="payment-method" id="cart-pay-klarna" value="klarna">
+                        <label for="cart-pay-klarna">
+                            <span class="payment-label">Klarna - <span class="subtext">Flexible payments</span></span>
+                            <span class="payment-logos"><img src="klarna.png" alt="Klarna" class="klarna-logo"></span>
+                        </label>
+                    </div>
+                    <div class="payment-option shop-pay">
+                        <input type="radio" name="payment-method" id="cart-pay-shop" value="shop">
+                        <label for="cart-pay-shop">
+                            <span class="payment-label"><span>Shop Pay</span><span class="subtext">Pay in full or in installments</span></span>
+                            <span class="payment-logos"><img src="shoppay.png" alt="Shop Pay"></span>
+                        </label>
+                    </div>
                     <div id="payment-message"></div>
                     <div class="remember-section">
                         <strong class="remember-heading">Remember me</strong>
@@ -1568,6 +1598,7 @@ function setupFinalForm(form) {
     const signupPhone = form.querySelector('input[name="signup_phone"]');
 
     const paymentMethodInputs = form.querySelectorAll('input[name="payment-method"]');
+    const appleBottomAction = form.querySelector('.apple-pay-bottom-action');
 
     paymentMethodInputs.forEach(input => {
         input.addEventListener('change', () => {
@@ -1589,8 +1620,16 @@ function setupFinalForm(form) {
                     }
                 });
             }
+            if (appleBottomAction) appleBottomAction.style.display = 'none';
             payBtn.style.display = 'block';
             payBtn.textContent = 'Pay now';
+            if (input.value === 'apple') {
+                mountApplePayBottomAction(form).then((mounted) => {
+                    if (mounted) payBtn.style.display = 'none';
+                }).catch(() => {
+                    payBtn.style.display = 'block';
+                });
+            }
         });
     });
 
