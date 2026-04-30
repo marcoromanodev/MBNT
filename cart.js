@@ -1522,7 +1522,7 @@ function setupFinalForm(form) {
     const emailWarning = form.querySelector('.email-warning');
     const creditRadio = form.querySelector('input[name="payment-method"][value="credit"]');
     const getSelectedPaymentMethod = () => form.querySelector('input[name="payment-method"]:checked')?.value;
-    const requiresContactAndDeliveryDetails = () => ['credit', 'apple'].includes(getSelectedPaymentMethod());
+    const requiresContactAndDeliveryDetails = () => ['credit'].includes(getSelectedPaymentMethod());
     const addressInputs = form.querySelectorAll('input[name="first_name"], input[name="last_name"], input[name="address"], input[name="city"], input[name="state"], input[name="zip"]');
     const fieldWarnings = {};
     form.querySelectorAll('.field-warning').forEach(p => { fieldWarnings[p.dataset.field] = p; });
@@ -1541,10 +1541,10 @@ function setupFinalForm(form) {
             });
             if (emailWarning) emailWarning.style.display = 'none';
             if (creditFields) {
-                creditFields.style.display = ['credit', 'apple'].includes(input.value) ? 'block' : 'none';
-                if (!['credit', 'apple'].includes(input.value) && cardWarning) cardWarning.style.display = 'none';
+                creditFields.style.display = input.value === 'credit' ? 'block' : 'none';
+                if (input.value !== 'credit' && cardWarning) cardWarning.style.display = 'none';
             }
-            if (['credit', 'apple'].includes(input.value)) {
+            if (input.value === 'credit') {
                 ensureEmbeddedPaymentReady(form).catch(err => {
                     if (cardWarning) {
                         cardWarning.textContent = err.message || 'Unable to load secure payment form.';
@@ -1750,7 +1750,7 @@ function setupFinalForm(form) {
             phoneInput.value = '+1' + phoneInput.value;
         }
         const selectedPayment = form.querySelector('input[name="payment-method"]:checked')?.value || 'credit';
-        if (selectedPayment === 'credit' || selectedPayment === 'apple') {
+        if (selectedPayment === 'credit') {
             submitEmbeddedPayment(form, paymentMsg).catch(err => {
                 if (cardWarning) {
                     cardWarning.textContent = err.message || 'Unable to complete payment.';
