@@ -629,7 +629,7 @@
                 <input type="radio" name="payment-method" id="pay-paypal" value="paypal">
                 <label for="pay-paypal">
                     <span class="payment-label">PayPal</span>
-                    <span class="payment-logos"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></span>
+                    <span class="payment-logos"><img src="paypal.png" alt="PayPal"></span>
                 </label>
             </div>
             <div class="payment-option shop-pay">
@@ -739,7 +739,7 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
         const paymentRadios = document.querySelectorAll('input[name="payment-method"]');
         paymentRadios.forEach(r => {
             r.addEventListener('change', () => {
-                if (creditRadio.checked) {
+                if (creditRadio.checked || document.getElementById('pay-apple')?.checked) {
                     creditFields.style.display = 'block';
                 } else {
                     creditFields.style.display = 'none';
@@ -800,7 +800,7 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
         const paymentMsg = document.getElementById('payment-message');
 
         const getSelectedPaymentMethod = () => document.querySelector('input[name="payment-method"]:checked')?.value;
-        const requiresContactAndDeliveryDetails = () => getSelectedPaymentMethod() === 'credit';
+        const requiresContactAndDeliveryDetails = () => ['credit', 'apple'].includes(getSelectedPaymentMethod());
 
 
         document.querySelectorAll('input[name="payment-method"]').forEach(input => {
@@ -814,9 +814,12 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
                 switch (input.value) {
                     case 'apple':
                         payBtn.textContent = 'Pay with Apple Pay';
+                        if (paymentMsg) {
+                            paymentMsg.innerHTML = '<div>Use Apple Pay in the secure form below to complete your purchase.</div>';
+                        }
                         break;
                     case 'paypal':
-                        payBtn.innerHTML = 'Pay now with <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" class="paypal-inline">';
+                        payBtn.innerHTML = 'Pay now with <img src="paypal.png" alt="PayPal" class="paypal-inline">';
                         if (paymentMsg) {
                             paymentMsg.innerHTML = '<div class="redirect-icon">↗</div>After clicking "Pay with PayPal", you will be redirected to PayPal to complete your purchase securely.';
                         }
