@@ -485,7 +485,9 @@ function buildPaymentIntentEndpoint(checkoutEndpoint) {
     }
 }
 
-async function mountExpressCheckout(container = document) {
+const expressCheckoutMountState = new WeakMap();
+
+async function mountExpressCheckout(container = document, options = {}) {
     const expressContainer =
         container.querySelector('.apple-pay-express-element') ||
         container.querySelector('#express-checkout-element');
@@ -493,13 +495,14 @@ async function mountExpressCheckout(container = document) {
         container.querySelector('.apple-pay-express-error') ||
         container.querySelector('#express-error');
     if (!expressContainer) return;
-    if (expressContainer.dataset.expressMounted === "true") return;
+    const forceRemount = options.forceRemount === true;
+    if (!forceRemount && expressCheckoutMountState.get(expressContainer) === 'mounted') return;
     expressContainer.innerHTML = "";
-    expressContainer.dataset.expressMounted = "mounting";
+    expressCheckoutMountState.set(expressContainer, 'mounting');
     if (expressError) expressError.textContent = "";
     if (!cart || !cart.length) {
         expressContainer.style.display = "none";
-        delete expressContainer.dataset.expressMounted;
+        expressCheckoutMountState.delete(expressContainer);
         return;
     }
     try {
@@ -526,7 +529,7 @@ async function mountExpressCheckout(container = document) {
             buttonType: { applePay: "plain", googlePay: "pay", paypal: "paypal" }
         });
         expressCheckoutElement.mount(expressContainer);
-        expressContainer.dataset.expressMounted = "true";
+        expressCheckoutMountState.set(expressContainer, 'mounted');
         expressCheckoutElement.on("ready", ({ availablePaymentMethods }) => {
             expressContainer.style.display = availablePaymentMethods ? "block" : "none";
         });
@@ -545,7 +548,7 @@ async function mountExpressCheckout(container = document) {
         });
     } catch (error) {
         console.error("Express Checkout Error:", error);
-        delete expressContainer.dataset.expressMounted;
+        expressCheckoutMountState.delete(expressContainer);
         if (expressError) expressError.textContent = error.message || "Unable to load express checkout.";
     }
 }
@@ -956,18 +959,8 @@ function createCartModal() {
             <div class="or">OR</div>
             <div class="express-checkout">
                 <h3>Express checkout</h3>
-                <div class="payment-icons" aria-label="Express payment options">
-                    <button class="pay-option pay-btn" data-method="express" type="button"><img src="/applepay.png" alt="Apple Pay"></button>
-                    <button class="pay-option pay-btn" data-method="Google Pay" type="button"><img src="/googlepay.png" alt="Google Pay"></button>
-                    <button class="pay-option pay-btn" data-method="Shop Pay" type="button"><img src="/shoppay.png" alt="Shop Pay"></button>
-                    <button class="pay-option pay-btn" data-method="PayPal" type="button"><img src="/paypal.png" alt="PayPal"></button>
-                    <button class="pay-option pay-btn" data-method="Klarna" type="button"><img class="klarna-logo" src="/klarna.png" alt="Klarna"></button>
-                    <button class="pay-option pay-btn" data-method="Venmo" type="button"><img src="/venmo.png" alt="Venmo"></button>
-                </div>
-                <div class="apple-pay-express-wrapper">
-                    <div class="apple-pay-express-element"></div>
-                    <div class="apple-pay-express-error" style="color:red; font-size:12px; margin-top:8px;"></div>
-                </div>
+                <div class="apple-pay-express-element"></div>
+                <div class="apple-pay-express-error" style="color:red; font-size:12px; margin-top:8px;"></div>
             </div>
             <form id="checkout-form" style="display:none;">
                 <h3>Sign up and know first!</h3>
@@ -1155,11 +1148,6 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
         window.location.href = 'cart.html';
     });
     modal.querySelector('#cart-checkout').addEventListener('click', () => showCheckoutForm(modal));
-    modal.querySelectorAll('.pay-btn').forEach(btn => {
-        btn.addEventListener('pointerdown', () => {
-            modal.querySelectorAll('.pay-btn').forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
-        });
         btn.addEventListener('click', (event) => {
             event.preventDefault();
             event.stopPropagation();
@@ -1550,6 +1538,24 @@ function setupFinalForm(form) {
     const signupPhone = form.querySelector('input[name="signup_phone"]');
 
     const paymentMethodInputs = form.querySelectorAll('input[name="payment-method"]');
+    const finalCheckout = form.closest('#final-checkout');
+    const applePayActionArea = form.querySelector('.apple-pay-action-area');
+
+    const togglePaymentUi = (method) => {
+        const isApplePay = method === 'apple';
+        if (finalCheckout) {
+            finalCheckout.classList.toggle('apple-pay-selected', isApplePay);
+        }
+        if (applePayActionArea) {
+            applePayActionArea.style.display = isApplePay ? 'block' : 'none';
+        }
+        if (creditFields) {
+            creditFields.style.display = isApplePay ? 'none' : (method === 'credit' ? 'block' : 'none');
+        }
+        if (payBtn) {
+            payBtn.style.display = isApplePay ? 'none' : 'block';
+        }
+    };
 
     paymentMethodInputs.forEach(input => {
         input.addEventListener('change', () => {
@@ -1559,15 +1565,8 @@ function setupFinalForm(form) {
                 field.required = requiresContactAndDeliveryDetails();
             });
             if (emailWarning) emailWarning.style.display = 'none';
-            if (creditFields) {
-                creditFields.style.display = input.value === 'credit' ? 'block' : 'none';
-                if (input.value !== 'credit' && cardWarning) cardWarning.style.display = 'none';
-            }
-            const finalCheckout = form.closest('#final-checkout');
-            const applePayExpressWrapper = finalCheckout ? finalCheckout.querySelector('.apple-pay-express-wrapper') : null;
-            if (applePayExpressWrapper) {
-                applePayExpressWrapper.style.display = input.value === 'apple' ? 'block' : 'none';
-            }
+            togglePaymentUi(input.value);
+            if (input.value !== 'credit' && cardWarning) cardWarning.style.display = 'none';
             if (input.value === 'credit') {
                 ensureEmbeddedPaymentReady(form).catch(err => {
                     if (cardWarning) {
@@ -1578,8 +1577,7 @@ function setupFinalForm(form) {
             }
             switch (input.value) {
                 case 'apple':
-                    payBtn.style.display = 'none';
-                    mountExpressCheckout(form.closest('#final-checkout') || form);
+                    mountExpressCheckout(applePayActionArea || form, { forceRemount: true });
                     break;
                 case 'paypal':
                     payBtn.innerHTML = 'Pay now with <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" class="paypal-inline">';
@@ -1593,7 +1591,6 @@ function setupFinalForm(form) {
                     paymentMsg.innerHTML = '<div class="redirect-icon">↗</div>After clicking "Pay now", you will be redirected to Klarna - Flexible payments to complete your purchase securely.';
                     break;
                 default:
-                    payBtn.style.display = 'block';
                     payBtn.textContent = 'Pay now';
             }
         });
@@ -1699,11 +1696,7 @@ function setupFinalForm(form) {
     const shippingFields = form.querySelectorAll('input[name="address"], input[name="city"], input[name="state"], input[name="zip"]');
     shippingFields.forEach(f => f.addEventListener('input', () => updateShippingAndTax(form)));
     updateShippingAndTax(form);
-    const finalCheckoutContainer = form.closest('#final-checkout');
-    if (finalCheckoutContainer) {
-        const applePayExpressWrapper = finalCheckoutContainer.querySelector('.apple-pay-express-wrapper');
-        if (applePayExpressWrapper) applePayExpressWrapper.style.display = 'none';
-    }
+    togglePaymentUi(getSelectedPaymentMethod() || 'credit');
 
     const remember = form.querySelector('#remember-me');
     const phone = form.querySelector('#phone-container');
@@ -1910,17 +1903,6 @@ function setupCartPage() {
     page.querySelector('#cart-checkout').addEventListener('click', () => {
         showFinalPage(page);
     });
-    page.querySelectorAll('.pay-btn').forEach(btn => {
-        btn.addEventListener('pointerdown', () => {
-            page.querySelectorAll('.pay-btn').forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
-        });
-        btn.addEventListener('click', (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            handleExpressButtonClick(page, btn.dataset.method);
-        });
-    });
     const finalForm = page.querySelector('#final-form');
     if (finalForm) {
         setupFinalForm(finalForm);
@@ -1982,17 +1964,6 @@ function setupCheckoutPage() {
         }
     }
     setupFinalForm(finalPage.querySelector('#final-form'));
-    finalPage.querySelectorAll('.pay-btn').forEach(btn => {
-        btn.addEventListener('pointerdown', () => {
-            finalPage.querySelectorAll('.pay-btn').forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
-        });
-        btn.addEventListener('click', (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            handleExpressButtonClick(finalPage, btn.dataset.method);
-        });
-    });
 }
 
 function updateCartCounter() {
