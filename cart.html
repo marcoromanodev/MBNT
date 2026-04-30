@@ -649,10 +649,17 @@
                 </label>
             </div>
             <div class="payment-option">
-                <input type="radio" name="payment-method" id="cart2-pay-paypal" value="paypal">
-                <label for="cart2-pay-paypal">
-                    <span class="payment-label">PayPal</span>
-                    <span class="payment-logos"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></span>
+                <input type="radio" name="payment-method" id="cart2-pay-google" value="google">
+                <label for="cart2-pay-google">
+                    <span class="payment-label">Google Pay</span>
+                    <span class="payment-logos"><img src="gpay.png" alt="Google Pay"></span>
+                </label>
+            </div>
+            <div class="payment-option">
+                <input type="radio" name="payment-method" id="cart2-pay-amazon" value="amazon">
+                <label for="cart2-pay-amazon">
+                    <span class="payment-label">Amazon Pay</span>
+                    <span class="payment-logos"><img src="amazonpay.png" alt="Amazon Pay"></span>
                 </label>
             </div>
             <div class="payment-option shop-pay">
@@ -698,6 +705,10 @@
                     <div><span>Shipping</span><span class="shipping">Select shipping method</span></div>
                     <div><strong>Total</strong><strong class="total">$0.00</strong></div>
                 </div>
+            </div>
+            <div class="wallet-bottom-action" style="display:none;">
+                <div class="wallet-express-element"></div>
+                <div class="wallet-express-error" style="color:red; font-size:12px; margin-top:8px;"></div>
             </div>
             <button id="final-order-submit" type="submit">Pay now</button>
             <p id="remember-message" style="display:none;">Your info will be saved to a Shop account. By continuing, you agree to Shop’s <a href="https://shop.app/terms-of-service" target="_blank" style="color:red;">Terms of Service</a> and acknowledge the <a href="https://www.shopify.com/legal/privacy/consumers" target="_blank" style="color:red;">Privacy Policy</a>.</p>
