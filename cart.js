@@ -559,9 +559,9 @@ async function getExpressCheckoutClientSecret(container = document, options = {}
     return expressCheckoutCache.promise;
 }
 
-function prewarmExpressCheckout(container = document) {
+function prewarmExpressCheckout(container = document, options = {}) {
     if (!cart.length) return;
-    getExpressCheckoutClientSecret(container).catch((err) => console.warn('Express Checkout prewarm skipped:', err.message));
+    getExpressCheckoutClientSecret(container, options).catch((err) => console.warn('Express Checkout prewarm skipped:', err.message));
 }
 
 
@@ -2217,5 +2217,17 @@ document.addEventListener('DOMContentLoaded', () => {
         loadStripeConfig().then(() => loadStripeJs()).then(() => { try { getStripe(); } catch (_) {} });
         prewarmExpressCheckout(document);
         mountExpressCheckout(document);
+
+        const cartPageExpress = document.querySelector('[data-express-context="cart-page"]');
+        const isCartPage = page === 'cart.html';
+        if (cartPageExpress || isCartPage) {
+            prewarmExpressCheckout(document, { context: 'cart-page', forceEstimate: true });
+            requestAnimationFrame(() => {
+                mountExpressCheckout(document, {
+                    context: 'cart-page',
+                    forceEstimate: true
+                });
+            });
+        }
     }, 0);
 });
