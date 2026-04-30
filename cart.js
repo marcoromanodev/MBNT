@@ -492,6 +492,8 @@ let expressCheckoutCache = {
 };
 let stripeInstancePromise = null;
 let expressCheckoutReadyPromise = null;
+const expressMountState = new Map();
+const EXPRESS_MOUNT_RETRY_DELAYS_MS = [300, 1000];
 
 function preloadStripe() {
     if (!stripeInstancePromise) {
@@ -499,7 +501,7 @@ function preloadStripe() {
             .then(() => loadStripeJs())
             .then(() => getStripe())
             .catch((error) => {
-                console.error("Stripe preload failed:", error);
+                console.warn("Express checkout mount failed", "stripe-preload", error);
                 stripeInstancePromise = null;
                 throw error;
             });
@@ -589,7 +591,6 @@ async function getExpressCheckoutClientSecret(container = document, options = {}
 
 function prewarmExpressCheckout(container = document, options = {}) {
     if (!cart.length) return;
-    invalidateExpressCheckoutCache();
     if (!expressCheckoutReadyPromise) {
         expressCheckoutReadyPromise = Promise.resolve()
             .then(() => preloadStripe())
@@ -598,10 +599,16 @@ function prewarmExpressCheckout(container = document, options = {}) {
                 expressCheckoutReadyPromise = null;
             });
     }
-    expressCheckoutReadyPromise.catch((err) => console.warn('Express Checkout prewarm skipped:', err.message));
+    expressCheckoutReadyPromise.catch((err) => console.warn("Express checkout mount failed", options.context || 'prewarm', err));
     return expressCheckoutReadyPromise;
 }
 
+function getExpressMountKey(expressContainer, signature, options = {}) {
+    const wallet = options.wallet || 'all';
+    const context = options.context || 'default';
+    const target = expressContainer?.dataset?.expressMountId || expressContainer?.className || 'express-target';
+    return `${context}|${wallet}|${signature}|${target}`;
+}
 
 async function mountExpressCheckout(container = document, options = {}) {
     const contextSelector = options.context ? `[data-express-context="${options.context}"]` : '';
@@ -629,38 +636,50 @@ async function mountExpressCheckout(container = document, options = {}) {
     }
     const signature = getExpressCheckoutSignature(container, options);
     if (expressContainer.dataset.expressMounted === 'true' && expressContainer.dataset.expressSignature === signature) return;
+    if (!expressContainer.dataset.expressMountId) expressContainer.dataset.expressMountId = `m${Math.random().toString(36).slice(2, 8)}`;
+    const mountKey = getExpressMountKey(expressContainer, signature, options);
+    if (expressMountState.has(mountKey)) return expressMountState.get(mountKey);
     expressContainer.dataset.expressMounted = 'mounting';
-    try {
-        const stripe = await preloadStripe();
-        const clientSecret = await getExpressCheckoutClientSecret(container, options);
-        const elements = stripe.elements({ clientSecret, appearance: { theme: 'stripe', variables: { colorText: '#000000', fontFamily: "'Courier New', Courier, monospace" } } });
-        const expressCheckoutElement = elements.create('expressCheckout', {
-            buttonHeight: 50,
-            buttonTheme: { applePay: 'white-outline', googlePay: 'white', link: 'black', amazonPay: 'gold', klarna: 'light' },
-            paymentMethods: { applePay: 'always', googlePay: 'always', link: 'auto', amazonPay: 'auto', klarna: 'auto', paypal: 'never' }
-        });
-        expressContainer.innerHTML = '';
-        expressCheckoutElement.mount(expressContainer);
-        expressContainer.dataset.expressMounted = 'true';
-        expressContainer.dataset.expressSignature = signature;
-        expressCheckoutElement.on('ready', ({ availablePaymentMethods }) => {
-            expressContainer.style.display = availablePaymentMethods ? 'block' : 'none';
-        });
-        expressCheckoutElement.on('confirm', async () => {
-            if (expressError) expressError.textContent = '';
-            const { error } = await stripe.confirmPayment({
-                elements,
-                confirmParams: { return_url: new URL(stripeSettings.successUrl || '/success.html', window.location.origin).toString() }
+    const mountPromise = (async () => {
+        const attemptMount = async () => {
+            const stripe = await preloadStripe();
+            const clientSecret = await getExpressCheckoutClientSecret(container, options);
+            const elements = stripe.elements({ clientSecret, appearance: { theme: 'stripe', variables: { colorText: '#000000', fontFamily: "'Courier New', Courier, monospace" } } });
+            const expressCheckoutElement = elements.create('expressCheckout', {
+                buttonHeight: 50,
+                buttonTheme: { applePay: 'white-outline', googlePay: 'white', link: 'black', amazonPay: 'gold', klarna: 'light' },
+                paymentMethods: { applePay: 'always', googlePay: 'always', link: 'auto', amazonPay: 'auto', klarna: 'auto', paypal: 'never' }
             });
-            if (error) {
-                if (expressError) expressError.textContent = error.message || 'Express checkout failed.';
+            expressContainer.innerHTML = '';
+            expressCheckoutElement.mount(expressContainer);
+            expressContainer.dataset.expressMounted = 'true';
+            expressContainer.dataset.expressSignature = signature;
+            expressCheckoutElement.on('ready', ({ availablePaymentMethods }) => { expressContainer.style.display = availablePaymentMethods ? 'block' : 'none'; });
+            expressCheckoutElement.on('confirm', async () => {
+                if (expressError) expressError.textContent = '';
+                const { error } = await stripe.confirmPayment({ elements, confirmParams: { return_url: new URL(stripeSettings.successUrl || '/success.html', window.location.origin).toString() } });
+                if (error && expressError) expressError.textContent = error.message || 'Express checkout failed.';
+            });
+        };
+        for (let attempt = 0; attempt <= EXPRESS_MOUNT_RETRY_DELAYS_MS.length; attempt += 1) {
+            try {
+                await attemptMount();
+                return;
+            } catch (error) {
+                if (attempt < EXPRESS_MOUNT_RETRY_DELAYS_MS.length) {
+                    await new Promise((resolve) => setTimeout(resolve, EXPRESS_MOUNT_RETRY_DELAYS_MS[attempt]));
+                    continue;
+                }
+                delete expressContainer.dataset.expressMounted;
+                expressContainer.style.display = 'none';
+                if (expressError) expressError.textContent = error.message || 'Unable to load express checkout.';
+                console.warn("Express checkout mount failed", options.context || 'default', error);
+                throw error;
             }
-        });
-    } catch (error) {
-        delete expressContainer.dataset.expressMounted;
-        expressContainer.style.display = 'none';
-        if (expressError) expressError.textContent = error.message || 'Unable to load express checkout.';
-    }
+        }
+    })().finally(() => expressMountState.delete(mountKey));
+    expressMountState.set(mountKey, mountPromise);
+    return mountPromise;
 }
 
 
@@ -674,9 +693,14 @@ async function mountWalletExpressCheckout(form, wallet = 'apple') {
     wrapper.style.display = 'block';
     expressContainer.innerHTML = '<div style="font-size:12px;color:#666;padding:6px 0;">Loading express checkout...</div>';
     if (expressError) expressError.textContent = '';
-    try {
+    const mountOptions = { wallet, context: 'wallet-bottom' };
+    const signature = getExpressCheckoutSignature(form, mountOptions);
+    if (expressContainer.dataset.expressMounted === 'true' && expressContainer.dataset.expressSignature === signature) return true;
+    const mountKey = getExpressMountKey(expressContainer, signature, mountOptions);
+    if (expressMountState.has(mountKey)) return expressMountState.get(mountKey);
+    const mountPromise = (async () => {
         const stripe = await preloadStripe();
-        const clientSecret = await getExpressCheckoutClientSecret(form, { wallet, context: 'wallet-bottom' });
+        const clientSecret = await getExpressCheckoutClientSecret(form, mountOptions);
         const elements = stripe.elements({ clientSecret, appearance: { theme: 'stripe', variables: { colorText: '#000000', fontFamily: "'Courier New', Courier, monospace" } } });
         let element;
         try {
@@ -685,15 +709,20 @@ async function mountWalletExpressCheckout(form, wallet = 'apple') {
             element = elements.create('expressCheckout', { buttonHeight: 50, paymentMethods: { link: 'auto' }, buttonTheme: { link: 'black' } });
         }
         element.mount(expressContainer);
+        expressContainer.dataset.expressMounted = 'true';
+        expressContainer.dataset.expressSignature = signature;
         element.on('confirm', async () => {
             const { error } = await stripe.confirmPayment({ elements, confirmParams: { return_url: new URL(stripeSettings.successUrl || '/success.html', window.location.origin).toString() } });
             if (error && expressError) expressError.textContent = error.message || 'Wallet checkout failed.';
         });
         return true;
-    } catch (error) {
+    })().catch((error) => {
         if (expressError) expressError.textContent = error.message || 'Unable to load wallet checkout.';
+        console.warn("Express checkout mount failed", 'wallet-bottom', error);
         return false;
-    }
+    }).finally(() => expressMountState.delete(mountKey));
+    expressMountState.set(mountKey, mountPromise);
+    return mountPromise;
 }
 
 function updatePaymentMethodUI(form) {
@@ -2313,9 +2342,9 @@ function ensureCartCounter() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    preloadStripe().catch(() => {});
     initCart();
     ensureCartTriggerBound();
-    preloadStripe().catch(() => {});
     prewarmExpressCheckout(document, { context: 'cart-page', forceEstimate: true }).catch(() => {});
     const page = window.location.pathname.split('/').pop();
     if (page !== 'cart.html' && page !== 'checkout.html') {
