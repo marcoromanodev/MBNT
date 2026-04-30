@@ -567,22 +567,25 @@ function prewarmExpressCheckout(container = document, options = {}) {
 
 async function mountExpressCheckout(container = document, options = {}) {
     const contextSelector = options.context ? `[data-express-context="${options.context}"]` : '';
-    const expressContainer =
-        (contextSelector && container.querySelector(`${contextSelector} .apple-pay-express-element`)) ||
-        container.querySelector('.apple-pay-express-element') ||
-        container.querySelector('#express-checkout-element');
-    const expressError =
-        (contextSelector && container.querySelector(`${contextSelector} .apple-pay-express-error`)) ||
-        container.querySelector('.apple-pay-express-error') ||
-        container.querySelector('#express-error');
+    const isCartPageContext = options.context === 'cart-page';
+    const expressContainer = isCartPageContext
+        ? container.querySelector('[data-express-context="cart-page"] .apple-pay-express-element')
+        : ((contextSelector && container.querySelector(`${contextSelector} .apple-pay-express-element`)) ||
+            container.querySelector('.apple-pay-express-element') ||
+            container.querySelector('#express-checkout-element'));
+    const expressError = isCartPageContext
+        ? container.querySelector('[data-express-context="cart-page"] .apple-pay-express-error')
+        : ((contextSelector && container.querySelector(`${contextSelector} .apple-pay-express-error`)) ||
+            container.querySelector('.apple-pay-express-error') ||
+            container.querySelector('#express-error'));
     if (!expressContainer) return;
-    expressContainer.innerHTML = '<div style="font-size:12px;color:#666;padding:6px 0;">Loading express checkout…</div>';
+    expressContainer.innerHTML = '<div style="font-size:12px;color:#666;padding:6px 0;">Loading express checkout...</div>';
     if (expressError) expressError.textContent = '';
     if (!cart.length) {
         expressContainer.style.display = 'none';
         return;
     }
-    if (!isElementVisible(expressContainer)) {
+    if (!isCartPageContext && !isElementVisible(expressContainer)) {
         requestAnimationFrame(() => mountExpressCheckout(container, options));
         return;
     }
@@ -2213,21 +2216,26 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     setupCartPage();
     setupCheckoutPage();
+    const cartPageExpress = document.querySelector('[data-express-context="cart-page"]');
+    if (cartPageExpress) {
+        mountExpressCheckout(document, {
+            context: 'cart-page',
+            forceEstimate: true
+        }).catch((error) => {
+            const cartExpressError = document.querySelector('[data-express-context="cart-page"] .apple-pay-express-error');
+            if (cartExpressError) cartExpressError.textContent = error.message || 'Unable to load express checkout.';
+            console.error('Cart page Express Checkout mount failed:', error);
+        });
+        setTimeout(() => {
+            loadStripeConfig().then(() => loadStripeJs()).then(() => { try { getStripe(); } catch (_) {} });
+            prewarmExpressCheckout(document, { context: 'cart-page', forceEstimate: true });
+        }, 0);
+        return;
+    }
+
     setTimeout(() => {
         loadStripeConfig().then(() => loadStripeJs()).then(() => { try { getStripe(); } catch (_) {} });
         prewarmExpressCheckout(document);
         mountExpressCheckout(document);
-
-        const cartPageExpress = document.querySelector('[data-express-context="cart-page"]');
-        const isCartPage = page === 'cart.html';
-        if (cartPageExpress || isCartPage) {
-            prewarmExpressCheckout(document, { context: 'cart-page', forceEstimate: true });
-            requestAnimationFrame(() => {
-                mountExpressCheckout(document, {
-                    context: 'cart-page',
-                    forceEstimate: true
-                });
-            });
-        }
     }, 0);
 });
