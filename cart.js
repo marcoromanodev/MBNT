@@ -484,95 +484,140 @@ function buildPaymentIntentEndpoint(checkoutEndpoint) {
     }
 }
 
-async function mountExpressCheckout(container = document, options = {}) {
+let expressCheckoutCache = {
+    signature: "",
+    clientSecret: "",
+    promise: null,
+    totals: null
+};
+
+function invalidateExpressCheckoutCache() {
+    expressCheckoutCache.signature = "";
+    expressCheckoutCache.clientSecret = "";
+    expressCheckoutCache.promise = null;
+    expressCheckoutCache.totals = null;
+    document.querySelectorAll('.apple-pay-express-element, #express-checkout-element').forEach((el) => {
+        delete el.dataset.expressMounted;
+        delete el.dataset.expressSignature;
+        el.innerHTML = '';
+    });
+}
+
+function isElementVisible(el) {
+    if (!el) return false;
+    const style = window.getComputedStyle(el);
+    if (style.display === 'none' || style.visibility === 'hidden') return false;
+    return !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length);
+}
+
+function getExpressCheckoutSignature(container = document) {
+    const { orderAmountCents, totals } = getCurrentCheckoutTotalCents(container);
+    return JSON.stringify({
+        cart: cart.map((item) => ({
+            id: item.id || item.name || item.product,
+            price: item.price,
+            quantity: item.quantity || 1
+        })),
+        totals,
+        totalCents: orderAmountCents
+    });
+}
+
+async function createExpressCheckoutPaymentIntent(container = document) {
+    await loadStripeConfig();
+    const { lineItems, missing } = buildStripeLineItems();
+    if (missing.length) throw new Error(`Stripe price IDs missing for: ${missing.join(', ')}.`);
+    const paymentIntentEndpoint = buildPaymentIntentEndpoint(stripeSettings.checkoutEndpoint);
+    if (!paymentIntentEndpoint) throw new Error('Stripe payment intent endpoint is not configured.');
+    const totalsData = getCurrentCheckoutTotalCents(container);
+    const response = await fetch(paymentIntentEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lineItems, cart, orderAmountCents: totalsData.orderAmountCents, totals: totalsData.totals })
+    });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok || !payload.clientSecret) throw new Error(payload.error || 'Unable to initialize express checkout.');
+    expressCheckoutCache.totals = totalsData.totals;
+    return payload.clientSecret;
+}
+
+async function getExpressCheckoutClientSecret(container = document) {
+    const signature = getExpressCheckoutSignature(container);
+    if (expressCheckoutCache.signature === signature && expressCheckoutCache.clientSecret) return expressCheckoutCache.clientSecret;
+    if (expressCheckoutCache.signature === signature && expressCheckoutCache.promise) return expressCheckoutCache.promise;
+    expressCheckoutCache.signature = signature;
+    expressCheckoutCache.clientSecret = '';
+    expressCheckoutCache.promise = createExpressCheckoutPaymentIntent(container)
+        .then((clientSecret) => {
+            expressCheckoutCache.clientSecret = clientSecret;
+            return clientSecret;
+        })
+        .finally(() => {
+            expressCheckoutCache.promise = null;
+        });
+    return expressCheckoutCache.promise;
+}
+
+function prewarmExpressCheckout(container = document) {
+    if (!cart.length) return;
+    getExpressCheckoutClientSecret(container).catch((err) => console.warn('Express Checkout prewarm skipped:', err.message));
+}
+
+
+async function mountExpressCheckout(container = document) {
     const expressContainer =
         container.querySelector('.apple-pay-express-element') ||
         container.querySelector('#express-checkout-element');
     const expressError =
         container.querySelector('.apple-pay-express-error') ||
         container.querySelector('#express-error');
-    if (!expressContainer) {
-        console.error("Express Checkout mount target not found.");
-        if (expressError) expressError.textContent = "Express Checkout unavailable: missing mount target.";
+    if (!expressContainer) return;
+    expressContainer.innerHTML = '<div style="font-size:12px;color:#666;padding:6px 0;">Loading express checkout…</div>';
+    if (expressError) expressError.textContent = '';
+    if (!cart.length) {
+        expressContainer.style.display = 'none';
         return;
     }
-    if (expressContainer.dataset.expressMounted === "true") return;
-    expressContainer.innerHTML = "";
-    expressContainer.dataset.expressMounted = "mounting";
-    if (expressError) expressError.textContent = "";
-    if (!cart || !cart.length) {
-        expressContainer.style.display = "none";
-        delete expressContainer.dataset.expressMounted;
+    if (!isElementVisible(expressContainer)) {
+        requestAnimationFrame(() => mountExpressCheckout(container));
         return;
     }
+    const signature = getExpressCheckoutSignature(container);
+    if (expressContainer.dataset.expressMounted === 'true' && expressContainer.dataset.expressSignature === signature) return;
+    expressContainer.dataset.expressMounted = 'mounting';
     try {
-        await loadStripeConfig();
         const stripe = await getStripe();
-        const { lineItems, missing } = buildStripeLineItems();
-        if (missing.length) throw new Error(`Stripe price IDs missing for: ${missing.join(", ")}.`);
-        const paymentIntentEndpoint = buildPaymentIntentEndpoint(stripeSettings.checkoutEndpoint);
-        if (!paymentIntentEndpoint) throw new Error("Stripe payment intent endpoint is not configured.");
-        const response = await fetch(paymentIntentEndpoint, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ lineItems, cart, orderAmountCents: options.orderAmountCents, totals: options.totals })
-        });
-        const payload = await response.json().catch(() => ({}));
-        if (!response.ok || !payload.clientSecret) throw new Error(payload.error || "Unable to initialize express checkout.");
-        const elements = stripe.elements({
-            clientSecret: payload.clientSecret,
-            appearance: { theme: "stripe", variables: { colorText: "#000000", fontFamily: "'Courier New', Courier, monospace" } }
-        });
-        const expressOptions = {
+        const clientSecret = await getExpressCheckoutClientSecret(container);
+        const elements = stripe.elements({ clientSecret, appearance: { theme: 'stripe', variables: { colorText: '#000000', fontFamily: "'Courier New', Courier, monospace" } } });
+        const expressCheckoutElement = elements.create('expressCheckout', {
             buttonHeight: 50,
-            buttonTheme: {
-                applePay: "white-outline",
-                googlePay: "white",
-                link: "black",
-                amazonPay: "gold",
-                klarna: "light"
-            },
-            paymentMethods: {
-                applePay: "always",
-                googlePay: "always",
-                link: "auto",
-                amazonPay: "auto",
-                klarna: "auto",
-                paypal: "never"
-            }
-        };
-        let expressCheckoutElement;
-        try {
-            expressCheckoutElement = elements.create("expressCheckout", expressOptions);
-        } catch (createError) {
-            console.error("Express Checkout create error:", createError);
-            throw createError;
-        }
-        expressCheckoutElement.mount(expressContainer);
-        expressContainer.dataset.expressMounted = "true";
-        expressCheckoutElement.on("ready", ({ availablePaymentMethods }) => {
-            expressContainer.style.display = availablePaymentMethods ? "block" : "none";
+            buttonTheme: { applePay: 'white-outline', googlePay: 'white', link: 'black', amazonPay: 'gold', klarna: 'light' },
+            paymentMethods: { applePay: 'always', googlePay: 'always', link: 'auto', amazonPay: 'auto', klarna: 'auto', paypal: 'never' }
         });
-        expressCheckoutElement.on("confirm", async () => {
-            if (expressError) expressError.textContent = "";
+        expressContainer.innerHTML = '';
+        expressCheckoutElement.mount(expressContainer);
+        expressContainer.dataset.expressMounted = 'true';
+        expressContainer.dataset.expressSignature = signature;
+        expressCheckoutElement.on('ready', ({ availablePaymentMethods }) => {
+            expressContainer.style.display = availablePaymentMethods ? 'block' : 'none';
+        });
+        expressCheckoutElement.on('confirm', async () => {
+            if (expressError) expressError.textContent = '';
             const { error } = await stripe.confirmPayment({
                 elements,
-                confirmParams: {
-                    return_url: new URL(stripeSettings.successUrl || "/success.html", window.location.origin).toString()
-                }
+                confirmParams: { return_url: new URL(stripeSettings.successUrl || '/success.html', window.location.origin).toString() }
             });
             if (error) {
-                if (expressError) expressError.textContent = error.message || "Express checkout failed.";
-                else alert(error.message || "Express checkout failed.");
+                if (expressError) expressError.textContent = error.message || 'Express checkout failed.';
             }
         });
     } catch (error) {
-        console.error("Express Checkout Error:", error);
         delete expressContainer.dataset.expressMounted;
-        expressContainer.style.display = "none";
-        if (expressError) expressError.textContent = error.message || "Unable to load express checkout.";
+        expressContainer.style.display = 'none';
+        if (expressError) expressError.textContent = error.message || 'Unable to load express checkout.';
     }
 }
+
 
 
 async function mountApplePayBottomAction(form) {
@@ -794,6 +839,7 @@ function initCart() {
     document.querySelectorAll('#final-checkout').forEach(section => {
         populateOrderSummary(section);
     });
+    prewarmExpressCheckout(document);
 }
 
 // animate a star from the clicked button to the cart icon
@@ -874,6 +920,7 @@ function addToCart(button) {
         timestamp: Date.now()
     };
     cart.push(product);
+    invalidateExpressCheckoutCache();
     localStorage.setItem('cart', JSON.stringify(cart));
     // TODO: sync with store server for inventory management
     updateCartCounter();
@@ -890,6 +937,7 @@ function checkout(button) {
 
 function removeFromCart(index) {
     cart.splice(index, 1);
+    invalidateExpressCheckoutCache();
     localStorage.setItem('cart', JSON.stringify(cart));
     updateCartCounter();
     populateCartModal();
@@ -897,6 +945,7 @@ function removeFromCart(index) {
     document.querySelectorAll('#final-checkout').forEach(section => {
         populateOrderSummary(section);
     });
+    prewarmExpressCheckout(document);
 }
 
 function openCart(showForm = false) {
@@ -906,6 +955,7 @@ function openCart(showForm = false) {
     }
     populateCartModal();
     modal.style.display = 'flex';
+    setTimeout(() => { mountExpressCheckout(modal); }, 0);
     if (cart.length === 0) {
         const msg = modal.querySelector('.cart-empty-message');
         if (msg) {
@@ -1442,7 +1492,7 @@ function populateOrderSummary(section, state = '', addressFilled = false) {
     const subtotal = cart.reduce((sum, item) => sum + parseFloat(item.price) * (parseInt(item.quantity) || 1), 0);
     const rate = state && stateTaxRates[state] !== undefined ? stateTaxRates[state] : defaultTaxRate;
     const tax = subtotal * rate;
-    const shipping = addressFilled ? shippingCost : 0;
+    const shipping = shippingCost;
     const total = subtotal + tax + shipping;
 
     section.querySelectorAll('.order-summary-details').forEach(details => {
@@ -1599,7 +1649,7 @@ function getCurrentCheckoutTotalCents(container = document) {
         const input = container.querySelector ? container.querySelector(`input[name="${name}"]`) : null;
         return input && input.value.trim();
     });
-    const shipping = addressFilled ? shippingCost : 0;
+    const shipping = shippingCost;
     const total = subtotal + tax + shipping;
     return { orderAmountCents: Math.max(1, Math.round(total * 100)), totals: { subtotal, tax, shipping, total } };
 }
@@ -2125,5 +2175,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     setupCartPage();
     setupCheckoutPage();
-    mountExpressCheckout();
+    setTimeout(() => {
+        loadStripeConfig().then(() => loadStripeJs()).then(() => { try { getStripe(); } catch (_) {} });
+        prewarmExpressCheckout(document);
+        mountExpressCheckout(document);
+    }, 0);
 });
