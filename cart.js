@@ -471,9 +471,9 @@ function buildPaymentIntentEndpoint(checkoutEndpoint) {
     }
 }
 
-async function mountExpressCheckout() {
-    const expressContainer = document.getElementById("express-checkout-element");
-    const expressError = document.getElementById("express-error");
+async function mountExpressCheckout(root = document) {
+    const expressContainer = root.querySelector("#express-checkout-element");
+    const expressError = root.querySelector("#express-error");
     if (!expressContainer) return;
     expressContainer.innerHTML = "";
     if (expressError) expressError.textContent = "";
@@ -504,7 +504,7 @@ async function mountExpressCheckout() {
             buttonTheme: { applePay: "white-outline", googlePay: "white", paypal: "gold" },
             buttonType: { applePay: "plain", googlePay: "pay", paypal: "paypal" }
         });
-        expressCheckoutElement.mount("#express-checkout-element");
+        expressCheckoutElement.mount(expressContainer);
         expressCheckoutElement.on("ready", ({ availablePaymentMethods }) => {
             expressContainer.style.display = availablePaymentMethods ? "block" : "none";
         });
@@ -1368,7 +1368,7 @@ function showCheckoutForm(root = document.getElementById('cart-modal')) {
     const count = root.querySelector('.item-count');
     if (count) count.style.display = 'none';
     root.querySelector('#checkout-form').style.display = 'block';
-    mountExpressCheckout();
+    mountExpressCheckout(root);
     const footer = root.querySelector('.cart-footer');
     if (footer) footer.style.display = 'block';
     const footerLinks = root.querySelector('.footer-links');
@@ -1452,7 +1452,7 @@ function showFinalPage(root = document.getElementById('cart-modal')) {
     const finalPage = root.querySelector('#final-checkout');
     if (finalPage) {
         finalPage.style.display = 'block';
-        mountExpressCheckout();
+        mountExpressCheckout(root);
         populateOrderSummary(finalPage);
         const bar = finalPage.querySelector('.order-summary-bar');
         const details = finalPage.querySelector('.order-summary-details.top-summary');
