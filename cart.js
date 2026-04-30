@@ -254,6 +254,20 @@ async function handlePayment(method, customerEmail = '') {
     }
 }
 
+function handleExpressButtonClick(root, method) {
+    if (method === 'Apple Pay') {
+        const appleOption = root?.querySelector('input[name="payment-method"][value="apple"]');
+        if (appleOption) {
+            appleOption.checked = true;
+            appleOption.dispatchEvent(new Event('change', { bubbles: true }));
+            const paymentSection = appleOption.closest('.payment-option');
+            if (paymentSection) paymentSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+        }
+    }
+    handlePayment(method);
+}
+
 let stripePromise = null;
 function loadStripeJs() {
     if (window.Stripe) return Promise.resolve();
@@ -1134,7 +1148,7 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
         btn.addEventListener('click', (event) => {
             event.preventDefault();
             event.stopPropagation();
-            handlePayment(btn.dataset.method);
+            handleExpressButtonClick(modal, btn.dataset.method);
         });
     });
 
@@ -1876,7 +1890,7 @@ function setupCartPage() {
         btn.addEventListener('click', (event) => {
             event.preventDefault();
             event.stopPropagation();
-            handlePayment(btn.dataset.method);
+            handleExpressButtonClick(page, btn.dataset.method);
         });
     });
     const finalForm = page.querySelector('#final-form');
@@ -1948,7 +1962,7 @@ function setupCheckoutPage() {
         btn.addEventListener('click', (event) => {
             event.preventDefault();
             event.stopPropagation();
-            handlePayment(btn.dataset.method);
+            handleExpressButtonClick(finalPage, btn.dataset.method);
         });
     });
 }
