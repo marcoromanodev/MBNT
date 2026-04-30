@@ -566,10 +566,13 @@ function prewarmExpressCheckout(container = document) {
 
 
 async function mountExpressCheckout(container = document, options = {}) {
+    const contextSelector = options.context ? `[data-express-context="${options.context}"]` : '';
     const expressContainer =
+        (contextSelector && container.querySelector(`${contextSelector} .apple-pay-express-element`)) ||
         container.querySelector('.apple-pay-express-element') ||
         container.querySelector('#express-checkout-element');
     const expressError =
+        (contextSelector && container.querySelector(`${contextSelector} .apple-pay-express-error`)) ||
         container.querySelector('.apple-pay-express-error') ||
         container.querySelector('#express-error');
     if (!expressContainer) return;
@@ -1515,8 +1518,9 @@ function showCheckoutForm(root = document.getElementById('cart-modal')) {
     if (header) header.style.display = 'none';
     const count = root.querySelector('.item-count');
     if (count) count.style.display = 'none';
-    root.querySelector('#checkout-form').style.display = 'block';
-    mountExpressCheckout(root, { forceEstimate: true, context: 'cart-popup-precheckout' });
+    const checkoutFormElement = root.querySelector('#checkout-form');
+    checkoutFormElement.style.display = 'block';
+    mountExpressCheckout(checkoutFormElement, { context: 'checkout-form', forceEstimate: true });
     const footer = root.querySelector('.cart-footer');
     if (footer) footer.style.display = 'block';
     const footerLinks = root.querySelector('.footer-links');
@@ -1600,7 +1604,8 @@ function showFinalPage(root = document.getElementById('cart-modal')) {
     const finalPage = root.querySelector('#final-checkout');
     if (finalPage) {
         finalPage.style.display = 'block';
-        mountExpressCheckout(root, { forceEstimate: true, context: 'cart-page-precheckout' });
+        const finalFormElement = finalPage.querySelector('#final-form');
+        mountExpressCheckout(finalFormElement || finalPage, { context: 'checkout-form', forceEstimate: true });
         populateOrderSummary(finalPage);
         const bar = finalPage.querySelector('.order-summary-bar');
         const details = finalPage.querySelector('.order-summary-details.top-summary');
