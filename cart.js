@@ -491,7 +491,11 @@ async function mountExpressCheckout(container = document, options = {}) {
     const expressError =
         container.querySelector('.apple-pay-express-error') ||
         container.querySelector('#express-error');
-    if (!expressContainer) return;
+    if (!expressContainer) {
+        console.error("Express Checkout mount target not found.");
+        if (expressError) expressError.textContent = "Express Checkout unavailable: missing mount target.";
+        return;
+    }
     if (expressContainer.dataset.expressMounted === "true") return;
     expressContainer.innerHTML = "";
     expressContainer.dataset.expressMounted = "mounting";
@@ -519,11 +523,31 @@ async function mountExpressCheckout(container = document, options = {}) {
             clientSecret: payload.clientSecret,
             appearance: { theme: "stripe", variables: { colorText: "#000000", fontFamily: "'Courier New', Courier, monospace" } }
         });
-        const expressCheckoutElement = elements.create("expressCheckout", {
+        const expressOptions = {
             buttonHeight: 50,
-            buttonTheme: { applePay: "white-outline", googlePay: "white", link: "default", amazonPay: "gold", klarna: "default" },
-            paymentMethodOrder: ["apple_pay", "google_pay", "link", "amazon_pay", "klarna"]
-        });
+            buttonTheme: {
+                applePay: "white-outline",
+                googlePay: "white",
+                link: "black",
+                amazonPay: "gold",
+                klarna: "light"
+            },
+            paymentMethods: {
+                applePay: "always",
+                googlePay: "always",
+                link: "auto",
+                amazonPay: "auto",
+                klarna: "auto",
+                paypal: "never"
+            }
+        };
+        let expressCheckoutElement;
+        try {
+            expressCheckoutElement = elements.create("expressCheckout", expressOptions);
+        } catch (createError) {
+            console.error("Express Checkout create error:", createError);
+            throw createError;
+        }
         expressCheckoutElement.mount(expressContainer);
         expressContainer.dataset.expressMounted = "true";
         expressCheckoutElement.on("ready", ({ availablePaymentMethods }) => {
@@ -545,6 +569,7 @@ async function mountExpressCheckout(container = document, options = {}) {
     } catch (error) {
         console.error("Express Checkout Error:", error);
         delete expressContainer.dataset.expressMounted;
+        expressContainer.style.display = "none";
         if (expressError) expressError.textContent = error.message || "Unable to load express checkout.";
     }
 }
