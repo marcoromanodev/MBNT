@@ -528,7 +528,7 @@ function isElementVisible(el) {
 }
 
 function getExpressCheckoutSignature(container = document, options = {}) {
-    const { orderAmountCents } = getCurrentCheckoutTotalCents(container, options);
+    const totals = getCurrentCheckoutTotalCents(container, options);
     return JSON.stringify({
         cart: cart.map((item) => ({
             id: item.id || item.name || item.product,
@@ -536,7 +536,9 @@ function getExpressCheckoutSignature(container = document, options = {}) {
             quantity: item.quantity || 1
         })),
         wallet: options.wallet || 'all',
-        totalCents: orderAmountCents,
+        totalCents: totals.totalCents,
+        taxCents: totals.taxCents,
+        shippingCents: totals.shippingCents,
         context: options.context || 'default'
     });
 }
@@ -547,15 +549,24 @@ async function createExpressCheckoutPaymentIntent(container = document, options 
     if (missing.length) throw new Error(`Stripe price IDs missing for: ${missing.join(', ')}.`);
     const paymentIntentEndpoint = buildPaymentIntentEndpoint(stripeSettings.checkoutEndpoint);
     if (!paymentIntentEndpoint) throw new Error('Stripe payment intent endpoint is not configured.');
-    const totalsData = getCurrentCheckoutTotalCents(container, options);
+    const totals = getCurrentCheckoutTotalCents(container, options);
+    console.log("Express Checkout totals", totals);
     const response = await fetch(paymentIntentEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ lineItems, cart, orderAmountCents: totalsData.orderAmountCents, subtotalCents: Math.round(totalsData.totals.subtotal * 100), taxCents: Math.round(totalsData.totals.tax * 100), shippingCents: Math.round(totalsData.totals.shipping * 100), totalCents: Math.round(totalsData.totals.total * 100), totals: totalsData.totals })
+        body: JSON.stringify({
+            lineItems,
+            cart,
+            orderAmountCents: totals.totalCents,
+            subtotalCents: totals.subtotalCents,
+            taxCents: totals.taxCents,
+            shippingCents: totals.shippingCents,
+            totalCents: totals.totalCents
+        })
     });
     const payload = await response.json().catch(() => ({}));
     if (!response.ok || !payload.clientSecret) throw new Error(payload.error || 'Unable to initialize express checkout.');
-    expressCheckoutCache.totals = totalsData.totals;
+    expressCheckoutCache.totals = totals;
     return payload.clientSecret;
 }
 
@@ -578,6 +589,7 @@ async function getExpressCheckoutClientSecret(container = document, options = {}
 
 function prewarmExpressCheckout(container = document, options = {}) {
     if (!cart.length) return;
+    invalidateExpressCheckoutCache();
     if (!expressCheckoutReadyPromise) {
         expressCheckoutReadyPromise = Promise.resolve()
             .then(() => preloadStripe())
@@ -1052,7 +1064,7 @@ function openCart(showForm = false) {
     }
     populateCartModal();
     modal.style.display = 'flex';
-    setTimeout(() => { mountExpressCheckout(modal); }, 0);
+    setTimeout(() => { mountExpressCheckout(modal, { context: 'cart-popup', forceEstimate: true }); }, 0);
     if (cart.length === 0) {
         const msg = modal.querySelector('.cart-empty-message');
         if (msg) {
@@ -1345,7 +1357,7 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
             event.preventDefault();
             event.stopPropagation();
             if (btn.dataset.method === "express") {
-                mountExpressCheckout(modal);
+                mountExpressCheckout(modal, { context: 'cart-popup', forceEstimate: true });
                 return;
             }
             handleExpressButtonClick(modal, btn.dataset.method);
@@ -1737,28 +1749,51 @@ function getCheckoutTotalsFromForm(form) {
 
 function getCurrentCheckoutTotalCents(container = document, options = {}) {
     const root = container && container.querySelector ? container : document;
-    const subtotalText = options.forceEstimate ? '' : root.querySelector('.total')?.textContent;
+    const preCheckoutContexts = new Set(['cart-popup', 'cart-page', 'checkout-form']);
+    const isPreCheckoutContext = options.forceEstimate === true || preCheckoutContexts.has(options.context || '');
+    const subtotalText = isPreCheckoutContext ? '' : root.querySelector('.total')?.textContent;
     const displayedTotal = parseCurrencyToNumber(subtotalText);
     if (displayedTotal > 0) {
-        const totals = {
-            subtotal: parseCurrencyToNumber(root.querySelector('.subtotal')?.textContent),
-            tax: parseCurrencyToNumber(root.querySelector('.tax')?.textContent),
-            shipping: parseCurrencyToNumber(root.querySelector('.shipping')?.textContent),
-            total: displayedTotal
-        };
+        const subtotal = parseCurrencyToNumber(root.querySelector('.subtotal')?.textContent);
+        const tax = parseCurrencyToNumber(root.querySelector('.tax')?.textContent);
+        const shipping = parseCurrencyToNumber(root.querySelector('.shipping')?.textContent);
+        const total = displayedTotal;
         return {
-            orderAmountCents: Math.round(displayedTotal * 100),
-            totals
+            subtotal,
+            tax,
+            shipping,
+            total,
+            subtotalCents: Math.round(subtotal * 100),
+            taxCents: Math.round(tax * 100),
+            shippingCents: Math.round(shipping * 100),
+            totalCents: Math.max(1, Math.round(total * 100))
         };
     }
-    const subtotal = cart.reduce((sum, item) => sum + (parseFloat(item.price) || 0) * (parseInt(item.quantity) || 1), 0);
+    return getEstimatedPreCheckoutTotals(container);
+}
+
+function getEstimatedPreCheckoutTotals(container = document) {
+    const subtotal = cart.reduce((sum, item) => {
+        const price = Number(item.price || item.unitPrice || 0);
+        const quantity = parseInt(item.quantity, 10) || 1;
+        return sum + price * quantity;
+    }, 0);
     const stateInput = container.querySelector ? container.querySelector('input[name="state"]') : null;
     const state = (stateInput?.value || '').trim().toUpperCase();
     const taxRate = state && stateTaxRates[state] !== undefined ? stateTaxRates[state] : defaultTaxRate;
     const tax = subtotal * taxRate;
     const shipping = shippingCost;
     const total = subtotal + tax + shipping;
-    return { orderAmountCents: Math.max(1, Math.round(total * 100)), totals: { subtotal, tax, shipping, total } };
+    return {
+        subtotal,
+        tax,
+        shipping,
+        total,
+        subtotalCents: Math.round(subtotal * 100),
+        taxCents: Math.round(tax * 100),
+        shippingCents: Math.round(shipping * 100),
+        totalCents: Math.max(1, Math.round(total * 100))
+    };
 }
 
 function setupFinalForm(form) {
