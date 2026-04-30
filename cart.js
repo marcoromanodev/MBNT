@@ -1032,6 +1032,7 @@ function addToCart(button) {
     localStorage.setItem('cart', JSON.stringify(cart));
     // TODO: sync with store server for inventory management
     updateCartCounter();
+    ensureCartTriggerBound();
     animateStar(button);
 }
 
@@ -2251,6 +2252,24 @@ function updateCartCounter() {
     }
 }
 
+function ensureCartTriggerBound() {
+    if (window.__mbntCartTriggerBound) return;
+    window.__mbntCartTriggerBound = true;
+
+    document.addEventListener('click', (event) => {
+        const cartTrigger = event.target.closest(
+            '#cart-icon, .cart-icon, [data-cart-trigger], .shopping-cart, .cart-link, .cart-counter'
+        );
+
+        if (!cartTrigger) return;
+        if (cartTrigger.closest('#cart-modal .cart-content')) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+        openCart();
+    });
+}
+
 function ensureCartCounter() {
     let counter = document.getElementById('cart-count')?.closest('.cart-counter');
     if (!counter) {
@@ -2281,7 +2300,7 @@ function ensureCartCounter() {
         }
     }
     counter.style.marginTop = '5px';
-    counter.addEventListener('click', () => openCart());
+    ensureCartTriggerBound();
 
     updateCartCounter();
 
@@ -2295,6 +2314,7 @@ function ensureCartCounter() {
 
 document.addEventListener('DOMContentLoaded', () => {
     initCart();
+    ensureCartTriggerBound();
     preloadStripe().catch(() => {});
     prewarmExpressCheckout(document, { context: 'cart-page', forceEstimate: true }).catch(() => {});
     const page = window.location.pathname.split('/').pop();
