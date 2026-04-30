@@ -618,37 +618,6 @@
                 <p class="stripe-payment-status"></p>
             </div>
             <p class="card-warning empty-cart-message" style="display:none;">Please complete your secure payment details.</p>
-            <div class="payment-option">
-                <input type="radio" name="payment-method" id="pay-apple" value="apple">
-                <label for="pay-apple">
-                    <span class="payment-label">Apple Pay</span>
-                    <span class="payment-logos"><img src="applepay.png" alt="Apple Pay"></span>
-                </label>
-            </div>
-            <div class="payment-option">
-                <input type="radio" name="payment-method" id="pay-paypal" value="paypal">
-                <label for="pay-paypal">
-                    <span class="payment-label">PayPal</span>
-                    <span class="payment-logos"><img src="paypal.png" alt="PayPal"></span>
-                </label>
-            </div>
-            <div class="payment-option shop-pay">
-                <input type="radio" name="payment-method" id="pay-shop" value="shop">
-                <label for="pay-shop">
-                    <span class="payment-label">
-                        <span>Shop Pay</span>
-                        <span class="subtext">Pay in full or in installments</span>
-                    </span>
-                    <span class="payment-logos"><img src="shoppay.png" alt="Shop Pay"></span>
-                </label>
-            </div>
-            <div class="payment-option">
-                <input type="radio" name="payment-method" id="pay-klarna" value="klarna">
-                <label for="pay-klarna">
-                    <span class="payment-label">Klarna - <span class="subtext">Flexible payments</span></span>
-                    <span class="payment-logos"><img src="klarna.png" alt="Klarna" class="klarna-logo"></span>
-                </label>
-            </div>
             <div id="payment-message"></div>
             <div class="remember-section">
                 <strong class="remember-heading">Remember me</strong>
@@ -739,7 +708,7 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
         const paymentRadios = document.querySelectorAll('input[name="payment-method"]');
         paymentRadios.forEach(r => {
             r.addEventListener('change', () => {
-                if (creditRadio.checked || document.getElementById('pay-apple')?.checked) {
+                if (creditRadio.checked) {
                     creditFields.style.display = 'block';
                 } else {
                     creditFields.style.display = 'none';
@@ -800,7 +769,7 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
         const paymentMsg = document.getElementById('payment-message');
 
         const getSelectedPaymentMethod = () => document.querySelector('input[name="payment-method"]:checked')?.value;
-        const requiresContactAndDeliveryDetails = () => ['credit', 'apple'].includes(getSelectedPaymentMethod());
+        const requiresContactAndDeliveryDetails = () => ['credit'].includes(getSelectedPaymentMethod());
 
 
         document.querySelectorAll('input[name="payment-method"]').forEach(input => {
@@ -811,28 +780,7 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
                     field.required = requiresContactAndDeliveryDetails();
                 });
                 if (!requiresContactAndDeliveryDetails() && emailWarning) emailWarning.style.display = 'none';
-                switch (input.value) {
-                    case 'apple':
-                        payBtn.textContent = 'Pay with Apple Pay';
-                        if (paymentMsg) {
-                            paymentMsg.innerHTML = '<div>Use Apple Pay in the secure form below to complete your purchase.</div>';
-                        }
-                        break;
-                    case 'paypal':
-                        payBtn.innerHTML = 'Pay now with <img src="paypal.png" alt="PayPal" class="paypal-inline">';
-                        if (paymentMsg) {
-                            paymentMsg.innerHTML = '<div class="redirect-icon">↗</div>After clicking "Pay with PayPal", you will be redirected to PayPal to complete your purchase securely.';
-                        }
-                        break;
-                    case 'klarna':
-                        payBtn.textContent = 'Pay now';
-                        if (paymentMsg) {
-                            paymentMsg.innerHTML = '<div class="redirect-icon">↗</div>After clicking "Pay now", you will be redirected to Klarna - Flexible payments to complete your purchase securely.';
-                        }
-                        break;
-                    default:
-                        payBtn.textContent = 'Pay now';
-                }
+                payBtn.textContent = 'Pay now';
             });
         });
 

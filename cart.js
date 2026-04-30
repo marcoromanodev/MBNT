@@ -522,8 +522,8 @@ async function mountExpressCheckout(container = document, options = {}) {
         });
         const expressCheckoutElement = elements.create("expressCheckout", {
             buttonHeight: 50,
-            buttonTheme: { applePay: "white-outline", googlePay: "white", paypal: "gold" },
-            buttonType: { applePay: "plain", googlePay: "pay", paypal: "paypal" }
+            buttonTheme: { applePay: "white-outline", googlePay: "white", link: "default", amazonPay: "gold", klarna: "default" },
+            paymentMethodOrder: ["apple_pay", "google_pay", "link", "amazon_pay", "klarna"]
         });
         expressCheckoutElement.mount(expressContainer);
         expressContainer.dataset.expressMounted = "true";
@@ -956,14 +956,6 @@ function createCartModal() {
             <div class="or">OR</div>
             <div class="express-checkout">
                 <h3>Express checkout</h3>
-                <div class="payment-icons" aria-label="Express payment options">
-                    <button class="pay-option pay-btn" data-method="express" type="button"><img src="/applepay.png" alt="Apple Pay"></button>
-                    <button class="pay-option pay-btn" data-method="Google Pay" type="button"><img src="/googlepay.png" alt="Google Pay"></button>
-                    <button class="pay-option pay-btn" data-method="Shop Pay" type="button"><img src="/shoppay.png" alt="Shop Pay"></button>
-                    <button class="pay-option pay-btn" data-method="PayPal" type="button"><img src="/paypal.png" alt="PayPal"></button>
-                    <button class="pay-option pay-btn" data-method="Klarna" type="button"><img class="klarna-logo" src="/klarna.png" alt="Klarna"></button>
-                    <button class="pay-option pay-btn" data-method="Venmo" type="button"><img src="/venmo.png" alt="Venmo"></button>
-                </div>
                 <div class="apple-pay-express-wrapper">
                     <div class="apple-pay-express-element"></div>
                     <div class="apple-pay-express-error" style="color:red; font-size:12px; margin-top:8px;"></div>
@@ -1062,37 +1054,6 @@ function createCartModal() {
                         <div class="stripe-payment-element" aria-label="Secure payment form"></div>
                     </div>
                     <p class="card-warning empty-cart-message" style="display:none;">Please complete your secure payment details.</p>
-                    <div class="payment-option">
-                        <input type="radio" name="payment-method" id="cart-pay-apple" value="apple">
-                        <label for="cart-pay-apple">
-                            <span class="payment-label">Apple Pay</span>
-                            <span class="payment-logos"><img src="/applepay.png" alt="Apple Pay"></span>
-                        </label>
-                    </div>
-                    <div class="payment-option">
-                        <input type="radio" name="payment-method" id="cart-pay-paypal" value="paypal">
-                        <label for="cart-pay-paypal">
-                            <span class="payment-label">PayPal</span>
-                            <span class="payment-logos"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></span>
-                        </label>
-                    </div>
-                    <div class="payment-option shop-pay">
-                        <input type="radio" name="payment-method" id="cart-pay-shop" value="shop">
-                        <label for="cart-pay-shop">
-                            <span class="payment-label">
-                                <span>Shop Pay</span>
-                                <span class="subtext">Pay in full or in installments</span>
-                            </span>
-                            <span class="payment-logos"><img src="/shoppay.png" alt="Shop Pay"></span>
-                        </label>
-                    </div>
-                    <div class="payment-option">
-                        <input type="radio" name="payment-method" id="cart-pay-klarna" value="klarna">
-                        <label for="cart-pay-klarna">
-                            <span class="payment-label">Klarna - <span class="subtext">Flexible payments</span></span>
-                            <span class="payment-logos"><img src="/klarna.png" alt="Klarna" class="klarna-logo"></span>
-                        </label>
-                    </div>
                     <div id="payment-message"></div>
                     <div class="remember-section">
                         <strong class="remember-heading">Remember me</strong>
@@ -1413,7 +1374,8 @@ function showCheckoutForm(root = document.getElementById('cart-modal')) {
     const count = root.querySelector('.item-count');
     if (count) count.style.display = 'none';
     root.querySelector('#checkout-form').style.display = 'block';
-    mountExpressCheckout(root);
+    const expressTotals = getCurrentCheckoutTotalCents(root);
+    mountExpressCheckout(root, expressTotals);
     const footer = root.querySelector('.cart-footer');
     if (footer) footer.style.display = 'block';
     const footerLinks = root.querySelector('.footer-links');
@@ -1497,7 +1459,8 @@ function showFinalPage(root = document.getElementById('cart-modal')) {
     const finalPage = root.querySelector('#final-checkout');
     if (finalPage) {
         finalPage.style.display = 'block';
-        mountExpressCheckout(root);
+        const expressTotals = getCurrentCheckoutTotalCents(root);
+        mountExpressCheckout(root, expressTotals);
         populateOrderSummary(finalPage);
         const bar = finalPage.querySelector('.order-summary-bar');
         const details = finalPage.querySelector('.order-summary-details.top-summary');
@@ -1556,6 +1519,36 @@ function getCheckoutTotalsFromForm(form) {
     return { subtotal, tax, shipping, total };
 }
 
+function getCurrentCheckoutTotalCents(container = document) {
+    const root = container && container.querySelector ? container : document;
+    const subtotalText = root.querySelector('.total')?.textContent;
+    const displayedTotal = parseCurrencyToNumber(subtotalText);
+    if (displayedTotal > 0) {
+        const totals = {
+            subtotal: parseCurrencyToNumber(root.querySelector('.subtotal')?.textContent),
+            tax: parseCurrencyToNumber(root.querySelector('.tax')?.textContent),
+            shipping: parseCurrencyToNumber(root.querySelector('.shipping')?.textContent),
+            total: displayedTotal
+        };
+        return {
+            orderAmountCents: Math.round(displayedTotal * 100),
+            totals
+        };
+    }
+    const subtotal = cart.reduce((sum, item) => sum + (parseFloat(item.price) || 0) * (parseInt(item.quantity) || 1), 0);
+    const stateInput = container.querySelector ? container.querySelector('input[name="state"]') : null;
+    const state = (stateInput?.value || '').trim().toUpperCase();
+    const taxRate = state && stateTaxRates[state] !== undefined ? stateTaxRates[state] : defaultTaxRate;
+    const tax = subtotal * taxRate;
+    const addressFilled = ['address', 'city', 'state', 'zip'].every(name => {
+        const input = container.querySelector ? container.querySelector(`input[name="${name}"]`) : null;
+        return input && input.value.trim();
+    });
+    const shipping = addressFilled ? shippingCost : 0;
+    const total = subtotal + tax + shipping;
+    return { orderAmountCents: Math.max(1, Math.round(total * 100)), totals: { subtotal, tax, shipping, total } };
+}
+
 function setupFinalForm(form) {
     if (!form) return;
     const payBtn = form.querySelector('#final-order-submit');
@@ -1588,15 +1581,6 @@ function setupFinalForm(form) {
                 creditFields.style.display = input.value === 'credit' ? 'block' : 'none';
                 if (input.value !== 'credit' && cardWarning) cardWarning.style.display = 'none';
             }
-            const finalCheckout = form.closest('#final-checkout');
-            const applePayExpressWrapper = finalCheckout ? finalCheckout.querySelector('.apple-pay-express-wrapper') : null;
-            const applePayBottomAction = finalCheckout ? finalCheckout.querySelector('.apple-pay-bottom-action') : null;
-            if (applePayExpressWrapper) {
-                applePayExpressWrapper.style.display = input.value === 'apple' ? 'block' : 'none';
-            }
-            if (applePayBottomAction) {
-                applePayBottomAction.style.display = input.value === 'apple' ? 'block' : 'none';
-            }
             if (input.value === 'credit') {
                 ensureEmbeddedPaymentReady(form).catch(err => {
                     if (cardWarning) {
@@ -1605,30 +1589,8 @@ function setupFinalForm(form) {
                     }
                 });
             }
-            switch (input.value) {
-                case 'apple':
-                    payBtn.style.display = 'none';
-                    {
-                        const totals = getCheckoutTotalsFromForm(form);
-                        const orderAmountCents = totals ? Math.round(totals.total * 100) : undefined;
-                        mountExpressCheckout(form.closest('#final-checkout') || form, { orderAmountCents, totals });
-                    }
-                    break;
-                case 'paypal':
-                    payBtn.innerHTML = 'Pay now with <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" class="paypal-inline">';
-                    paymentMsg.innerHTML = '<div class="redirect-icon">↗</div>After clicking "Pay with PayPal", you will be redirected to PayPal to complete your purchase securely.';
-                    break;
-                case 'shop':
-                    payBtn.textContent = 'Pay now';
-                    break;
-                case 'klarna':
-                    payBtn.textContent = 'Pay now';
-                    paymentMsg.innerHTML = '<div class="redirect-icon">↗</div>After clicking "Pay now", you will be redirected to Klarna - Flexible payments to complete your purchase securely.';
-                    break;
-                default:
-                    payBtn.style.display = 'block';
-                    payBtn.textContent = 'Pay now';
-            }
+            payBtn.style.display = 'block';
+            payBtn.textContent = 'Pay now';
         });
     });
 
