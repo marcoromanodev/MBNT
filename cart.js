@@ -932,10 +932,18 @@ function createCartModal() {
             </div>
             <div class="or">OR</div>
             <div class="express-checkout">
-  <h3>Express checkout</h3>
-  <div id="express-checkout-element"></div>
-  <div id="express-error" style="color:red; font-size:12px; margin-top:8px;"></div>
-</div>
+                <h3>Express checkout</h3>
+                <div class="payment-icons" aria-label="Express payment options">
+                    <button class="pay-option pay-btn" data-method="Apple Pay" type="button"><img src="/applepay.png" alt="Apple Pay"></button>
+                    <button class="pay-option pay-btn" data-method="Google Pay" type="button"><img src="/googlepay.png" alt="Google Pay"></button>
+                    <button class="pay-option pay-btn" data-method="Shop Pay" type="button"><img src="/shoppay.png" alt="Shop Pay"></button>
+                    <button class="pay-option pay-btn" data-method="PayPal" type="button"><img src="/paypal.png" alt="PayPal"></button>
+                    <button class="pay-option pay-btn" data-method="Klarna" type="button"><img class="klarna-logo" src="/klarna.png" alt="Klarna"></button>
+                    <button class="pay-option pay-btn" data-method="Venmo" type="button"><img src="/venmo.png" alt="Venmo"></button>
+                </div>
+                <div id="express-checkout-element"></div>
+                <div id="express-error" style="color:red; font-size:12px; margin-top:8px;"></div>
+            </div>
             <form id="checkout-form" style="display:none;">
                 <h3>Sign up and know first!</h3>
                 <div class="phone-input">
@@ -1029,7 +1037,7 @@ function createCartModal() {
                         <input type="radio" name="payment-method" id="cart-pay-apple" value="apple">
                         <label for="cart-pay-apple">
                             <span class="payment-label">Apple Pay</span>
-                            <span class="payment-logos"><img src="applepay.png" alt="Apple Pay"></span>
+                            <span class="payment-logos"><img src="/applepay.png" alt="Apple Pay"></span>
                         </label>
                     </div>
                     <div class="payment-option">
@@ -1046,14 +1054,14 @@ function createCartModal() {
                                 <span>Shop Pay</span>
                                 <span class="subtext">Pay in full or in installments</span>
                             </span>
-                            <span class="payment-logos"><img src="shoppay.png" alt="Shop Pay"></span>
+                            <span class="payment-logos"><img src="/shoppay.png" alt="Shop Pay"></span>
                         </label>
                     </div>
                     <div class="payment-option">
                         <input type="radio" name="payment-method" id="cart-pay-klarna" value="klarna">
                         <label for="cart-pay-klarna">
                             <span class="payment-label">Klarna - <span class="subtext">Flexible payments</span></span>
-                            <span class="payment-logos"><img src="klarna.png" alt="Klarna" class="klarna-logo"></span>
+                            <span class="payment-logos"><img src="/klarna.png" alt="Klarna" class="klarna-logo"></span>
                         </label>
                     </div>
                     <div id="payment-message"></div>
@@ -1071,7 +1079,7 @@ function createCartModal() {
                         <p class="remember-warning empty-cart-message" style="display:none;">Please provide a mobile phone number to continue or deselect this option.</p>
                         <div class="secure-row">
                             <span class="secure-text">Secure and encrypted</span>
-                            <div class="shop-logo"><img src="shoppayhalf.png" alt="Shop Pay"></div>
+                            <div class="shop-logo"><img src="/shoppayhalf.png" alt="Shop Pay"></div>
                         </div>
                     </div>
                     <div class="order-summary-bar">
@@ -1500,7 +1508,7 @@ function setupFinalForm(form) {
     const emailWarning = form.querySelector('.email-warning');
     const creditRadio = form.querySelector('input[name="payment-method"][value="credit"]');
     const getSelectedPaymentMethod = () => form.querySelector('input[name="payment-method"]:checked')?.value;
-    const requiresContactAndDeliveryDetails = () => getSelectedPaymentMethod() === 'credit';
+    const requiresContactAndDeliveryDetails = () => ['credit', 'apple'].includes(getSelectedPaymentMethod());
     const addressInputs = form.querySelectorAll('input[name="first_name"], input[name="last_name"], input[name="address"], input[name="city"], input[name="state"], input[name="zip"]');
     const fieldWarnings = {};
     form.querySelectorAll('.field-warning').forEach(p => { fieldWarnings[p.dataset.field] = p; });
@@ -1519,10 +1527,10 @@ function setupFinalForm(form) {
             });
             if (emailWarning) emailWarning.style.display = 'none';
             if (creditFields) {
-                creditFields.style.display = input.value === 'credit' ? 'block' : 'none';
-                if (input.value !== 'credit' && cardWarning) cardWarning.style.display = 'none';
+                creditFields.style.display = ['credit', 'apple'].includes(input.value) ? 'block' : 'none';
+                if (!['credit', 'apple'].includes(input.value) && cardWarning) cardWarning.style.display = 'none';
             }
-            if (input.value === 'credit') {
+            if (['credit', 'apple'].includes(input.value)) {
                 ensureEmbeddedPaymentReady(form).catch(err => {
                     if (cardWarning) {
                         cardWarning.textContent = err.message || 'Unable to load secure payment form.';
@@ -1728,7 +1736,7 @@ function setupFinalForm(form) {
             phoneInput.value = '+1' + phoneInput.value;
         }
         const selectedPayment = form.querySelector('input[name="payment-method"]:checked')?.value || 'credit';
-        if (selectedPayment === 'credit') {
+        if (selectedPayment === 'credit' || selectedPayment === 'apple') {
             submitEmbeddedPayment(form, paymentMsg).catch(err => {
                 if (cardWarning) {
                     cardWarning.textContent = err.message || 'Unable to complete payment.';
