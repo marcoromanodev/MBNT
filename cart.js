@@ -510,30 +510,31 @@ function isElementVisible(el) {
     return !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length);
 }
 
-function getExpressCheckoutSignature(container = document) {
-    const { orderAmountCents, totals } = getCurrentCheckoutTotalCents(container);
+function getExpressCheckoutSignature(container = document, options = {}) {
+    const { orderAmountCents } = getCurrentCheckoutTotalCents(container, options);
     return JSON.stringify({
         cart: cart.map((item) => ({
             id: item.id || item.name || item.product,
             price: item.price,
             quantity: item.quantity || 1
         })),
-        totals,
-        totalCents: orderAmountCents
+        wallet: options.wallet || 'all',
+        totalCents: orderAmountCents,
+        context: options.context || 'default'
     });
 }
 
-async function createExpressCheckoutPaymentIntent(container = document) {
+async function createExpressCheckoutPaymentIntent(container = document, options = {}) {
     await loadStripeConfig();
     const { lineItems, missing } = buildStripeLineItems();
     if (missing.length) throw new Error(`Stripe price IDs missing for: ${missing.join(', ')}.`);
     const paymentIntentEndpoint = buildPaymentIntentEndpoint(stripeSettings.checkoutEndpoint);
     if (!paymentIntentEndpoint) throw new Error('Stripe payment intent endpoint is not configured.');
-    const totalsData = getCurrentCheckoutTotalCents(container);
+    const totalsData = getCurrentCheckoutTotalCents(container, options);
     const response = await fetch(paymentIntentEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ lineItems, cart, orderAmountCents: totalsData.orderAmountCents, totals: totalsData.totals })
+        body: JSON.stringify({ lineItems, cart, orderAmountCents: totalsData.orderAmountCents, subtotalCents: Math.round(totalsData.totals.subtotal * 100), taxCents: Math.round(totalsData.totals.tax * 100), shippingCents: Math.round(totalsData.totals.shipping * 100), totalCents: Math.round(totalsData.totals.total * 100), totals: totalsData.totals })
     });
     const payload = await response.json().catch(() => ({}));
     if (!response.ok || !payload.clientSecret) throw new Error(payload.error || 'Unable to initialize express checkout.');
@@ -541,13 +542,13 @@ async function createExpressCheckoutPaymentIntent(container = document) {
     return payload.clientSecret;
 }
 
-async function getExpressCheckoutClientSecret(container = document) {
-    const signature = getExpressCheckoutSignature(container);
+async function getExpressCheckoutClientSecret(container = document, options = {}) {
+    const signature = getExpressCheckoutSignature(container, options);
     if (expressCheckoutCache.signature === signature && expressCheckoutCache.clientSecret) return expressCheckoutCache.clientSecret;
     if (expressCheckoutCache.signature === signature && expressCheckoutCache.promise) return expressCheckoutCache.promise;
     expressCheckoutCache.signature = signature;
     expressCheckoutCache.clientSecret = '';
-    expressCheckoutCache.promise = createExpressCheckoutPaymentIntent(container)
+    expressCheckoutCache.promise = createExpressCheckoutPaymentIntent(container, options)
         .then((clientSecret) => {
             expressCheckoutCache.clientSecret = clientSecret;
             return clientSecret;
@@ -564,7 +565,7 @@ function prewarmExpressCheckout(container = document) {
 }
 
 
-async function mountExpressCheckout(container = document) {
+async function mountExpressCheckout(container = document, options = {}) {
     const expressContainer =
         container.querySelector('.apple-pay-express-element') ||
         container.querySelector('#express-checkout-element');
@@ -579,15 +580,15 @@ async function mountExpressCheckout(container = document) {
         return;
     }
     if (!isElementVisible(expressContainer)) {
-        requestAnimationFrame(() => mountExpressCheckout(container));
+        requestAnimationFrame(() => mountExpressCheckout(container, options));
         return;
     }
-    const signature = getExpressCheckoutSignature(container);
+    const signature = getExpressCheckoutSignature(container, options);
     if (expressContainer.dataset.expressMounted === 'true' && expressContainer.dataset.expressSignature === signature) return;
     expressContainer.dataset.expressMounted = 'mounting';
     try {
         const stripe = await getStripe();
-        const clientSecret = await getExpressCheckoutClientSecret(container);
+        const clientSecret = await getExpressCheckoutClientSecret(container, options);
         const elements = stripe.elements({ clientSecret, appearance: { theme: 'stripe', variables: { colorText: '#000000', fontFamily: "'Courier New', Courier, monospace" } } });
         const expressCheckoutElement = elements.create('expressCheckout', {
             buttonHeight: 50,
@@ -620,13 +621,35 @@ async function mountExpressCheckout(container = document) {
 
 
 
-async function mountApplePayBottomAction(form) {
-    const wrapper = form.querySelector('.apple-pay-bottom-action');
+async function mountWalletExpressCheckout(form, wallet = 'apple') {
+    const wrapper = form.querySelector('.wallet-bottom-action');
     if (!wrapper) return false;
+    const expressContainer = wrapper.querySelector('.wallet-express-element');
+    const expressError = wrapper.querySelector('.wallet-express-error');
+    if (!expressContainer) return false;
     wrapper.style.display = 'block';
-    await mountExpressCheckout(wrapper, getCurrentCheckoutTotalCents(form));
-    const expressContainer = wrapper.querySelector('.apple-pay-express-element');
-    return !!(expressContainer && expressContainer.dataset.expressMounted === 'true' && expressContainer.style.display !== 'none');
+    expressContainer.innerHTML = '';
+    if (expressError) expressError.textContent = '';
+    try {
+        const stripe = await getStripe();
+        const clientSecret = await getExpressCheckoutClientSecret(form, { wallet, context: 'wallet-bottom' });
+        const elements = stripe.elements({ clientSecret, appearance: { theme: 'stripe', variables: { colorText: '#000000', fontFamily: "'Courier New', Courier, monospace" } } });
+        let element;
+        try {
+            element = elements.create('expressCheckout', { buttonHeight: 50, paymentMethods: { applePay: wallet === 'apple' ? 'always' : 'never', googlePay: wallet === 'google' ? 'always' : 'never', amazonPay: wallet === 'amazon' ? 'always' : 'never', link: 'auto', klarna: 'never', paypal: 'never' }, buttonTheme: { applePay: 'white-outline', googlePay: 'white', amazonPay: 'gold', link: 'black' } });
+        } catch (_) {
+            element = elements.create('expressCheckout', { buttonHeight: 50, paymentMethods: { link: 'auto' }, buttonTheme: { link: 'black' } });
+        }
+        element.mount(expressContainer);
+        element.on('confirm', async () => {
+            const { error } = await stripe.confirmPayment({ elements, confirmParams: { return_url: new URL(stripeSettings.successUrl || '/success.html', window.location.origin).toString() } });
+            if (error && expressError) expressError.textContent = error.message || 'Wallet checkout failed.';
+        });
+        return true;
+    } catch (error) {
+        if (expressError) expressError.textContent = error.message || 'Unable to load wallet checkout.';
+        return false;
+    }
 }
 
 const stripeEmbeddedState = {
@@ -1040,7 +1063,7 @@ function createCartModal() {
             <div class="or">OR</div>
             <div class="express-checkout">
                 <h3>Express checkout</h3>
-                <div class="apple-pay-express-wrapper">
+                <div class="express-checkout-container" data-express-context="checkout-form">
                     <div class="apple-pay-express-element"></div>
                     <div class="apple-pay-express-error" style="color:red; font-size:12px; margin-top:8px;"></div>
                 </div>
@@ -1055,7 +1078,7 @@ function createCartModal() {
                 <p class="consent-text">By submitting this form, you consent to receive informational (eg, order updates) and/or marketing texts (eg, cart reminders) from maybenot.com including texts sent by autodialer. Consent is not a condition of purchase. Msg & data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available). Privacy Policy & Terms.</p>
                 <button type="button" class="signup-btn">Sign Up</button>
                 <h3>Express checkout</h3>
-        <div class="apple-pay-express-wrapper">
+        <div class="express-checkout-container" data-express-context="checkout-form">
                     <div class="apple-pay-express-element"></div>
                     <div class="apple-pay-express-error" style="color:red; font-size:12px; margin-top:8px;"></div>
                 </div>
@@ -1085,7 +1108,7 @@ function createCartModal() {
                     <p class="consent-text">By submitting this form, you consent to receive informational (eg, order updates) and/or marketing texts (eg, cart reminders) from maybenot.com including texts sent by autodialer. Consent is not a condition of purchase. Msg & data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available). Privacy Policy & Terms.</p>
                     <button type="button" class="signup-btn">Sign Up</button>
                     <h3>Express checkout</h3>
-        <div class="apple-pay-express-wrapper">
+        <div class="express-checkout-container" data-express-context="checkout-form">
                     <div class="apple-pay-express-element"></div>
                     <div class="apple-pay-express-error" style="color:red; font-size:12px; margin-top:8px;"></div>
                 </div>
@@ -1146,6 +1169,20 @@ function createCartModal() {
                         </label>
                     </div>
                     <div class="payment-option">
+                        <input type="radio" name="payment-method" id="cart-pay-google" value="google">
+                        <label for="cart-pay-google">
+                            <span class="payment-label">Google Pay</span>
+                            <span class="payment-logos"><span>G Pay</span></span>
+                        </label>
+                    </div>
+                    <div class="payment-option">
+                        <input type="radio" name="payment-method" id="cart-pay-amazon" value="amazon">
+                        <label for="cart-pay-amazon">
+                            <span class="payment-label">Amazon Pay</span>
+                            <span class="payment-logos"><span>Amazon Pay</span></span>
+                        </label>
+                    </div>
+                    <div class="payment-option">
                         <input type="radio" name="payment-method" id="cart-pay-klarna" value="klarna">
                         <label for="cart-pay-klarna">
                             <span class="payment-label">Klarna - <span class="subtext">Flexible payments</span></span>
@@ -1191,10 +1228,10 @@ ALL SALES FINAL. NO EXCHANGES OR RETURNS</p>
                             <div><strong>Total</strong><strong class="total">$0.00</strong></div>
                         </div>
                     </div>
-                    <div class="apple-pay-bottom-action" style="display:none;">
-  <div class="apple-pay-express-element"></div>
-  <div class="apple-pay-express-error" style="color:red; font-size:12px; margin-top:8px;"></div>
-</div>
+                    <div class="wallet-bottom-action" style="display:none;">
+                        <div class="wallet-express-element"></div>
+                        <div class="wallet-express-error" style="color:red; font-size:12px; margin-top:8px;"></div>
+                    </div>
                     <button id="final-order-submit" type="submit">Pay now</button>
                     <p id="remember-message" style="display:none;">Your info will be saved to a Shop account. By continuing, you agree to Shop’s <a href="https://shop.app/terms-of-service" target="_blank" style="color:red;">Terms of Service</a> and acknowledge the <a href="https://www.shopify.com/legal/privacy/consumers" target="_blank" style="color:red;">Privacy Policy</a>.</p>
                 </form>
@@ -1479,8 +1516,7 @@ function showCheckoutForm(root = document.getElementById('cart-modal')) {
     const count = root.querySelector('.item-count');
     if (count) count.style.display = 'none';
     root.querySelector('#checkout-form').style.display = 'block';
-    const expressTotals = getCurrentCheckoutTotalCents(root);
-    mountExpressCheckout(root, expressTotals);
+    mountExpressCheckout(root, { forceEstimate: true, context: 'cart-popup-precheckout' });
     const footer = root.querySelector('.cart-footer');
     if (footer) footer.style.display = 'block';
     const footerLinks = root.querySelector('.footer-links');
@@ -1564,8 +1600,7 @@ function showFinalPage(root = document.getElementById('cart-modal')) {
     const finalPage = root.querySelector('#final-checkout');
     if (finalPage) {
         finalPage.style.display = 'block';
-        const expressTotals = getCurrentCheckoutTotalCents(root);
-        mountExpressCheckout(root, expressTotals);
+        mountExpressCheckout(root, { forceEstimate: true, context: 'cart-page-precheckout' });
         populateOrderSummary(finalPage);
         const bar = finalPage.querySelector('.order-summary-bar');
         const details = finalPage.querySelector('.order-summary-details.top-summary');
@@ -1624,9 +1659,9 @@ function getCheckoutTotalsFromForm(form) {
     return { subtotal, tax, shipping, total };
 }
 
-function getCurrentCheckoutTotalCents(container = document) {
+function getCurrentCheckoutTotalCents(container = document, options = {}) {
     const root = container && container.querySelector ? container : document;
-    const subtotalText = root.querySelector('.total')?.textContent;
+    const subtotalText = options.forceEstimate ? '' : root.querySelector('.total')?.textContent;
     const displayedTotal = parseCurrencyToNumber(subtotalText);
     if (displayedTotal > 0) {
         const totals = {
@@ -1645,10 +1680,6 @@ function getCurrentCheckoutTotalCents(container = document) {
     const state = (stateInput?.value || '').trim().toUpperCase();
     const taxRate = state && stateTaxRates[state] !== undefined ? stateTaxRates[state] : defaultTaxRate;
     const tax = subtotal * taxRate;
-    const addressFilled = ['address', 'city', 'state', 'zip'].every(name => {
-        const input = container.querySelector ? container.querySelector(`input[name="${name}"]`) : null;
-        return input && input.value.trim();
-    });
     const shipping = shippingCost;
     const total = subtotal + tax + shipping;
     return { orderAmountCents: Math.max(1, Math.round(total * 100)), totals: { subtotal, tax, shipping, total } };
@@ -1673,7 +1704,7 @@ function setupFinalForm(form) {
     const signupPhone = form.querySelector('input[name="signup_phone"]');
 
     const paymentMethodInputs = form.querySelectorAll('input[name="payment-method"]');
-    const appleBottomAction = form.querySelector('.apple-pay-bottom-action');
+    const walletBottomAction = form.querySelector('.wallet-bottom-action');
 
     paymentMethodInputs.forEach(input => {
         input.addEventListener('change', () => {
@@ -1695,11 +1726,11 @@ function setupFinalForm(form) {
                     }
                 });
             }
-            if (appleBottomAction) appleBottomAction.style.display = 'none';
+            if (walletBottomAction) walletBottomAction.style.display = 'none';
             payBtn.style.display = 'block';
             payBtn.textContent = 'Pay now';
-            if (input.value === 'apple') {
-                mountApplePayBottomAction(form).then((mounted) => {
+            if (['apple', 'google', 'amazon'].includes(input.value)) {
+                mountWalletExpressCheckout(form, input.value).then((mounted) => {
                     if (mounted) payBtn.style.display = 'none';
                 }).catch(() => {
                     payBtn.style.display = 'block';
@@ -1886,7 +1917,7 @@ function setupFinalForm(form) {
             phoneInput.value = '+1' + phoneInput.value;
         }
         const selectedPayment = form.querySelector('input[name="payment-method"]:checked')?.value || 'credit';
-        if (selectedPayment === 'apple') {
+        if (['apple', 'google', 'amazon'].includes(selectedPayment)) {
             return;
         }
         if (selectedPayment === 'credit') {
@@ -1901,6 +1932,8 @@ function setupFinalForm(form) {
 
         const methodMap = {
             apple: 'Apple Pay',
+            google: 'Google Pay',
+            amazon: 'Amazon Pay',
             paypal: 'PayPal',
             shop: 'Shop Pay',
             klarna: 'Klarna'
