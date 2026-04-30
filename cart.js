@@ -490,12 +490,29 @@ let expressCheckoutCache = {
     promise: null,
     totals: null
 };
+let stripeInstancePromise = null;
+let expressCheckoutReadyPromise = null;
+
+function preloadStripe() {
+    if (!stripeInstancePromise) {
+        stripeInstancePromise = loadStripeConfig()
+            .then(() => loadStripeJs())
+            .then(() => getStripe())
+            .catch((error) => {
+                console.error("Stripe preload failed:", error);
+                stripeInstancePromise = null;
+                throw error;
+            });
+    }
+    return stripeInstancePromise;
+}
 
 function invalidateExpressCheckoutCache() {
     expressCheckoutCache.signature = "";
     expressCheckoutCache.clientSecret = "";
     expressCheckoutCache.promise = null;
     expressCheckoutCache.totals = null;
+    expressCheckoutReadyPromise = null;
     document.querySelectorAll('.apple-pay-express-element, #express-checkout-element').forEach((el) => {
         delete el.dataset.expressMounted;
         delete el.dataset.expressSignature;
@@ -525,7 +542,7 @@ function getExpressCheckoutSignature(container = document, options = {}) {
 }
 
 async function createExpressCheckoutPaymentIntent(container = document, options = {}) {
-    await loadStripeConfig();
+    await preloadStripe();
     const { lineItems, missing } = buildStripeLineItems();
     if (missing.length) throw new Error(`Stripe price IDs missing for: ${missing.join(', ')}.`);
     const paymentIntentEndpoint = buildPaymentIntentEndpoint(stripeSettings.checkoutEndpoint);
@@ -561,7 +578,16 @@ async function getExpressCheckoutClientSecret(container = document, options = {}
 
 function prewarmExpressCheckout(container = document, options = {}) {
     if (!cart.length) return;
-    getExpressCheckoutClientSecret(container, options).catch((err) => console.warn('Express Checkout prewarm skipped:', err.message));
+    if (!expressCheckoutReadyPromise) {
+        expressCheckoutReadyPromise = Promise.resolve()
+            .then(() => preloadStripe())
+            .then(() => getExpressCheckoutClientSecret(container, options))
+            .finally(() => {
+                expressCheckoutReadyPromise = null;
+            });
+    }
+    expressCheckoutReadyPromise.catch((err) => console.warn('Express Checkout prewarm skipped:', err.message));
+    return expressCheckoutReadyPromise;
 }
 
 
@@ -593,8 +619,7 @@ async function mountExpressCheckout(container = document, options = {}) {
     if (expressContainer.dataset.expressMounted === 'true' && expressContainer.dataset.expressSignature === signature) return;
     expressContainer.dataset.expressMounted = 'mounting';
     try {
-        await loadStripeConfig();
-        const stripe = await getStripe();
+        const stripe = await preloadStripe();
         const clientSecret = await getExpressCheckoutClientSecret(container, options);
         const elements = stripe.elements({ clientSecret, appearance: { theme: 'stripe', variables: { colorText: '#000000', fontFamily: "'Courier New', Courier, monospace" } } });
         const expressCheckoutElement = elements.create('expressCheckout', {
@@ -635,11 +660,10 @@ async function mountWalletExpressCheckout(form, wallet = 'apple') {
     const expressError = wrapper.querySelector('.wallet-express-error');
     if (!expressContainer) return false;
     wrapper.style.display = 'block';
-    expressContainer.innerHTML = '';
+    expressContainer.innerHTML = '<div style="font-size:12px;color:#666;padding:6px 0;">Loading express checkout...</div>';
     if (expressError) expressError.textContent = '';
     try {
-        await loadStripeConfig();
-        const stripe = await getStripe();
+        const stripe = await preloadStripe();
         const clientSecret = await getExpressCheckoutClientSecret(form, { wallet, context: 'wallet-bottom' });
         const elements = stripe.elements({ clientSecret, appearance: { theme: 'stripe', variables: { colorText: '#000000', fontFamily: "'Courier New', Courier, monospace" } } });
         let element;
@@ -909,7 +933,8 @@ function initCart() {
     document.querySelectorAll('#final-checkout').forEach(section => {
         populateOrderSummary(section);
     });
-    prewarmExpressCheckout(document);
+    preloadStripe().catch(() => {});
+    prewarmExpressCheckout(document, { context: 'cart-page', forceEstimate: true }).catch(() => {});
 }
 
 // animate a star from the clicked button to the cart icon
@@ -991,6 +1016,7 @@ function addToCart(button) {
     };
     cart.push(product);
     invalidateExpressCheckoutCache();
+    prewarmExpressCheckout(document, { context: 'cart-page', forceEstimate: true }).catch(() => {});
     localStorage.setItem('cart', JSON.stringify(cart));
     // TODO: sync with store server for inventory management
     updateCartCounter();
@@ -1016,6 +1042,7 @@ function removeFromCart(index) {
         populateOrderSummary(section);
     });
     prewarmExpressCheckout(document);
+    prewarmExpressCheckout(document, { context: 'cart-page', forceEstimate: true }).catch(() => {});
 }
 
 function openCart(showForm = false) {
@@ -2233,6 +2260,8 @@ function ensureCartCounter() {
 
 document.addEventListener('DOMContentLoaded', () => {
     initCart();
+    preloadStripe().catch(() => {});
+    prewarmExpressCheckout(document, { context: 'cart-page', forceEstimate: true }).catch(() => {});
     const page = window.location.pathname.split('/').pop();
     if (page !== 'cart.html' && page !== 'checkout.html') {
         ensureCartCounter();
@@ -2266,15 +2295,15 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Cart page Express Checkout mount failed:', error);
         });
         setTimeout(() => {
-            loadStripeConfig().then(() => loadStripeJs()).then(() => getStripe()).catch(console.warn);
-            prewarmExpressCheckout(document, { context: 'cart-page', forceEstimate: true });
+            preloadStripe().catch(console.warn);
+            prewarmExpressCheckout(document, { context: 'cart-page', forceEstimate: true }).catch(() => {});
         }, 0);
         return;
     }
 
     setTimeout(() => {
-        loadStripeConfig().then(() => loadStripeJs()).then(() => getStripe()).catch(console.warn);
-        prewarmExpressCheckout(document);
+        preloadStripe().catch(console.warn);
+        prewarmExpressCheckout(document, { context: 'cart-page', forceEstimate: true }).catch(() => {});
         mountExpressCheckout(document);
     }, 0);
 });
