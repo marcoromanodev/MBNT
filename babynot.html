@@ -3,84 +3,533 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="BabyNot | MaybeNot Shop">
-    <title>BabyNot</title>
+    <meta name="description" content="MaybeNot Shop BabyNot">
+    <title>MaybeNot Shop - BabyNot</title>
     <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="196x196">
     <style>
-        body, html { margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; background-color: #f7f7f7; color: #000; min-height: 100vh; }
-        .header-container { width: 100%; padding: 0 10px 10px; background-color: #f7f7f7; display: flex; flex-direction: column; align-items: center; position: sticky; top: 0; z-index: 1000; }
-        .logo-container { position: relative; width: 20vw; height: 10vh; margin-top: 0; }
-        .logo-overlay { position: absolute; inset: 0; cursor: pointer; z-index: 10; }
-        iframe { width: 100%; height: 100%; border: none; }
-        .time, .cart-counter { font-size: 0.7rem; font-weight: 600; text-align: center; }
-        .time { margin-top: 0; }
-        .cart-counter { margin-top: 5px; }
-        .header-line { border-top: 1px solid #000; margin-top: 10px; width: 100%; }
-        .desktop-nav { display: none; width: 100%; text-align: center; margin-top: 20px; }
-        .desktop-nav ul, .mobile-nav ul { list-style: none; padding: 0; margin: 0; }
-        .desktop-nav ul li { margin: 4px 0; }
-        .desktop-nav a { color: #000; text-decoration: none; display: inline-block; padding: 5px 0; width: 100%; font-weight: 600; }
-        .desktop-nav a:hover, .desktop-nav a:focus, .desktop-nav a:active, .desktop-nav a.active { border: 2px solid red; color: red; background-color: white; }
-        .mobile-nav { display: block; width: 100%; margin-top: 20px; }
-        .mobile-nav li { padding: 10px 20px; text-align: left; border-bottom: 1px solid #e0e0e0; }
-        .mobile-nav a { display: block; text-decoration: none; color: #000; padding: 10px; }
-        .mobile-nav a:hover, .mobile-nav a:focus, .mobile-nav a:active, .mobile-nav a.active { background-color: red; color: white; }
-        .page-content { max-width: 1100px; margin: 20px auto 40px; padding: 0 20px; text-align: center; }
-        h1 { font-size: 2rem; margin-bottom: 8px; }
-        .subtitle { font-size: 0.9rem; margin-bottom: 30px; }
-        .product-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
-        .product-card { border: 1px solid #000; padding: 12px; background: #fff; }
-        .product-card img { width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover; }
-        .product-card h2 { font-size: 1rem; margin: 12px 0 4px; }
-        .price { font-size: 0.9rem; margin: 0 0 10px; }
-        .coming-soon { font-family: 'Courier New', Courier, monospace; font-size: 0.8rem; background: #fff; color: #000; border: 1px solid #000; padding: 8px 12px; cursor: pointer; }
-        .coming-soon:hover { background: red; color: #fff; }
-        footer { width: 100%; text-align: center; background-color: #f7f7f7; padding: 8px 0; margin-top: 20px; }
-        .footer-links { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; }
-        .footer-line { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; width: min(90%, 820px); font-size: 0.65rem; letter-spacing: 0.02rem; padding-bottom: 10px; }
-        .footer-links a, .full-site-link a { color: #000; text-decoration: none; }
-        .footer-links a:hover, .footer-links a:focus, .footer-links a:active, .full-site-link a:hover { border: 2px solid red; color: red; background-color: white; }
-        .full-site-link { display: block; width: 100%; text-align: center; padding: 10px; background-color: #f7f7f7; }
-        @media (max-width: 1024px) { .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-        @media (max-width: 768px) {
-            .desktop-nav { display: none; }
-            .logo-container { left: 50%; transform: translateX(-50%); }
-            .product-grid { grid-template-columns: 1fr; }
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #f7f7f7;
+            color: #000;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        @media (min-width: 769px) { .desktop-nav { display: block; } .mobile-nav { display: none; } }
-    </style>
+
+        .header-container {
+            width: 100%;
+            padding: 0 10px 10px;
+            background-color: #f7f7f7;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .logo-container {
+            position: relative;
+            width: 20vw;
+            height: 15vh;
+            margin-top: 0;
+        }
+
+        .logo-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .time {
+            font-size: 0.7rem;
+            text-align: center;
+            margin-top: -15px;
+            font-weight: 600;
+        }
+
+        .header-line {
+            border-top: 1px solid #000;
+            margin-top: 5px;
+            width: 100%;
+        }
+
+        .cart-counter {
+            margin-top:5px;
+            font-size:0.7rem;
+            text-align:center;
+            font-weight:600;
+        }
+
+        /* Mobile Navigation */
+        .mobile-nav {
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+            flex-shrink: 0;
+            position: static;
+            clear: both;
+        }
+
+        nav.mobile-nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+        }
+
+        nav.mobile-nav ul li {
+            margin: 0;
+            padding: 10px 20px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        nav.mobile-nav ul li a {
+            display: block;
+            text-decoration: none;
+            color: #000;
+            padding: 10px;
+        }
+
+        nav.mobile-nav ul li a:hover,
+        nav.mobile-nav ul li a:focus,
+        nav.mobile-nav ul li a:active {
+            background-color: red;
+            color: white;
+        }
+
+        /* Desktop Navigation */
+        .desktop-nav {
+            display: none;
+            width: 100%;
+            text-align: center;
+            margin-top: 20px;
+            flex-shrink: 0;
+            position: static;
+            clear: both;
+        }
+
+        .desktop-nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .desktop-nav ul li {
+            margin: 4px 0;
+        }
+
+        .desktop-nav ul li a {
+            color: #000;
+            text-decoration: none;
+            display: inline-block;
+            padding: 5px 0;
+            width: 100%;
+            font-weight: 600;
+        }
+
+        .desktop-nav ul li a:hover,
+        .desktop-nav ul li a:focus,
+        .desktop-nav ul li a:active {
+            border: 2px solid red;
+            color: red;
+            background-color: white;
+        }
+
+        /* Product grid */
+        .product-section {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .product-grid {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            margin-top: 20px;
+            flex-shrink: 0;
+        }
+
+        .product-item {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            aspect-ratio: 1/1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .product-item a {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .product-item img {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            object-position: center;
+            display: block;
+            margin: 0 auto;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));
+        }
+
+        .product-item img.camo-hat-thumb {
+            max-width: 78%;
+            max-height: 78%;
+        }
+
+        .product-item img.trucker-hat-thumb {
+            max-width: 68%;
+            max-height: 68%;
+        }
+
+        .coming-soon {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        @media (min-width: 768px) {
+            .product-grid {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .product-item {
+                flex: 1 1 400px;
+                max-width: 400px;
+                margin: 10px;
+            }
+        }
+
+        .product-info {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1;
+            box-sizing: border-box;
+        }
+
+        .product-item:hover .product-info,
+        .product-item:focus .product-info,
+        .product-item:active .product-info {
+            opacity: 1;
+            outline: 2px solid red;
+            outline-offset: -2px;
+        }
+
+        /* Footer Links styling */
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            background-color: #f7f7f7;
+        }
+
+        .footer-line {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding-bottom: 10px;
+        }
+
+        .footer-line.extra-padding {
+            padding-bottom: 10px;
+        }
+
+        .footer-line.less-padding {
+            padding-bottom: 25px;
+        }
+
+        .footer-links a {
+            color: #000;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-links a:hover,
+        .footer-links a:focus,
+        .footer-links a:active {
+            color: red;
+            border: 2px solid red;
+            background: white;
+        }
+
+        .full-site-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .product-info {
+            pointer-events: none;
+        }
+        .product-info button {
+            pointer-events: auto;
+            margin-top: 5px;
+            font-family: 'Courier New', Courier, monospace;
+            cursor: pointer;
+            background: #fff;
+            color: #000;
+            border: 1px solid #000;
+        }
+        .product-info button:hover {
+            background: red;
+            color: #fff;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .pagination a {
+            text-decoration: none;
+            background-color: #000;
+            color: #fff;
+            border: 1px solid #000;
+            padding: 10px 20px;
+        }
+        .pagination a:hover,
+        .pagination a:focus,
+        .pagination a:active {
+            background-color: red;
+            color: #fff;
+        }
+        .header-container { position: sticky; top: 0; z-index: 1000; }
+    .logo-container { height: 10vh; }
+    .time { margin-top: -5px; }
+    .cart-counter { margin-top: 5px; }
+</style>
 </head>
 <body>
+
 <header class="header-container">
     <div class="logo-container">
-        <iframe src="https://www.vectary.com/viewer/v1/?model=8b9281ad-097b-4408-88e2-ef824efa63eb&env=studio3&turntable=1" frameborder="0"></iframe>
+        <iframe id="8b9281ad-097b-4408-88e2-ef824efa63eb" src="https://www.vectary.com/viewer/v1/?model=8b9281ad-097b-4408-88e2-ef824efa63eb&env=studio3&turntable=1" frameborder="0"></iframe>
         <div class="logo-overlay"></div>
     </div>
     <div class="time" id="current-time"></div>
     <div class="header-line"></div>
-    <div class="cart-counter"><span class="cart-icon">🛒</span><span id="cart-count">0</span></div>
+<div class="cart-counter">
+        <span class="cart-icon">🛒</span><span id="cart-count">0</span>
+
+</div>
+
 </header>
-<nav class="desktop-nav"><ul>
-<li><a href="babynot.html">babynot</a></li><li><a href="new.html">new</a></li><li><a href="jackets.html">jackets</a></li><li><a href="shirts.html">shirts</a></li><li><a href="tops-sweaters.html">tops/sweaters</a></li><li><a href="sweatshirts.html">sweatshirts</a></li><li><a href="pants.html">pants</a></li><li><a href="t-shirts.html">t-shirts</a></li><li><a href="hats.html">hats</a></li><li><a href="bags.html">bags</a></li><li><a href="accessories.html">accessories</a></li><li><a href="shoes.html">shoes</a></li><li><a href="gym.html">gym</a></li><li><a href="skate.html">skate</a></li><li><a href="all.html">all</a></li>
-</ul></nav>
-<nav class="mobile-nav"><ul>
-<li><a href="babynot.html">babynot</a></li><li><a href="new.html">new</a></li><li><a href="jackets.html">jackets</a></li><li><a href="shirts.html">shirts</a></li><li><a href="tops-sweaters.html">tops/sweaters</a></li><li><a href="sweatshirts.html">sweatshirts</a></li><li><a href="pants.html">pants</a></li><li><a href="t-shirts.html">t-shirts</a></li><li><a href="hats.html">hats</a></li><li><a href="bags.html">bags</a></li><li><a href="accessories.html">accessories</a></li><li><a href="shoes.html">shoes</a></li><li><a href="gym.html">gym</a></li><li><a href="skate.html">skate</a></li><li><a href="all.html">all</a></li>
-</ul></nav>
-<main class="page-content">
-<h1>BabyNot</h1>
-<p class="subtitle">Baby, infant, and toddler essentials by Maybe Not Studios.</p>
-<div class="product-grid">
-<article class="product-card"><img src="images/babynot-onesie.jpg" alt="BabyNot Onesie"><h2>BabyNot Onesie</h2><p class="price">$38</p><button class="coming-soon" type="button">Coming Soon</button></article>
-<article class="product-card"><img src="images/babynot-hoodie-set.jpg" alt="BabyNot Hoodie Set"><h2>BabyNot Hoodie Set</h2><p class="price">$68</p><button class="coming-soon" type="button">Coming Soon</button></article>
-<article class="product-card"><img src="images/babynot-toddler-tee.jpg" alt="BabyNot Toddler Tee"><h2>BabyNot Toddler Tee</h2><p class="price">$34</p><button class="coming-soon" type="button">Coming Soon</button></article>
-</div></main>
-<footer><div class="footer-links"><div class="footer-line"><a href="shop.html">shop</a><a href="all.html">view all</a><a href="soon.html">preview</a><a href="soon.html">lookbook</a><a href="news.html">news</a></div><div class="footer-line"><a href="random.html">random</a><a href="about.html">about</a><a href="stores.html">stores</a><a href="soon.html">sizing</a><a href="faq.html">f.a.q.</a><a href="contact.html">contact</a></div><div class="footer-line"><a href="terms.html">terms</a><a href="privacy.html">privacy</a><a href="accessibility.html">accessibility</a><a href="mailinglist.html">mailing list</a></div></div><div class="full-site-link"><a href="index.html">full site</a></div></footer>
-<script src="cart.js"></script>
+<section class="product-section">
+    <div class="product-grid">
+        
+<div class="product-item">
+    <a href="soon.html">
+        <img src="whitehat.png" alt="BabyNot Onesie">
+        <div class="product-info">
+            <p>BabyNot Onesie</p>
+            <p>$38</p>
+        </div>
+    </a>
+</div>
+    
+<div class="product-item">
+    <a href="soon.html">
+        <img src="camohatcamo.png" alt="BabyNot Hoodie Set" class="camo-hat-thumb">
+        <div class="product-info">
+            <p>BabyNot Hoodie Set</p>
+            <p>$68</p>
+        </div>
+    </a>
+</div>
+
+<div class="product-item">
+    <a href="soon.html">
+        <img src="truckerwhitefront.png" alt="BabyNot Toddler Tee" class="trucker-hat-thumb">
+        <div class="product-info">
+            <p>BabyNot Toddler Tee</p>
+            <p>$34</p>
+        </div>
+    </a>
+</div>
+    </div>
+    
+</section>
+
+<!-- Desktop Nav -->
+<nav class="desktop-nav">
+    <ul>
+        <li><a href="babynot.html">babynot</a></li>
+        <li><a href="new.html">new</a></li>
+        <li><a href="jackets.html">jackets</a></li>
+        <li><a href="shirts.html">shirts</a></li>
+        <li><a href="tops-sweaters.html">tops/sweaters</a></li>
+        <li><a href="sweatshirts.html">sweatshirts</a></li>
+        <li><a href="pants.html">pants</a></li>
+        <li><a href="t-shirts.html">t-shirts</a></li>
+        <li><a href="hats.html">hats</a></li>
+        <li><a href="bags.html">bags</a></li>
+        <li><a href="accessories.html">accessories</a></li>
+        <li><a href="shoes.html">shoes</a></li>
+        <li><a href="gym.html">gym</a></li>
+        <li><a href="skate.html">skate</a></li>
+        <li><a href="all.html">all</a></li>
+    </ul>
+</nav>
+
+<!-- Mobile Nav -->
+<nav class="mobile-nav">
+    <ul>
+        <li><a href="babynot.html">babynot</a></li>
+        <li><a href="new.html">new</a></li>
+        <li><a href="jackets.html">jackets</a></li>
+        <li><a href="shirts.html">shirts</a></li>
+        <li><a href="tops-sweaters.html">tops/sweaters</a></li>
+        <li><a href="sweatshirts.html">sweatshirts</a></li>
+        <li><a href="pants.html">pants</a></li>
+        <li><a href="t-shirts.html">t-shirts</a></li>
+        <li><a href="hats.html">hats</a></li>
+        <li><a href="bags.html">bags</a></li>
+        <li><a href="accessories.html">accessories</a></li>
+        <li><a href="shoes.html">shoes</a></li>
+        <li><a href="gym.html">gym</a></li>
+        <li><a href="skate.html">skate</a></li>
+        <li><a href="all.html">all</a></li>
+    </ul>
+</nav>
+
+<footer>
+    <br>
+    <br>
+        <div class="footer-links">
+        <div class="footer-line extra-padding">
+            <a href="shop.html">shop</a>
+            <a href="all.html">view all</a>
+            <a href="soon.html">preview</a>
+            <a href="soon.html">lookbook</a>
+            <a href="news.html">news</a>
+        </div>
+        <br>
+        <br>
+        <div class="footer-line">
+            <a href="random.html">random</a>
+            <a href="about.html">about</a>
+            <a href="stores.html">stores</a>
+            <a href="soon.html">sizing</a>
+            <a href="faq.html">f.a.q.</a>
+            <a href="contact.html">contact</a>
+        </div>
+        <div class="footer-line less-padding">
+            <a href="terms.html">terms</a>
+            <a href="privacy.html">privacy</a>
+            <a href="accessibility.html">accessibility</a>
+            <a href="mailinglist.html">mailing list</a>
+        </div>
+    </div>
+    <div class="full-site-link" id="full-site-link">
+        <a href="index.html">full site</a>
+    </div>
+</footer>
+
 <script>
-function updateChicagoTime(){const options={timeZone:'America/Chicago',hour:'2-digit',minute:'2-digit',year:'numeric',month:'2-digit',day:'2-digit'};const t=new Intl.DateTimeFormat('en-US',options).format(new Date()).replace(',', '');document.getElementById('current-time').textContent=t+' CHICAGO';}
-setInterval(updateChicagoTime,1000);updateChicagoTime();
-document.querySelectorAll('.desktop-nav a, .mobile-nav a').forEach(link=>{if(link.getAttribute('href')===window.location.pathname.split('/').pop()){link.classList.add('active');}});
-const logoOverlay=document.querySelector('.logo-overlay');if(logoOverlay){logoOverlay.addEventListener('click',()=>window.location.href='index.html');}
+    function updateChicagoTime() {
+        const options = {
+            timeZone: 'America/Chicago',
+            hour: '2-digit',
+            minute: '2-digit',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+        };
+        const currentTime = new Intl.DateTimeFormat('en-US', options).format(new Date()).replace(",", "");
+        document.getElementById('current-time').textContent = currentTime + " CHICAGO";
+    }
+
+    setInterval(updateChicagoTime, 1000);
+
+    // Full-site link is always visible; scroll handler removed
+
+                const logoOverlay = document.querySelector(".logo-overlay");
+    if (logoOverlay) {
+        let pressTimer;
+        let moved = false;
+
+        const restoreOverlay = () => {
+            logoOverlay.style.display = "block";
+        };
+
+        const cancel = () => {
+            clearTimeout(pressTimer);
+            document.removeEventListener("mousemove", moveHandler);
+            document.removeEventListener("touchmove", moveHandler);
+            document.removeEventListener("mouseup", cancel);
+            document.removeEventListener("touchend", cancel);
+            document.removeEventListener("touchcancel", cancel);
+            logoOverlay.style.display = "none";
+            setTimeout(restoreOverlay, 1000);
+        };
+
+        const moveHandler = () => {
+            moved = true;
+            cancel();
+        };
+
+        const startPress = () => {
+            moved = false;
+            document.addEventListener("mousemove", moveHandler);
+            document.addEventListener("touchmove", moveHandler);
+            document.addEventListener("mouseup", cancel);
+            document.addEventListener("touchend", cancel);
+            document.addEventListener("touchcancel", cancel);
+            pressTimer = setTimeout(() => {
+                if (!moved) {
+                    window.location.href = "index.html";
+                }
+                cancel();
+            }, 600);
+        };
+
+        logoOverlay.addEventListener("mousedown", startPress);
+        logoOverlay.addEventListener("touchstart", startPress);
+    }
 </script>
+
+<script src="cart.js"></script>
+
+    <script src="footer-highlight.js"></script>
 </body>
 </html>
