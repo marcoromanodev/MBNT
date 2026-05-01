@@ -375,7 +375,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
     </div>
     <div class="full-site-link" id="full-site-link">
-        <a href="index.html?fullsite=1">full site</a>
+        <a href="index.html" onclick="localStorage.setItem('fullSiteMode', 'true')">full site</a>
     </div>`;
   }
 
