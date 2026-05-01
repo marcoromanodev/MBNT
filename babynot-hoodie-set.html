@@ -164,6 +164,10 @@
         }
         .image-slider { position:relative; display:flex; justify-content:center; align-items:center; width:80%; max-width:400px; aspect-ratio:1/1; margin:0 auto; overflow:hidden; }
         .image-slider img { width:100%; height:100%; object-fit:cover; }
+        .image-slider button { position:absolute; top:50%; transform:translateY(-50%); background:transparent; border:2px solid transparent; font-size:2rem; cursor:pointer; color:red; z-index:1; }
+        .image-slider button:hover, .image-slider button:focus, .image-slider button:active { background:white; border:2px solid red; }
+        .image-slider .prev { left:0; }
+        .image-slider .next { right:0; }
         .color-options {
             display: flex;
             gap: 5px;
@@ -220,7 +224,9 @@
 </header>
 <div class="product-item" data-product="babynot-hoodie-set" data-price="68" data-selected-color="" data-size="">
     <div class="image-slider" data-images="babynothoodiesetfront.png,babynothoodiesetback.png">
+        <button class="prev" type="button" aria-label="Previous image">&#10094;</button>
         <img id="product-image" src="babynothoodiesetfront.png" alt="BabyNot Hoodie Set">
+        <button class="next" type="button" aria-label="Next image">&#10095;</button>
     </div>
     <h1>BabyNot Hoodie Set</h1>
     <p>$68</p>
