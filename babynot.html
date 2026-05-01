@@ -408,7 +408,7 @@
 <section class="product-section">
     <div class="product-grid">
         
-<div class="product-item">
+<div class="product-item" data-images="babynotonsie.png">
     <a href="babynot-onesie.html">
         <img src="babynotonsie.png" alt="BabyNot Onesie">
         <div class="product-info">
@@ -418,7 +418,7 @@
     </a>
 </div>
     
-<div class="product-item">
+<div class="product-item" data-images="babynothoodiesetfront.png,babynothoodiesetback.png">
     <a href="babynot-hoodie-set.html">
         <img src="babynothoodiesetfront.png" alt="BabyNot Hoodie Set">
         <div class="product-info">
@@ -428,7 +428,7 @@
     </a>
 </div>
 
-<div class="product-item">
+<div class="product-item" data-images="babynotshirt.png">
     <a href="babynot-toddler-tee.html">
         <img src="babynotshirt.png" alt="BabyNot Shirt">
         <div class="product-info">
@@ -579,6 +579,47 @@
         logoOverlay.addEventListener("mousedown", startPress);
         logoOverlay.addEventListener("touchstart", startPress);
     }
+</script>
+
+<script>
+    function initProductGridCarousels() {
+        document.querySelectorAll('.product-grid .product-item[data-images]').forEach((item) => {
+            const link = item.querySelector('a');
+            const image = item.querySelector('img');
+            if (!link || !image) return;
+
+            const images = (item.dataset.images || '')
+                .split(',')
+                .map((src) => src.trim())
+                .filter(Boolean);
+
+            if (images.length <= 1) return;
+
+            let index = 0;
+
+            const createButton = (direction) => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = `product-carousel-control ${direction}`;
+                button.setAttribute('aria-label', direction === 'prev' ? 'Previous image' : 'Next image');
+                button.innerHTML = direction === 'prev' ? '&#10094;' : '&#10095;';
+                button.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    index = direction === 'prev'
+                        ? (index - 1 + images.length) % images.length
+                        : (index + 1) % images.length;
+                    image.src = images[index];
+                });
+                return button;
+            };
+
+            link.appendChild(createButton('prev'));
+            link.appendChild(createButton('next'));
+        });
+    }
+
+    initProductGridCarousels();
 </script>
 
 <script src="cart.js"></script>
