@@ -7,14 +7,25 @@
     <title>MaybeNot</title>
     <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="196x196">
     <style>
-        body, html {
+        html,
+        body {
             margin: 0;
             padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
             font-family: 'Courier New', Courier, monospace;
             background-color: #f2f2f2;
             color: #000;
             text-align: center;
-            height: 100%;
+        }
+
+        .index-page,
+        .home-page,
+        main {
+            min-height: 100dvh;
+            height: 100dvh;
+            overflow: hidden;
         }
 
         .container {
@@ -22,16 +33,18 @@
             flex-direction: column;
             justify-content: flex-start;
             align-items: center;
-            height: 100vh;
+            height: 100%;
             box-sizing: border-box;
-            padding-bottom: 25vh;
+            overflow: hidden;
+            padding: 8px 12px 10px;
+            gap: 8px;
         }
 
         .logo-container {
             position: relative;
             display: inline-block;
             width: 80vw;
-            height: 40vh;
+            height: 34vh;
             min-height: 160px; /* Ensure minimum height for consistency across devices */
             margin: 0;
             padding: 0;
@@ -44,8 +57,8 @@
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
-            gap: 2px;
-            margin-top: 100px;
+            gap: 4px;
+            margin-top: 0;
             width: 100%;
         }
 
@@ -87,7 +100,7 @@
             padding: 0;
             font-size: 0.7rem;
             text-align: left;
-            margin-top: 20px; /* Space between header line and first nav link */
+            margin-top: 10px; /* Space between header line and first nav link */
         }
 
         .desktop-nav {
@@ -125,7 +138,7 @@
         }
 
         footer .legal-links {
-            margin-top: 20px;
+            margin-top: 8px;
             display: flex;
             justify-content: center;
             gap: 8px;
@@ -212,29 +225,80 @@
 
         /* Mobile Adjustments */
         @media (max-width: 768px) {
-            .container {
-                padding-top: 20px; /* Shift content down slightly on mobile */
+            html,
+            body {
+                height: 100%;
+                overflow: hidden;
             }
+
+            .index-page,
+            .home-page,
+            main {
+                height: 100dvh;
+                min-height: 100dvh;
+                overflow: hidden;
+            }
+
+            .container {
+                padding: 6px 10px 8px;
+                gap: 6px;
+            }
+
             .logo-time-container {
                 margin-top: 0;
+                gap: 4px;
             }
+
             .logo-container {
                 position: relative;
                 margin-top: 0;
-                width: 90vw;
+                padding-top: 0;
+                width: 88vw;
+                height: 28vh;
+                min-height: 120px;
+                gap: 4px;
+            }
+
+            .logo {
+                margin-bottom: 4px;
             }
 
             iframe {
                 width: 100%;
-                height: 40vh;
+                height: 100%;
             }
 
-            .time {
-                margin-top: 8px;
+            .time,
+            #chicago-time,
+            #current-time {
+                margin-top: 0;
+                padding-top: 0;
+                line-height: 1;
+                font-size: 0.65rem;
+            }
+
+            nav,
+            .nav,
+            .navigation,
+            .desktop-nav ul {
+                margin-top: 10px;
+                gap: 6px;
+            }
+
+            .desktop-nav ul li {
+                margin: 2px 0;
+            }
+
+            .desktop-nav ul li a {
+                padding: 2px 0;
+            }
+
+            footer .legal-links {
+                margin-top: 6px;
             }
 
             .cookie-banner {
-                font-size: 0.6rem; /* Smaller text for the cookie banner on mobile */
+                font-size: 0.6rem;
             }
 
             .social-icons {
@@ -269,7 +333,8 @@
     }
     </style>
 </head>
-<body>
+<body class="index-page home-page">
+<main>
 
 <div class="cookie-banner" id="cookie-banner">
     This site uses cookies to improve your experience. By continuing to browse, you agree to the use of cookies. Read the <a href="privacy.html">Privacy Policy</a> here.<span class="cookie-close" onclick="closeCookieBanner()">✖</span>
@@ -335,6 +400,7 @@
         </div>
     </footer>
 </div>
+</main>
 
 <script>
     function updateChicagoTime() {
