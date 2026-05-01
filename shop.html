@@ -203,6 +203,36 @@
             background-color: white;
         }
 
+        /* Cookie banner styling */
+        .cookie-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            box-sizing: border-box;
+            background: rgba(128, 128, 128, 0.8);
+            padding: 10px 40px 10px 10px;
+            color: #000;
+            font-size: 0.8rem;
+            z-index: 2000;
+            text-align: center;
+        }
+
+        .cookie-banner a {
+            color: #000;
+            text-decoration: underline;
+            font-weight: 600;
+        }
+
+        .cookie-banner .cookie-close {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: #fff;
+        }
+
         /* Mobile-Specific Nav and Footer */
         @media (max-width: 768px) {
             .header-container {
@@ -374,6 +404,10 @@
 </head>
 <body>
 
+<div class="cookie-banner" id="cookie-banner">
+    This site uses cookies to improve your experience. By continuing to browse, you agree to the use of cookies. Read the <a href="privacy.html">Privacy Policy</a> here.<span class="cookie-close" onclick="closeCookieBanner()">✖</span>
+</div>
+
 <header class="header-container">
     <div class="logo-container">
         <iframe id="8b9281ad-097b-4408-88e2-ef824efa63eb" src="https://www.vectary.com/viewer/v1/?model=8b9281ad-097b-4408-88e2-ef824efa63eb&env=studio3&turntable=1" frameborder="0"></iframe>
@@ -456,7 +490,7 @@
         </div>
     </div>
     <div class="full-site-link" id="full-site-link">
-        <a href="index.html">full site</a>
+        <a href="index.html?fullsite=1">full site</a>
     </div>
 </footer>
 
@@ -486,48 +520,66 @@
 
     // Full-site link is now always visible; no scroll handler needed
 
-                const logoOverlay = document.querySelector(".logo-overlay");
+    // Cookie banner persistence logic
+    function closeCookieBanner() {
+        document.getElementById('cookie-banner').style.display = 'none';
+        localStorage.setItem('cookieBannerClosed', 'true');
+    }
+
+    if (localStorage.getItem('cookieBannerClosed') === 'true') {
+        document.getElementById('cookie-banner').style.display = 'none';
+    }
+
+    const logoOverlay = document.querySelector(".logo-overlay");
     if (logoOverlay) {
         let pressTimer;
-        let moved = false;
+        let startPoint = null;
 
-        const restoreOverlay = () => {
-            logoOverlay.style.display = "block";
+        const getPoint = (event) => {
+            if (event.touches && event.touches[0]) {
+                return { x: event.touches[0].clientX, y: event.touches[0].clientY };
+            }
+            if (event.changedTouches && event.changedTouches[0]) {
+                return { x: event.changedTouches[0].clientX, y: event.changedTouches[0].clientY };
+            }
+            return { x: event.clientX, y: event.clientY };
         };
 
-        const cancel = () => {
+        const cleanup = () => {
             clearTimeout(pressTimer);
+            startPoint = null;
             document.removeEventListener("mousemove", moveHandler);
             document.removeEventListener("touchmove", moveHandler);
-            document.removeEventListener("mouseup", cancel);
-            document.removeEventListener("touchend", cancel);
-            document.removeEventListener("touchcancel", cancel);
-            logoOverlay.style.display = "none";
-            setTimeout(restoreOverlay, 1000);
+            document.removeEventListener("mouseup", cleanup);
+            document.removeEventListener("touchend", cleanup);
+            document.removeEventListener("touchcancel", cleanup);
         };
 
-        const moveHandler = () => {
-            moved = true;
-            cancel();
+        const moveHandler = (event) => {
+            if (!startPoint) return;
+            const current = getPoint(event);
+            if (current.x !== startPoint.x || current.y !== startPoint.y) {
+                cleanup();
+            }
         };
 
-        const startPress = () => {
-            moved = false;
+        const startPress = (event) => {
+            startPoint = getPoint(event);
             document.addEventListener("mousemove", moveHandler);
-            document.addEventListener("touchmove", moveHandler);
-            document.addEventListener("mouseup", cancel);
-            document.addEventListener("touchend", cancel);
-            document.addEventListener("touchcancel", cancel);
+            document.addEventListener("touchmove", moveHandler, { passive: true });
+            document.addEventListener("mouseup", cleanup);
+            document.addEventListener("touchend", cleanup);
+            document.addEventListener("touchcancel", cleanup);
             pressTimer = setTimeout(() => {
-                if (!moved) {
-                    window.location.href = "index.html";
+                if (startPoint) {
+                    window.location.href = "index.html?fullsite=1";
                 }
-                cancel();
+                cleanup();
             }, 600);
         };
 
         logoOverlay.addEventListener("mousedown", startPress);
-        logoOverlay.addEventListener("touchstart", startPress);
+        logoOverlay.addEventListener("touchstart", startPress, { passive: true });
     }
 </script>
 

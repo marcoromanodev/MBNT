@@ -332,6 +332,14 @@
         }
     }
     </style>
+<script>
+    (function () {
+        const params = new URLSearchParams(window.location.search);
+        if (!params.has("fullsite")) {
+            window.location.replace("shop.html");
+        }
+    })();
+</script>
 </head>
 <body class="index-page home-page">
 <main>
