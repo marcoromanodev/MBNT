@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Hoodie product page">
-    <title>Hoodie - MaybeNot Shop</title>
+    <meta name="description" content="BabyNot Hoodie Set product page">
+    <title>BabyNot Hoodie Set - MaybeNot Shop</title>
     <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="196x196">
     <style>
         body, html {
@@ -27,29 +27,131 @@
             top: 0;
             z-index: 1000;
         }
-        .logo-container { position: relative; width: 20vw; height: 10vh; margin-top: 0; }
-        .logo-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: pointer; z-index: 10; }
-        iframe { width: 100%; height: 100%; border: none; }
-        .time { font-size: 0.7rem; text-align: center; margin-top: -5px; font-weight: 600; }
-        .header-line { border-top: 1px solid #000; margin-top: 5px; width: 100%; }
-        .cart-counter { margin-top: 5px; font-size: 0.7rem; text-align: center; font-weight: 600; }
+        .logo-container {
+            position: relative;
+            width: 20vw;
+            height: 10vh;
+            margin-top: 0;
+        }
+        .logo-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            z-index: 10;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .time {
+            font-size: 0.7rem;
+            text-align: center;
+            margin-top: -5px;
+            font-weight: 600;
+        }
+        .header-line {
+            border-top: 1px solid #000;
+            margin-top: 5px;
+            width: 100%;
+        }
+        .cart-counter {
+            margin-top: 5px;
+            font-size: 0.7rem;
+            text-align: center;
+            font-weight: 600;
+        }
         /* Mobile Navigation */
-        .mobile-nav { display:block; width:100%; margin-top:20px; }
-        nav.mobile-nav ul { list-style-type:none; padding:0; margin:0; width:100%; }
-        nav.mobile-nav ul li { margin:0; padding:10px 20px; text-align:left; border-bottom:1px solid #e0e0e0; }
-        nav.mobile-nav ul li a { display:block; text-decoration:none; color:#000; padding:10px; }
-        nav.mobile-nav ul li a:hover, nav.mobile-nav ul li a:focus, nav.mobile-nav ul li a:active { background-color:red; color:white; }
+        .mobile-nav {
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        nav.mobile-nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+        }
+
+        nav.mobile-nav ul li {
+            margin: 0;
+            padding: 10px 20px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        nav.mobile-nav ul li a {
+            display: block;
+            text-decoration: none;
+            color: #000;
+            padding: 10px;
+        }
+
+        nav.mobile-nav ul li a:hover,
+        nav.mobile-nav ul li a:focus,
+        nav.mobile-nav ul li a:active {
+            background-color: red;
+            color: white;
+        }
+
         /* Desktop Navigation */
-        .desktop-nav { display:none; width:100%; text-align:center; margin-top:0; }
-        .desktop-nav ul { list-style-type:none; padding:0; margin:0; }
-        .desktop-nav ul li { margin:4px 0; }
-        .desktop-nav ul li a { color:#000; text-decoration:none; display:inline-block; padding:5px 0; width:100%; font-weight:600; }
-        .desktop-nav ul li a:hover, .desktop-nav ul li a:focus, .desktop-nav ul li a:active { border:2px solid red; color:red; background-color:white; }
-        .product-item { margin-top:20px; display:flex; flex-direction:column; align-items:center; }
+        .desktop-nav {
+            display: none;
+            width: 100%;
+            text-align: center;
+            margin-top: 0;
+        }
+
+        .desktop-nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .desktop-nav ul li {
+            margin: 4px 0;
+        }
+
+        .desktop-nav ul li a {
+            color: #000;
+            text-decoration: none;
+            display: inline-block;
+            padding: 5px 0;
+            width: 100%;
+            font-weight: 600;
+        }
+
+        .desktop-nav ul li a:hover,
+        .desktop-nav ul li a:focus,
+        .desktop-nav ul li a:active {
+            border: 2px solid red;
+            color: red;
+            background-color: white;
+        }
+        .product-item {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
         .image-slider { position:relative; display:flex; justify-content:center; align-items:center; width:80%; max-width:400px; aspect-ratio:1/1; margin:0 auto; overflow:hidden; }
-        .image-slider img { width:100%; height:100%; object-fit:contain; }
-        .color-options { display:flex; gap:5px; margin:5px 0; }
-        .color-option { width:15px; height:15px; cursor:pointer; display:inline-block; }
+        .image-slider img { width:100%; height:100%; object-fit:cover; }
+        .color-options {
+            display: flex;
+            gap: 5px;
+            margin: 5px 0;
+        }
+        .color-option {
+            width: 15px;
+            height: 15px;
+            cursor: pointer;
+            display: inline-block;
+        }
 </style>
 </head>
 <body>
@@ -65,32 +167,25 @@
     
 </div>
 </header>
-<div class="product-item" data-product="hoodie" data-price="70" data-selected-color="" data-size="">
-    <div class="image-slider" data-images="whitehoodie.png,whitehoodieback.png,espressohoodie.png,espressohoodieback.png,blackhoodie.png,blackhoodieback.png,grayhoodie.png,grayhoodieback.png">
-        <button class="prev">&#10094;</button>
-        <img id="product-image" src="whitehoodie.png" alt="Hoodie">
-        <button class="next">&#10095;</button>
+<div class="product-item" data-product="babynot-hoodie-set" data-price="68" data-selected-color="" data-size="">
+    <div class="image-slider">
+        <div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;border:1px solid #000;background:#fff;">
+            <span>Image coming soon</span>
+        </div>
     </div>
-    <h1>Hoodie</h1>
-    <p>$70</p>
-    <div class="color-options">
-        <span class="color-option" data-color="white" data-image="whitehoodie.png" style="background:#fff;border:1px solid #000;"></span>
-        <span class="color-option" data-color="espresso" data-image="espressohoodie.png" style="background:#4b342a;"></span>
-        <span class="color-option" data-color="black" data-image="blackhoodie.png" style="background:#000;"></span>
-        <span class="color-option" data-color="gray" data-image="grayhoodie.png" style="background:#808080;"></span>
-    </div>
-    <div class="size-select">
+    <h1>BabyNot Hoodie Set</h1>
+    <p>$68</p>
+        <div class="size-select">
         <select>
             <option value="">Select Size</option>
-            <option value="S">Small</option>
-            <option value="M">Medium</option>
-            <option value="L">Large</option>
-            <option value="XL">X-Large</option>
-            <option value="XXL">XX-Large</option>
+                        <option value="2T">2T</option>
+            <option value="3T">3T</option>
+            <option value="4T">4T</option>
+            <option value="5T">5T</option>
         </select>
     </div>
     <div class="product-details">
-        <p>100% heavyweight cotton.</p>
+        <p>Soft, comfortable fit for little ones.</p>
         <p>All American made cut and sew in house: vertical integration process all American sourcing and printing locally.</p>
         <p>Only national shipping for now.</p>
     </div>
