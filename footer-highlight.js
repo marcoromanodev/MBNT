@@ -82,7 +82,8 @@ document.addEventListener('DOMContentLoaded', () => {
     'socks.html': ['blacksocks.png', 'blacksocks2.png'],
     'skateboard1.html': ['skateboard3v2.png'],
     'skateboard2.html': ['skateboard4.png'],
-    'skateboard3.html': ['skateboard1.png']
+    'skateboard3.html': ['skateboard1.png'],
+    'mbnt-superior-shirt.html': ['mbntsuperior.png', 'mbntsuperiorblack.png', 'mbntsuperiorcamo.png']
   };
 
   document.querySelectorAll('.product-grid .product-item a[href]').forEach(link => {
