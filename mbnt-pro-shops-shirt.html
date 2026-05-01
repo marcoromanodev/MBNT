@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="MBNT Pro Shops Shirt product page">
+    <title>MBNT Pro Shops Shirt - MaybeNot Shop</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="196x196">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #f7f7f7;
+            color: #000;
+            /* Allow normal document flow so the header can stick */
+            min-height: 100%;
+        }
+        .header-container {
+            width: 100%;
+            padding: 0 10px 10px;
+            background-color: #f7f7f7;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .logo-container {
+            position: relative;
+            width: 20vw;
+            height: 10vh;
+            margin-top: 0;
+        }
+        .logo-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            z-index: 10;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .time {
+            font-size: 0.7rem;
+            text-align: center;
+            margin-top: -5px;
+            font-weight: 600;
+        }
+        .header-line {
+            border-top: 1px solid #000;
+            margin-top: 5px;
+            width: 100%;
+        }
+        .cart-counter {
+            margin-top: 5px;
+            font-size: 0.7rem;
+            text-align: center;
+            font-weight: 600;
+        }
+        /* Mobile Navigation */
+        .mobile-nav {
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        nav.mobile-nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+        }
+
+        nav.mobile-nav ul li {
+            margin: 0;
+            padding: 10px 20px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        nav.mobile-nav ul li a {
+            display: block;
+            text-decoration: none;
+            color: #000;
+            padding: 10px;
+        }
+
+        nav.mobile-nav ul li a:hover,
+        nav.mobile-nav ul li a:focus,
+        nav.mobile-nav ul li a:active {
+            background-color: red;
+            color: white;
+        }
+
+        /* Desktop Navigation */
+        .desktop-nav {
+            display: none;
+            width: 100%;
+            text-align: center;
+            margin-top: 0;
+        }
+
+        .desktop-nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .desktop-nav ul li {
+            margin: 4px 0;
+        }
+
+        .desktop-nav ul li a {
+            color: #000;
+            text-decoration: none;
+            display: inline-block;
+            padding: 5px 0;
+            width: 100%;
+            font-weight: 600;
+        }
+
+        .desktop-nav ul li a:hover,
+        .desktop-nav ul li a:focus,
+        .desktop-nav ul li a:active {
+            border: 2px solid red;
+            color: red;
+            background-color: white;
+        }
+        .product-item {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .image-slider { position:relative; display:flex; justify-content:center; align-items:center; width:80%; max-width:400px; aspect-ratio:1/1; margin:0 auto; overflow:hidden; }
+        .image-slider img { width:100%; height:100%; object-fit:cover; }
+        .color-options {
+            display: flex;
+            gap: 5px;
+            margin: 5px 0;
+        }
+        .color-option {
+            width: 15px;
+            height: 15px;
+            cursor: pointer;
+            display: inline-block;
+        }
+</style>
+</head>
+<body>
+<header class="header-container">
+    <div class="logo-container">
+        <iframe id="8b9281ad-097b-4408-88e2-ef824efa63eb" src="https://www.vectary.com/viewer/v1/?model=8b9281ad-097b-4408-88e2-ef824efa63eb&env=studio3&turntable=1" frameborder="0"></iframe>
+        <div class="logo-overlay"></div>
+    </div>
+    <div class="time" id="current-time"></div>
+    <div class="header-line"></div>
+<div class="cart-counter">
+        <span class="cart-icon">🛒</span><span id="cart-count">0</span>
+    
+</div>
+</header>
+<div class="product-item" data-product="mbnt-pro-shops-shirt" data-price="33" data-price-id="mbnt-pro-shops-shirt" data-selected-color="white" data-size="" data-style="single">
+    <div class="image-slider" data-images="MBNTPROSHOPS.png,blankwhiteshirtback.png">
+        <button class="prev">&#10094;</button>
+        <img id="product-image" src="MBNTPROSHOPS.png" alt="MBNT Pro Shops Shirt">
+        <button class="next">&#10095;</button>
+    </div>
+    <h1>MBNT Pro Shops Shirt</h1>
+    <p class="dynamic-price">$33</p>
+    <div class="color-options">
+        <span class="color-option" data-color="white" data-style="single" data-price="33" data-price-id="mbnt-pro-shops-shirt" data-image="MBNTPROSHOPS.png" data-images="MBNTPROSHOPS.png,blankwhiteshirtback.png" style="background:#fff;border:1px solid #000;" title="Single White"></span>
+    </div>
+    <div class="size-select">
+        <select>
+            <option value="">Select Size</option>
+            <option value="S">Small</option>
+            <option value="M">Medium</option>
+            <option value="L">Large</option>
+            <option value="XL">X-Large</option>
+            <option value="XXL">XX-Large</option>
+        </select>
+    </div>
+    <div class="product-details">
+        <p>Signature MBNT tee featuring original front artwork.</p>
+        <p>All American made cut and sew in house: vertical integration process all American sourcing and printing locally.</p>
+        <p>Only national shipping for now.</p>
+    </div>
+    <button onclick="addToCart(this)">Add to Cart</button>
+    <button onclick="checkout(this)">Checkout</button>
+</div>
+
+<!-- Desktop Nav -->
+<nav class="desktop-nav">
+    <ul>
+        <li><a href="new.html">new</a></li>
+        <li><a href="jackets.html">jackets</a></li>
+        <li><a href="shirts.html">shirts</a></li>
+        <li><a href="tops-sweaters.html">tops/sweaters</a></li>
+        <li><a href="sweatshirts.html">sweatshirts</a></li>
+        <li><a href="pants.html">pants</a></li>
+        <li><a href="t-shirts.html">t-shirts</a></li>
+        <li><a href="hats.html">hats</a></li>
+        <li><a href="bags.html">bags</a></li>
+        <li><a href="accessories.html">accessories</a></li>
+        <li><a href="shoes.html">shoes</a></li>
+        <li><a href="gym.html">gym</a></li>
+        <li><a href="skate.html">skate</a></li>
+        <li><a href="all.html">all</a></li>
+    </ul>
+</nav>
+
+<!-- Mobile Nav -->
+<nav class="mobile-nav">
+    <ul>
+        <li><a href="new.html">new</a></li>
+        <li><a href="jackets.html">jackets</a></li>
+        <li><a href="shirts.html">shirts</a></li>
+        <li><a href="tops-sweaters.html">tops/sweaters</a></li>
+        <li><a href="sweatshirts.html">sweatshirts</a></li>
+        <li><a href="pants.html">pants</a></li>
+        <li><a href="t-shirts.html">t-shirts</a></li>
+        <li><a href="hats.html">hats</a></li>
+        <li><a href="bags.html">bags</a></li>
+        <li><a href="accessories.html">accessories</a></li>
+        <li><a href="shoes.html">shoes</a></li>
+        <li><a href="gym.html">gym</a></li>
+        <li><a href="skate.html">skate</a></li>
+        <li><a href="all.html">all</a></li>
+    </ul>
+</nav>
+<footer>
+        <div class="footer-links">
+        <div class="footer-line extra-padding">
+            <a href="shop.html">shop</a>
+            <a href="all.html">view all</a>
+            <a href="soon.html">preview</a>
+            <a href="soon.html">lookbook</a>
+            <a href="news.html">news</a>
+        </div>
+        <br>
+        <br>
+        <div class="footer-line">
+            <a href="random.html">random</a>
+            <a href="about.html">about</a>
+            <a href="stores.html">stores</a>
+            <a href="soon.html">sizing</a>
+            <a href="faq.html">f.a.q.</a>
+            <a href="contact.html">contact</a>
+        </div>
+        <div class="footer-line less-padding">
+            <a href="terms.html">terms</a>
+            <a href="privacy.html">privacy</a>
+            <a href="accessibility.html">accessibility</a>
+            <a href="mailinglist.html">mailing list</a>
+        </div>
+    </div>
+</footer>
+<script src="cart.js"></script>
+<script src="product.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const item = document.querySelector('.product-item[data-product="blank-shirt"]');
+    if (!item) return;
+    const priceEl = item.querySelector('.dynamic-price');
+    item.querySelectorAll('.color-option').forEach((opt) => {
+        opt.addEventListener('click', () => {
+        const nextPrice = opt.dataset.price || '15';
+        item.dataset.price = nextPrice;
+        item.dataset.style = opt.dataset.style || '';
+        item.dataset.priceId = opt.dataset.priceId || 'blank-shirt';
+        if (priceEl) priceEl.textContent = `$${nextPrice}`;
+      });
+    });
+  });
+</script>
+
+<script src="footer-highlight.js"></script>
+</body>
+</html>
