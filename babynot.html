@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="BabyNot | MaybeNot Shop">
+    <title>BabyNot</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="196x196">
+    <style>
+        body, html { margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; background-color: #f7f7f7; color: #000; min-height: 100vh; }
+        .header-container { width: 100%; padding: 0 10px 10px; background-color: #f7f7f7; display: flex; flex-direction: column; align-items: center; position: sticky; top: 0; z-index: 1000; }
+        .logo-container { position: relative; width: 20vw; height: 10vh; margin-top: 0; }
+        .logo-overlay { position: absolute; inset: 0; cursor: pointer; z-index: 10; }
+        iframe { width: 100%; height: 100%; border: none; }
+        .time, .cart-counter { font-size: 0.7rem; font-weight: 600; text-align: center; }
+        .time { margin-top: 0; }
+        .cart-counter { margin-top: 5px; }
+        .header-line { border-top: 1px solid #000; margin-top: 10px; width: 100%; }
+        .desktop-nav { display: none; width: 100%; text-align: center; margin-top: 20px; }
+        .desktop-nav ul, .mobile-nav ul { list-style: none; padding: 0; margin: 0; }
+        .desktop-nav ul li { margin: 4px 0; }
+        .desktop-nav a { color: #000; text-decoration: none; display: inline-block; padding: 5px 0; width: 100%; font-weight: 600; }
+        .desktop-nav a:hover, .desktop-nav a:focus, .desktop-nav a:active, .desktop-nav a.active { border: 2px solid red; color: red; background-color: white; }
+        .mobile-nav { display: block; width: 100%; margin-top: 20px; }
+        .mobile-nav li { padding: 10px 20px; text-align: left; border-bottom: 1px solid #e0e0e0; }
+        .mobile-nav a { display: block; text-decoration: none; color: #000; padding: 10px; }
+        .mobile-nav a:hover, .mobile-nav a:focus, .mobile-nav a:active, .mobile-nav a.active { background-color: red; color: white; }
+        .page-content { max-width: 1100px; margin: 20px auto 40px; padding: 0 20px; text-align: center; }
+        h1 { font-size: 2rem; margin-bottom: 8px; }
+        .subtitle { font-size: 0.9rem; margin-bottom: 30px; }
+        .product-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+        .product-card { border: 1px solid #000; padding: 12px; background: #fff; }
+        .product-card img { width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover; }
+        .product-card h2 { font-size: 1rem; margin: 12px 0 4px; }
+        .price { font-size: 0.9rem; margin: 0 0 10px; }
+        .coming-soon { font-family: 'Courier New', Courier, monospace; font-size: 0.8rem; background: #fff; color: #000; border: 1px solid #000; padding: 8px 12px; cursor: pointer; }
+        .coming-soon:hover { background: red; color: #fff; }
+        footer { width: 100%; text-align: center; background-color: #f7f7f7; padding: 8px 0; margin-top: 20px; }
+        .footer-links { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; }
+        .footer-line { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; width: min(90%, 820px); font-size: 0.65rem; letter-spacing: 0.02rem; padding-bottom: 10px; }
+        .footer-links a, .full-site-link a { color: #000; text-decoration: none; }
+        .footer-links a:hover, .footer-links a:focus, .footer-links a:active, .full-site-link a:hover { border: 2px solid red; color: red; background-color: white; }
+        .full-site-link { display: block; width: 100%; text-align: center; padding: 10px; background-color: #f7f7f7; }
+        @media (max-width: 1024px) { .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+        @media (max-width: 768px) {
+            .desktop-nav { display: none; }
+            .logo-container { left: 50%; transform: translateX(-50%); }
+            .product-grid { grid-template-columns: 1fr; }
+        }
+        @media (min-width: 769px) { .desktop-nav { display: block; } .mobile-nav { display: none; } }
+    </style>
+</head>
+<body>
+<header class="header-container">
+    <div class="logo-container">
+        <iframe src="https://www.vectary.com/viewer/v1/?model=8b9281ad-097b-4408-88e2-ef824efa63eb&env=studio3&turntable=1" frameborder="0"></iframe>
+        <div class="logo-overlay"></div>
+    </div>
+    <div class="time" id="current-time"></div>
+    <div class="header-line"></div>
+    <div class="cart-counter"><span class="cart-icon">🛒</span><span id="cart-count">0</span></div>
+</header>
+<nav class="desktop-nav"><ul>
+<li><a href="new.html">new</a></li><li><a href="jackets.html">jackets</a></li><li><a href="shirts.html">shirts</a></li><li><a href="tops-sweaters.html">tops/sweaters</a></li><li><a href="sweatshirts.html">sweatshirts</a></li><li><a href="pants.html">pants</a></li><li><a href="t-shirts.html">t-shirts</a></li><li><a href="hats.html">hats</a></li><li><a href="bags.html">bags</a></li><li><a href="accessories.html">accessories</a></li><li><a href="shoes.html">shoes</a></li><li><a href="gym.html">gym</a></li><li><a href="skate.html">skate</a></li><li><a href="all.html">all</a></li><li><a href="babynot.html">babynot</a></li>
+</ul></nav>
+<nav class="mobile-nav"><ul>
+<li><a href="new.html">new</a></li><li><a href="jackets.html">jackets</a></li><li><a href="shirts.html">shirts</a></li><li><a href="tops-sweaters.html">tops/sweaters</a></li><li><a href="sweatshirts.html">sweatshirts</a></li><li><a href="pants.html">pants</a></li><li><a href="t-shirts.html">t-shirts</a></li><li><a href="hats.html">hats</a></li><li><a href="bags.html">bags</a></li><li><a href="accessories.html">accessories</a></li><li><a href="shoes.html">shoes</a></li><li><a href="gym.html">gym</a></li><li><a href="skate.html">skate</a></li><li><a href="all.html">all</a></li><li><a href="babynot.html">babynot</a></li>
+</ul></nav>
+<main class="page-content">
+<h1>BabyNot</h1>
+<p class="subtitle">Baby, infant, and toddler essentials by Maybe Not Studios.</p>
+<div class="product-grid">
+<article class="product-card"><img src="images/babynot-onesie.jpg" alt="BabyNot Onesie"><h2>BabyNot Onesie</h2><p class="price">$38</p><button class="coming-soon" type="button">Coming Soon</button></article>
+<article class="product-card"><img src="images/babynot-hoodie-set.jpg" alt="BabyNot Hoodie Set"><h2>BabyNot Hoodie Set</h2><p class="price">$68</p><button class="coming-soon" type="button">Coming Soon</button></article>
+<article class="product-card"><img src="images/babynot-toddler-tee.jpg" alt="BabyNot Toddler Tee"><h2>BabyNot Toddler Tee</h2><p class="price">$34</p><button class="coming-soon" type="button">Coming Soon</button></article>
+</div></main>
+<footer><div class="footer-links"><div class="footer-line"><a href="shop.html">shop</a><a href="all.html">view all</a><a href="soon.html">preview</a><a href="soon.html">lookbook</a><a href="news.html">news</a></div><div class="footer-line"><a href="random.html">random</a><a href="about.html">about</a><a href="stores.html">stores</a><a href="soon.html">sizing</a><a href="faq.html">f.a.q.</a><a href="contact.html">contact</a></div><div class="footer-line"><a href="terms.html">terms</a><a href="privacy.html">privacy</a><a href="accessibility.html">accessibility</a><a href="mailinglist.html">mailing list</a></div></div><div class="full-site-link"><a href="index.html">full site</a></div></footer>
+<script src="cart.js"></script>
+<script>
+function updateChicagoTime(){const options={timeZone:'America/Chicago',hour:'2-digit',minute:'2-digit',year:'numeric',month:'2-digit',day:'2-digit'};const t=new Intl.DateTimeFormat('en-US',options).format(new Date()).replace(',', '');document.getElementById('current-time').textContent=t+' CHICAGO';}
+setInterval(updateChicagoTime,1000);updateChicagoTime();
+document.querySelectorAll('.desktop-nav a, .mobile-nav a').forEach(link=>{if(link.getAttribute('href')===window.location.pathname.split('/').pop()){link.classList.add('active');}});
+const logoOverlay=document.querySelector('.logo-overlay');if(logoOverlay){logoOverlay.addEventListener('click',()=>window.location.href='index.html');}
+</script>
+</body>
+</html>
