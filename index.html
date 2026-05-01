@@ -39,6 +39,16 @@
             z-index: 2;
         }
 
+        .logo-time-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 2px;
+            margin-top: 100px;
+            width: 100%;
+        }
+
         .logo-overlay {
             position: absolute;
             top: 0;
@@ -57,7 +67,7 @@
         }
 
         .time {
-            margin-top: 8px;
+            margin-top: 0;
             font-size: 0.7rem;
             text-align: center;
             font-weight: 600; /* Semi-bold for time */
@@ -205,9 +215,12 @@
             .container {
                 padding-top: 20px; /* Shift content down slightly on mobile */
             }
+            .logo-time-container {
+                margin-top: 0;
+            }
             .logo-container {
-            position: relative;
-                margin-top: -80px; /* Reduced top margin for mobile */
+                position: relative;
+                margin-top: 0;
                 width: 90vw;
             }
 
@@ -237,12 +250,12 @@
         /* Desktop-Specific Adjustments */
         @media (min-width: 769px) {
             .logo-container {
-            position: relative;
-                margin-top: 100px; /* Raise logo slightly on desktop */
+                position: relative;
+                margin-top: 0;
             }
 
             .time {
-                margin-top: 12px;
+                margin-top: 0;
             }
 
         .social-icons {
@@ -263,12 +276,13 @@
 </div>
 
 <div class="container">
-    <div class="logo-container">
-        <iframe id="8b9281ad-097b-4408-88e2-ef824efa63eb" src="https://www.vectary.com/viewer/v1/?model=8b9281ad-097b-4408-88e2-ef824efa63eb&env=studio3&turntable=1" frameborder="0"></iframe>
-        <div class="logo-overlay"></div>
+    <div class="logo-time-container">
+        <div class="logo-container">
+            <iframe id="8b9281ad-097b-4408-88e2-ef824efa63eb" src="https://www.vectary.com/viewer/v1/?model=8b9281ad-097b-4408-88e2-ef824efa63eb&env=studio3&turntable=1" frameborder="0"></iframe>
+            <div class="logo-overlay"></div>
+        </div>
+        <div class="time" id="current-time"></div>
     </div>
-
-    <div class="time" id="current-time"></div>
 
     <!-- Desktop Nav -->
     <nav class="desktop-nav">
