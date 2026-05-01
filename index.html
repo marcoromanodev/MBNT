@@ -334,7 +334,13 @@
 <script>
     (function () {
         const params = new URLSearchParams(window.location.search);
-        if (!params.has("fullsite")) {
+        const isFullSiteRequest = params.has("fullsite") || localStorage.getItem("fullSiteMode") === "true";
+
+        if (params.has("fullsite")) {
+            localStorage.setItem("fullSiteMode", "true");
+        }
+
+        if (!isFullSiteRequest) {
             window.location.replace("shop.html");
         }
     })();
