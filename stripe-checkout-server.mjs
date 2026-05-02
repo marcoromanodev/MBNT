@@ -374,6 +374,38 @@ async function handleCreatePaymentIntent(req, res) {
   }
 }
 
+
+async function handleCreateProduct(req, res) {
+  const requestOrigin = req.headers.origin || '';
+  if (!stripeSecretKey) return jsonResponse(res, 500, { error: 'Missing STRIPE_SECRET_KEY.' }, requestOrigin);
+  const rawBody = await readBody(req);
+  let body;
+  try { body = rawBody ? JSON.parse(rawBody) : {}; } catch { return jsonResponse(res, 400, { error: 'Invalid JSON body.' }, requestOrigin); }
+  const name = String(body.name || '').trim();
+  const description = String(body.description || '').trim();
+  const category = String(body.category || '').trim();
+  const priceAmount = Number(body.price);
+  const quantity = Number(body.inventoryQuantity || 0);
+  const images = Array.isArray(body.images) ? body.images.filter(Boolean) : [];
+  if (!name || !Number.isFinite(priceAmount) || priceAmount <= 0) return jsonResponse(res, 400, { error: 'name and valid price are required.' }, requestOrigin);
+  try {
+    const productForm = new URLSearchParams();
+    productForm.append('name', name);
+    if (description) productForm.append('description', description);
+    images.forEach((img, i) => productForm.append(`images[${i}]`, img));
+    if (category) productForm.append('metadata[category]', category);
+    productForm.append('metadata[inventoryQuantity]', String(Math.max(0, quantity)));
+    const stripeProduct = await stripeApiRequest('/v1/products', { method: 'POST', contentType: 'application/x-www-form-urlencoded', body: productForm });
+    const priceForm = new URLSearchParams();
+    priceForm.append('product', stripeProduct.id);
+    priceForm.append('unit_amount', String(Math.round(priceAmount * 100)));
+    priceForm.append('currency', 'usd');
+    const stripePrice = await stripeApiRequest('/v1/prices', { method: 'POST', contentType: 'application/x-www-form-urlencoded', body: priceForm });
+    return jsonResponse(res, 200, { stripe_product_id: stripeProduct.id, stripe_price_id: stripePrice.id }, requestOrigin);
+  } catch (error) {
+    return jsonResponse(res, 500, { error: error.message || 'Unable to create product in Stripe.' }, requestOrigin);
+  }
+}
 const server = createServer(async (req, res) => {
   const requestOrigin = req.headers.origin || '';
   const requestUrl = new URL(req.url || '/', `http://${req.headers.host || 'localhost'}`);
