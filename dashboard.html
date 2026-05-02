@@ -1,13 +1,17 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>Team Private Admin</title><style>
 *{box-sizing:border-box}
-html,body{min-height:100%;width:100%;overflow-x:hidden}
-body{margin:0;font-family:Arial,sans-serif;background:#fff;color:#000;min-height:100dvh;display:flex;flex-direction:column}
+html,body{min-height:100%;margin:0;width:100%;overflow-x:hidden}
+body{min-height:100dvh;font-family:Arial,sans-serif;background:#fff;color:#000}
 .dashboard-shell{min-height:100dvh;display:flex;flex-direction:column;width:100%}
+
+#dashboard-site-header{flex:0 0 auto}
+#dashboard-login-screen{flex:1 1 auto;display:flex;align-items:center;justify-content:center;padding:16px}
+.dashboard-footer-wrap{flex:0 0 auto}
 .header-container{width:100%;padding:0 10px 10px;background-color:#f7f7f7;display:flex;flex-direction:column;align-items:center}
 .logo-container{position:relative;width:20vw;max-width:260px;min-width:170px;height:15vh;max-height:120px;margin-top:0}
 .logo-container iframe{width:100%;height:100%;border:0;display:block}
 .time{font-size:.7rem;text-align:center;margin-top:-15px;font-weight:600}
-.site-shell{width:100%;max-width:1280px;margin:0 auto;padding:14px 16px;flex:1;display:flex;flex-direction:column;align-items:center}
+.site-shell{width:100%;max-width:1280px;margin:0 auto;padding:14px 16px;display:flex;flex-direction:column;align-items:center}
 main{flex:1;width:100%;max-width:100%}
 .panel{border:1px solid #000;padding:12px;margin:10px auto;max-width:100%;overflow:visible;width:100%;text-align:center}
 .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;max-width:100%;width:100%;margin:0 auto}
@@ -68,7 +72,7 @@ footer .footer-links{display:flex;justify-content:center;padding-bottom:10px}
 <div class="panel"><h2>Real Analytics</h2><canvas id="analyticsGraph" width="1000" height="120"></canvas><div id="siteMetrics" class="row"></div><h3>Traffic Per Page</h3><ul id="pageAnalytics"></ul><h3>Visitors by Location</h3><div class="panel">Location analytics will appear here once backend tracking is connected.</div></div>
 <div class="panel"><h2>Product Manager</h2><h3>Create New Product</h3><form id="createProductForm" class="row"><input id="newName" placeholder="Product name" required><textarea id="newDescription" placeholder="Description"></textarea><input id="newPrice" type="number" step="0.01" placeholder="Price" required><select id="newCategory"></select><input id="newMainImage" placeholder="Main image path"><input id="newMainImageUpload" type="file" accept="image/*"><input id="newImages" placeholder="Additional images (comma separated)"><input id="newImagesUpload" type="file" accept="image/*" multiple><input id="newQty" type="number" placeholder="Quantity" value="0"><input id="newVariants" placeholder="Variants (comma separated)"><label><input type="checkbox" id="newManualSold"> Sold out manually</label><label><input type="checkbox" id="newActive" checked> Active/visible</label><div><strong>Placement</strong><div id="placementPills" class="pill-wrap"></div></div><button id="createProductBtn" type="submit">Create Product</button><small id="createProductError" style="color:#c00"></small></form><div id="productGrid" class="product-manager-list"></div></div>
 <div class="panel"><h2>Page Manager</h2><h3>Create New Page</h3><form id="pageForm" class="row"><input id="pageName" placeholder="Page filename (example: vintage.html)" required><input id="pageLabel" placeholder="Nav label" required><select id="pageType"><option>Collection Page</option><option>Redirect Page</option><option>Product Page</option><option>Blank Page</option></select><input id="redirectUrl" placeholder="Redirect URL (for Redirect Page)"><button>Create/Update Page</button></form><div id="pageManager"></div></div>
-</main></div><div class="view-full-site-wrap"><a class="view-full-site" href="index.html">View Full Site</a></div><footer class="footer"><div class="footer-links"><div class="footer-line extra-padding"><a href="shop.html">shop</a><a href="all.html">view all</a><a href="soon.html">preview</a><a href="soon.html">lookbook</a><a href="news.html">news</a></div><div class="footer-line"><a href="random.html">random</a><a href="about.html">about</a><a href="stores.html">stores</a><a href="soon.html">sizing</a><a href="faq.html">f.a.q.</a><a href="contact.html">contact</a></div><div class="footer-line less-padding"><a href="terms.html">terms</a><a href="privacy.html">privacy</a><a href="accessibility.html">accessibility</a><a href="mailinglist.html">mailing list</a></div></div></footer></div>
+</main></div><div class="view-full-site-wrap"><a class="view-full-site" href="index.html">View Full Site</a></div><footer class="footer dashboard-footer-wrap"><div class="footer-links"><div class="footer-line extra-padding"><a href="shop.html">shop</a><a href="all.html">view all</a><a href="soon.html">preview</a><a href="soon.html">lookbook</a><a href="news.html">news</a></div><div class="footer-line"><a href="random.html">random</a><a href="about.html">about</a><a href="stores.html">stores</a><a href="soon.html">sizing</a><a href="faq.html">f.a.q.</a><a href="contact.html">contact</a></div><div class="footer-line less-padding"><a href="terms.html">terms</a><a href="privacy.html">privacy</a><a href="accessibility.html">accessibility</a><a href="mailinglist.html">mailing list</a></div></div></footer></div>
 <script>
 const DASH_SESSION_KEY='mbnt_dashboard_auth',productsKey='mbnt_admin_products',pagesKey='mbnt_admin_pages',analyticsKey='mbnt_analytics_events';
 const SITE_PAGES=['index.html','shop.html','all.html','new.html','t-shirts.html','babynot.html','vintage.html','hoodie.html','hats.html','accessories.html','shirts.html','sweatshirts.html','pants.html','bags.html','skate.html','cart.html','checkout.html','about.html','contact.html'];
@@ -86,7 +90,7 @@ function buildEvent(type,payload={}){return{type,timestamp:new Date().toISOStrin
 async function trackEvent(type,payload={}){const event=buildEvent(type,payload);const events=read(analyticsKey,[]);events.push({...event,timestampMs:Date.now()});save(analyticsKey,events);try{await fetch('/api/analytics/track',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(event)});}catch(_){}}
 trackEvent('page_visit',{page:'dashboard.html'});
 let inactivityTimeout,logoutTimeout,warningShown=false,liveTimer;
-function doLogout(){const loginScreen=document.getElementById('dashboard-login-screen');const app=document.getElementById('dashboard-app');sessionStorage.removeItem(DASH_SESSION_KEY);sessionStorage.removeItem('maybenotDashboardAuth');if(loginScreen){loginScreen.hidden=false;loginScreen.style.display='block';}if(app){app.hidden=true;app.style.display='none';}clearTimeout(inactivityTimeout);clearTimeout(logoutTimeout);warningShown=false;alert('Signed out due to inactivity.');}
+function doLogout(){const loginScreen=document.getElementById('dashboard-login-screen');const app=document.getElementById('dashboard-app');sessionStorage.removeItem(DASH_SESSION_KEY);sessionStorage.removeItem('maybenotDashboardAuth');if(loginScreen){loginScreen.hidden=false;loginScreen.style.display='flex';}if(app){app.hidden=true;app.style.display='none';}clearTimeout(inactivityTimeout);clearTimeout(logoutTimeout);warningShown=false;alert('Signed out due to inactivity.');}
 function armInactivity(){clearTimeout(inactivityTimeout);clearTimeout(logoutTimeout);if(warningShown){warningShown=false;}inactivityTimeout=setTimeout(()=>{warningShown=true;alert('You have been inactive. You will be signed out in 1 minute.');logoutTimeout=setTimeout(doLogout,60000);},300000);}
 ['mousemove','click','keydown','scroll','touchstart'].forEach(evt=>document.addEventListener(evt,()=>{if(!dashboardApp.hidden)armInactivity()},{passive:true}));
 async function fetchAnalyticsSummary(){try{const res=await fetch('/api/analytics/summary');if(!res.ok)throw new Error('summary');const summary=await res.json();return summary.events||[]}catch(_){return read(analyticsKey,[])}}
@@ -129,34 +133,38 @@ filterRange.addEventListener('change',guardedRender(renderAll));analyticsPage.ad
     const form = document.getElementById("dashboard-login-form");
     const usernameInput = document.getElementById("dashboard-username");
     const passwordInput = document.getElementById("dashboard-password");
+    const loginError = document.getElementById("dashboard-login-error");
     const loginScreen = document.getElementById("dashboard-login-screen");
     const dashboardApp = document.getElementById("dashboard-app");
-    const loginError = document.getElementById("dashboard-login-error");
 
     console.log("Dashboard login elements:", {
       form: !!form,
       usernameInput: !!usernameInput,
       passwordInput: !!passwordInput,
+      loginError: !!loginError,
       loginScreen: !!loginScreen,
-      dashboardApp: !!dashboardApp,
-      loginError: !!loginError
+      dashboardApp: !!dashboardApp
     });
 
-    if (!form || !usernameInput || !passwordInput || !loginScreen || !dashboardApp || !loginError) {
+    if (!form || !usernameInput || !passwordInput || !loginError || !loginScreen || !dashboardApp) {
       console.error("Dashboard login is broken because required IDs are missing.");
       return;
     }
 
     function showDashboard() {
       sessionStorage.setItem("maybenotDashboardAuth", "true");
-      sessionStorage.setItem(DASH_SESSION_KEY,'1');
+      sessionStorage.setItem(DASH_SESSION_KEY, "1");
       loginScreen.hidden = true;
       loginScreen.style.display = "none";
       dashboardApp.hidden = false;
       dashboardApp.style.display = "block";
       loginError.textContent = "";
       loginError.style.display = "none";
-      initPageSelect();renderAll();armInactivity();liveTimer=setInterval(renderAll,5000);
+      initPageSelect();
+      renderAll();
+      armInactivity();
+      clearInterval(liveTimer);
+      liveTimer = setInterval(renderAll, 5000);
     }
 
     function showLogin() {
@@ -164,12 +172,12 @@ filterRange.addEventListener('change',guardedRender(renderAll));analyticsPage.ad
       sessionStorage.removeItem(DASH_SESSION_KEY);
       clearInterval(liveTimer);
       loginScreen.hidden = false;
-      loginScreen.style.display = "block";
+      loginScreen.style.display = "flex";
       dashboardApp.hidden = true;
       dashboardApp.style.display = "none";
     }
 
-    if (sessionStorage.getItem("maybenotDashboardAuth") === "true") {
+    if (sessionStorage.getItem("maybenotDashboardAuth") === "true" || sessionStorage.getItem(DASH_SESSION_KEY) === "1") {
       showDashboard();
     } else {
       showLogin();
@@ -177,12 +185,18 @@ filterRange.addEventListener('change',guardedRender(renderAll));analyticsPage.ad
 
     form.addEventListener("submit", function (event) {
       event.preventDefault();
-      event.stopPropagation();
 
       const username = usernameInput.value.trim();
-      const password = passwordInput.value.trim();
+      const password = passwordInput.value;
+      const matched = username === "maybenot" && password === "Sacred6767";
 
-      if (username === "maybenot" && password === "Sacred6767") {
+      console.log("Dashboard login attempt:", {
+        username,
+        passwordLength: password.length,
+        matched
+      });
+
+      if (matched) {
         showDashboard();
       } else {
         loginError.textContent = "Invalid credentials.";
