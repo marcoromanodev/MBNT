@@ -445,6 +445,72 @@ async function handleCreateProduct(req, res) {
     return jsonResponse(res, 500, { error: error.message || 'Unable to create product in Stripe.' }, requestOrigin);
   }
 }
+
+
+async function readJsonFile(fileName, fallback = []) {
+  try {
+    const raw = await fs.readFile(path.join(repoRoot, fileName), 'utf8');
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+async function readDashboardDefaults() {
+  const html = await fs.readFile(path.join(repoRoot, 'dashboard.html'), 'utf8');
+  const productsMatch = html.match(/const DEFAULT_PRODUCTS=\[(.*?)\];\s*const DEFAULT_PAGES=/s);
+  const pagesMatch = html.match(/const DEFAULT_PAGES=\[(.*?)\];\s*function seedDefaultData/s);
+  const evalArray = (body) => Function(`"use strict"; return [${body}];`)();
+  return {
+    products: productsMatch ? evalArray(productsMatch[1]) : [],
+    pages: pagesMatch ? evalArray(pagesMatch[1]) : []
+  };
+}
+
+function slugifyProductPage(name){return String(name||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')+'.html'}
+
+async function handleAdminProducts(req,res){
+  const requestOrigin=req.headers.origin||'';
+  const defaults=await readDashboardDefaults();
+  const adminProducts=await readJsonFile('admin-products.json',[]);
+  const map=new Map();
+  [...defaults.products,...adminProducts].forEach((p)=>{if(p&&p.id) map.set(p.id,{...map.get(p.id),...p});});
+  const products=[...map.values()].map((p)=>({
+    id:p.id,name:p.name||'',slug:p.slug||slugifyProductPage(p.name||p.id),images:Array.isArray(p.images)?p.images:[],description:p.description||'',price:Number(p.price||0),inventoryQuantity:Number(p.inventoryQuantity||0),category:p.category||'',placement:Array.isArray(p.placement)?p.placement:[],status:p.status||'active',manualSold:Boolean(p.manualSold),soldOut:Boolean(p.manualSold)||Number(p.inventoryQuantity||0)<1,stripe_product_id:p.stripe_product_id||'',stripe_price_id:p.stripe_price_id||'',variants:Array.isArray(p.variants)?p.variants:[]
+  }));
+  return jsonResponse(res,200,{products,source:'repo+registry'},requestOrigin);
+}
+
+async function handleAdminPages(req,res){
+  const requestOrigin=req.headers.origin||'';
+  const htmlFiles=(await fs.readdir(repoRoot)).filter((f)=>f.endsWith('.html'));
+  const defaults=await readDashboardDefaults();
+  const adminPages=await readJsonFile('admin-pages.json',[]);
+  const products=(await handleProductsData());
+  const productSlugs=products.map((p)=>slugifyProductPage(p.name||p.id));
+  const names=new Set([...htmlFiles,...productSlugs,...defaults.pages.map((p)=>p.slug),...adminPages.map((p)=>p.slug)]);
+  const collectionHints=['shop.html','all.html','new.html','jackets.html','shirts.html','tops-sweaters.html','sweatshirts.html','pants.html','t-shirts.html','hats.html','bags.html','accessories.html','shoes.html','gym.html','skate.html','babynot.html'];
+  const infoHints=['about.html','privacy.html','terms.html','faq.html','contact.html','accessibility.html','mailinglist.html','news.html','stores.html'];
+  const pages=[...names].map((slug)=>{
+    let type='Blank Page';
+    if(slug==='vintage.html') type='Redirect Page';
+    else if(productSlugs.includes(slug)) type='Product Page';
+    else if(collectionHints.includes(slug)) type='Collection Page';
+    else if(slug==='index.html'||infoHints.includes(slug)) type='Blank Page';
+    const existing=adminPages.find((p)=>p.slug===slug)||defaults.pages.find((p)=>p.slug===slug)||{};
+    return {slug,label:existing.label||slug,type,visible:existing.visible!==false,redirectUrl:existing.redirectUrl||'',content:existing.content||''};
+  });
+  return jsonResponse(res,200,{pages},requestOrigin);
+}
+
+async function handleProductsData(){
+  const defaults=await readDashboardDefaults();
+  const adminProducts=await readJsonFile('admin-products.json',[]);
+  const map=new Map();
+  [...defaults.products,...adminProducts].forEach((p)=>{if(p&&p.id) map.set(p.id,{...map.get(p.id),...p});});
+  return [...map.values()];
+}
 const analyticsEvents = [];
 
 const repoRoot=process.cwd();
@@ -555,6 +621,33 @@ const server = createServer(async (req, res) => {
 
     if (req.method === 'GET' && pathname === '/api/admin/orders') {
       return await handleAdminOrders(req, res);
+    }
+    if (req.method === 'GET' && pathname === '/api/admin/products') {
+      return await handleAdminProducts(req, res);
+    }
+    if (req.method === 'GET' && pathname === '/api/admin/pages') {
+      return await handleAdminPages(req, res);
+    }
+
+    if (req.method === 'POST' && pathname === '/api/admin/delete-product') {
+      const body=JSON.parse((await readBody(req))||'{}');
+      const arr=await readJsonFile('admin-products.json',[]);
+      const next=arr.filter(p=>p.id!==(body.product?.id||body.id));
+      const fp=path.join(repoRoot,'admin-products.json');
+      await fs.writeFile(fp,JSON.stringify(next,null,2));
+      if(!ensureGitHubConfigured()) return jsonResponse(res,503,{error:'GitHub save is not configured yet. Changes were not published permanently.'},requestOrigin);
+      await gitCommit(path.relative(repoRoot,fp),'admin: delete product');
+      return jsonResponse(res,200,{ok:true},requestOrigin);
+    }
+    if (req.method === 'POST' && pathname === '/api/admin/delete-page') {
+      const body=JSON.parse((await readBody(req))||'{}');
+      const arr=await readJsonFile('admin-pages.json',[]);
+      const next=arr.filter(p=>p.slug!==(body.slug||body.page?.slug));
+      const fp=path.join(repoRoot,'admin-pages.json');
+      await fs.writeFile(fp,JSON.stringify(next,null,2));
+      if(!ensureGitHubConfigured()) return jsonResponse(res,503,{error:'GitHub save is not configured yet. Changes were not published permanently.'},requestOrigin);
+      await gitCommit(path.relative(repoRoot,fp),'admin: delete page');
+      return jsonResponse(res,200,{ok:true},requestOrigin);
     }
 
     if (req.method === 'POST' && pathname === '/api/admin/create-page') {
