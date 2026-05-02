@@ -406,6 +406,10 @@ async function handleCreateProduct(req, res) {
     return jsonResponse(res, 500, { error: error.message || 'Unable to create product in Stripe.' }, requestOrigin);
   }
 }
+const analyticsEvents = [];
+
+function normalizeAnalyticsEvent(event={}){return {type:String(event.type||'page_event'),timestamp:event.timestamp||new Date().toISOString(),timestampMs:Date.parse(event.timestamp||'')||Date.now(),pagePath:String(event.pagePath||event.page||'index.html'),productId:event.productId||null,productName:event.productName||null,sessionId:event.sessionId||null,cartCount:Number.isFinite(Number(event.cartCount))?Number(event.cartCount):null,userAgent:String(event.userAgent||''),timezone:String(event.timezone||''),referrer:String(event.referrer||'')};}
+
 const server = createServer(async (req, res) => {
   const requestOrigin = req.headers.origin || '';
   const requestUrl = new URL(req.url || '/', `http://${req.headers.host || 'localhost'}`);
@@ -432,6 +436,20 @@ const server = createServer(async (req, res) => {
 
     if (req.method === 'POST' && pathname === '/api/products/create') {
       return await handleCreateProduct(req, res);
+    }
+
+    if (req.method === 'POST' && pathname === '/api/analytics/track') {
+      const rawBody = await readBody(req);
+      let body;
+      try { body = rawBody ? JSON.parse(rawBody) : {}; } catch { return jsonResponse(res, 400, { error: 'Invalid JSON body.' }, requestOrigin); }
+      const event = normalizeAnalyticsEvent(body);
+      analyticsEvents.push(event);
+      if (analyticsEvents.length > 10000) analyticsEvents.splice(0, analyticsEvents.length - 10000);
+      return jsonResponse(res, 200, { ok: true }, requestOrigin);
+    }
+
+    if (req.method === 'GET' && pathname === '/api/analytics/summary') {
+      return jsonResponse(res, 200, { events: analyticsEvents }, requestOrigin);
     }
 
     if (req.method === 'POST' && pathname === '/api/stripe/webhook') {

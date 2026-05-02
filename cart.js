@@ -1,12 +1,33 @@
 let cart = [];
 
 const ANALYTICS_KEY = 'mbnt_analytics_events';
+function buildAnalyticsEvent(type, payload = {}) {
+    return {
+        type,
+        timestamp: new Date().toISOString(),
+        pagePath: window.location.pathname.split('/').pop() || 'index.html',
+        productId: payload.productId || null,
+        productName: payload.product || payload.productName || null,
+        sessionId: sessionStorage.getItem('mbnt_session_id') || (sessionStorage.setItem('mbnt_session_id', crypto.randomUUID()), sessionStorage.getItem('mbnt_session_id')),
+        cartCount: payload.cartCount ?? getTotalQuantity(),
+        userAgent: navigator.userAgent,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        referrer: document.referrer || ''
+    };
+}
+
 function trackAnalyticsEvent(type, payload = {}) {
+    const event = buildAnalyticsEvent(type, payload);
     try {
         const events = JSON.parse(localStorage.getItem(ANALYTICS_KEY) || '[]');
-        events.push({ type, timestamp: Date.now(), page: window.location.pathname.split('/').pop() || 'index.html', ...payload });
+        events.push({ ...event, timestampMs: Date.now() });
         localStorage.setItem(ANALYTICS_KEY, JSON.stringify(events));
     } catch (_) {}
+    fetch('/api/analytics/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(event)
+    }).catch(() => {});
 }
 
 
