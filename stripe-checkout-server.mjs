@@ -385,9 +385,6 @@ async function handleCreatePaymentIntent(req, res) {
 
 async function handleAdminOrders(req, res) {
   const requestOrigin = req.headers.origin || '';
-  if (!isAdmin(req)) {
-    return jsonResponse(res, 401, { error: 'Unauthorized admin request.' }, requestOrigin);
-  }
   if (!stripeSecretKey) {
     return jsonResponse(res, 500, { error: 'Stripe secret key is not configured.' }, requestOrigin);
   }
@@ -488,10 +485,7 @@ function slugifyProductPage(name){return String(name||'').toLowerCase().replace(
 async function handleAdminProducts(req,res){
   const requestOrigin=req.headers.origin||'';
   const defaults=await readDashboardDefaults();
-  const adminProducts=await readJsonFile('admin-products.json',[]);
-  const map=new Map();
-  [...defaults.products,...adminProducts].forEach((p)=>{if(p&&p.id) map.set(p.id,{...map.get(p.id),...p});});
-  const products=[...map.values()].map((p)=>({
+  const products=[...defaults.products].map((p)=>({
     id:p.id,name:p.name||'',slug:p.slug||slugifyProductPage(p.name||p.id),images:Array.isArray(p.images)?p.images:[],description:p.description||'',price:Number(p.price||0),inventoryQuantity:Number(p.inventoryQuantity||0),category:p.category||'',placement:Array.isArray(p.placement)?p.placement:[],status:p.status||'active',manualSold:Boolean(p.manualSold),soldOut:Boolean(p.manualSold)||Number(p.inventoryQuantity||0)<1,stripe_product_id:p.stripe_product_id||'',stripe_price_id:p.stripe_price_id||'',variants:Array.isArray(p.variants)?p.variants:[]
   }));
   return jsonResponse(res,200,{products,source:'repo+registry'},requestOrigin);
@@ -499,12 +493,11 @@ async function handleAdminProducts(req,res){
 
 async function handleAdminPages(req,res){
   const requestOrigin=req.headers.origin||'';
-  const htmlFiles=(await fs.readdir(repoRoot)).filter((f)=>f.endsWith('.html'));
   const defaults=await readDashboardDefaults();
-  const adminPages=await readJsonFile('admin-pages.json',[]);
   const products=(await handleProductsData());
   const productSlugs=products.map((p)=>slugifyProductPage(p.name||p.id));
-  const names=new Set([...htmlFiles,...productSlugs,...defaults.pages.map((p)=>p.slug),...adminPages.map((p)=>p.slug)]);
+  const names=new Set([...defaults.pages.map((p)=>p.slug),...productSlugs]);
+  const adminPages=[];
   const collectionHints=['shop.html','all.html','new.html','jackets.html','shirts.html','tops-sweaters.html','sweatshirts.html','pants.html','t-shirts.html','hats.html','bags.html','accessories.html','shoes.html','gym.html','skate.html','babynot.html'];
   const infoHints=['about.html','privacy.html','terms.html','faq.html','contact.html','accessibility.html','mailinglist.html','news.html','stores.html'];
   const pages=[...names].map((slug)=>{
@@ -595,6 +588,21 @@ const server = createServer(async (req, res) => {
       return await handleVerifyReturn(req, res, requestUrl);
     }
 
+
+    if (req.method === 'GET' && pathname === '/api/health') {
+      return jsonResponse(
+        res,
+        200,
+        {
+          ok: true,
+          server: 'running',
+          stripeConfigured: Boolean(stripeSecretKey),
+          githubConfigured: Boolean(ensureGitHubConfigured())
+        },
+        requestOrigin
+      );
+    }
+
     if (req.method === 'GET' && pathname === '/api/stripe/health') {
       return jsonResponse(
         res,
@@ -612,7 +620,7 @@ const server = createServer(async (req, res) => {
     }
 
 
-    if (pathname.startsWith('/api/admin/') && pathname !== '/api/admin/orders' && !isAdmin(req)) {
+    if (pathname.startsWith('/api/admin/') && !['/api/admin/orders','/api/admin/products','/api/admin/pages'].includes(pathname) && !isAdmin(req)) {
       return jsonResponse(res, 401, { error: 'Admin session required.' }, requestOrigin);
     }
 
