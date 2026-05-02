@@ -541,7 +541,7 @@
         </div>
     </div>
     <div class="full-site-link" id="full-site-link">
-        <a href="index.html" onclick="localStorage.setItem('fullSiteMode', 'true')">full site</a>
+        <a href="index.html?fullsite=1">full site</a>
     </div>
 </footer>
 
@@ -623,8 +623,7 @@
             document.addEventListener("touchcancel", cleanup);
             pressTimer = setTimeout(() => {
                 if (startPoint) {
-                    localStorage.setItem("fullSiteMode", "true");
-                    window.location.href = "index.html";
+                    window.location.href = "index.html?fullsite=1";
                 }
                 cleanup();
             }, 600);
