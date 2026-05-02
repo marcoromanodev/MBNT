@@ -128,14 +128,31 @@ const DEFAULT_PRODUCTS=[
 {id:'prod_24',name:'MBNT Patagucci Shirt',category:'shirts.html',images:['mbntpatagucci.png'],inventoryQuantity:10,manualSold:false,status:'active',placement:['shirts.html']},
 {id:'prod_25',name:'MBNT Cancer Shirt',category:'shirts.html',images:['MBNTCANCER.png'],inventoryQuantity:10,manualSold:false,status:'active',placement:['shirts.html']}
 ];
+const STATIC_PAGE_SLUGS=['index.html','shop.html','all.html','new.html','t-shirts.html','babynot.html','vintage.html','hoodie.html','hats.html','accessories.html','shirts.html','sweatshirts.html','pants.html','bags.html','skate.html','cart.html','checkout.html','about.html','contact.html','terms.html','privacy.html','accessibility.html','mailinglist.html','faq.html','news.html','stores.html','random.html','success.html','gym.html','shoes.html','jackets.html','tops-sweaters.html'];
 const DEFAULT_PAGES=[
 {slug:'index.html',label:'Blank Page',type:'Blank Page',visible:true},
 {slug:'vintage.html',label:'Redirect Page',type:'Redirect Page',visible:true},
-...COLLECTION_SLUGS.map(slug=>({slug,label:slug,type:'Collection Page',visible:true}))
+...COLLECTION_SLUGS.map(slug=>({slug,label:slug,type:'Collection Page',visible:true})),
+...STATIC_PAGE_SLUGS.filter(slug=>!['index.html','vintage.html',...COLLECTION_SLUGS].includes(slug)).map(slug=>({slug,label:slug,type:'Blank Page',visible:true}))
 ];
 function isValidProductsData(v){return Array.isArray(v)&&v.length>0&&v.every(p=>p&&typeof p==='object'&&p.name);}
 function isValidPagesData(v){return Array.isArray(v)&&v.length>0&&v.every(p=>p&&typeof p==='object'&&p.slug);}
-function seedDefaultData(){const existingProducts=read(productsKey,[]);const products=isValidProductsData(existingProducts)?existingProducts:DEFAULT_PRODUCTS.map(p=>({...p,placement:Array.isArray(p.placement)?p.placement:[p.category].filter(Boolean),variants:Array.isArray(p.variants)?p.variants:[]}));if(!isValidProductsData(existingProducts))save(productsKey,products);const existingPages=read(pagesKey,[]);const seededPages=isValidPagesData(existingPages)?existingPages:DEFAULT_PAGES.map(p=>({...p}));const syncedPages=syncProductPages(products,seededPages);save(pagesKey,syncedPages);}
+function seedDefaultData(){
+const existingProducts=read(productsKey,[]);
+const normalizedDefaults=DEFAULT_PRODUCTS.map(p=>({...p,placement:Array.isArray(p.placement)?p.placement:[p.category].filter(Boolean),variants:Array.isArray(p.variants)?p.variants:[],price:Number(p.price||0),description:p.description||''}));
+const validExisting=Array.isArray(existingProducts)?existingProducts.filter(p=>p&&typeof p==='object'&&(p.id||p.name)):[];
+const productsById=new Map(validExisting.map(p=>[p.id||p.name,p]));
+for(const dp of normalizedDefaults){const key=dp.id||dp.name;if(!productsById.has(key))productsById.set(key,dp);}
+const mergedProducts=[...productsById.values()];
+if(!isValidProductsData(existingProducts)||mergedProducts.length<DEFAULT_PRODUCTS.length)save(productsKey,mergedProducts);
+const existingPages=read(pagesKey,[]);
+const validPages=Array.isArray(existingPages)?existingPages.filter(p=>p&&typeof p==='object'&&p.slug):[];
+const pageMap=new Map(validPages.map(p=>[p.slug,p]));
+for(const pg of DEFAULT_PAGES){if(!pageMap.has(pg.slug))pageMap.set(pg.slug,{...pg});}
+const mergedPages=[...pageMap.values()];
+const syncedPages=syncProductPages(mergedProducts,mergedPages);
+save(pagesKey,syncedPages);
+}
 
 const adminAuth=()=>sessionStorage.getItem('mbnt_admin_auth')||'';
 const read=(k,d)=>JSON.parse(localStorage.getItem(k)||JSON.stringify(d)),save=(k,v)=>localStorage.setItem(k,JSON.stringify(v)); let dirty=false;
@@ -173,9 +190,10 @@ async function fetchOrders(){
     const res=await fetch('/api/admin/orders',{headers:{'x-admin-auth':adminAuth()}});
     if(!res.ok)throw new Error('orders');
     const data=await res.json();
-    return Array.isArray(data.orders)?data.orders:[];
+    if(data.configured===false) return {orders:[],message:'Stripe order sync is not configured yet.'};
+    return {orders:Array.isArray(data.orders)?data.orders:[],message:''};
   }catch(_){
-    return read('mbnt_admin_orders',[]);
+    return {orders:read('mbnt_admin_orders',[]),message:'Stripe order sync is not configured yet.'};
   }
 }
 async function persistOrderUpdate(path,payload){
@@ -196,7 +214,7 @@ async function autoRefundExpiredOrders(orders){
 }
 function orderDetailsMarkup(order){
   const c=order.customer||{};const addr=order.address||{};
-  return `<div style='margin-top:8px;font-size:13px'><div><strong>Customer:</strong> ${c.name||''} (${c.email||''})</div><div><strong>Address:</strong> ${[addr.line1,addr.city,addr.state,addr.postal_code,addr.country].filter(Boolean).join(', ')}</div><div><strong>Items:</strong> ${(order.items||[]).map(i=>`${i.name||'Item'} x${i.quantity||1}`).join('; ')||'N/A'}</div><div><strong>Total:</strong> $${((order.total||0)/100).toFixed(2)}</div></div>`
+  return `<div style='margin-top:8px;font-size:13px'><div><strong>Date:</strong> ${order.createdAt?new Date(order.createdAt).toLocaleString():'N/A'}</div><div><strong>Customer:</strong> ${c.name||''} (${c.email||''})</div><div><strong>Address:</strong> ${[addr.line1,addr.city,addr.state,addr.postal_code,addr.country].filter(Boolean).join(', ')}</div><div><strong>Items:</strong> ${(order.items||[]).map(i=>`${i.name||'Item'} x${i.quantity||1}`).join('; ')||'N/A'}</div><div><strong>Total:</strong> $${((order.total||0)/100).toFixed(2)} ${(order.currency||'usd').toUpperCase()}</div><div><strong>Payment status:</strong> ${order.payment_status||order.status||'unknown'}</div><div><strong>Stripe ID:</strong> ${order.stripe_session_id||order.id||'N/A'}</div></div>`
 }
 async function confirmDelivered(i){
   const orders=read('mbnt_admin_orders',[]);const order=orders[i];
@@ -209,13 +227,14 @@ async function confirmDelivered(i){
 }
 window.confirmDelivered=confirmDelivered;
 async function renderOrders(){
-  const orders=await fetchOrders();
+  const orderPayload=await fetchOrders();
+  const orders=orderPayload.orders||[];
   await autoRefundExpiredOrders(orders);
   save('mbnt_admin_orders',orders);
   orderManager.innerHTML=orders.length?orders.map((o,i)=>{
     const status=o.status==='confirmed'?'confirmed':(o.status==='refunded'?'refunded':'unconfirmed');
     return `<details class='order-card'><summary class='order-summary'><span>#${o.orderNumber||o.id||('ORD-'+(i+1))}</span><span class='order-badge ${status==='confirmed'?'confirmed':'unconfirmed'}'>${status}</span></summary>${orderDetailsMarkup(o)}<div style='margin-top:8px'><button type='button' ${status!=='unconfirmed'?'disabled':''} onclick='confirmDelivered(${i})'>Confirm Delivered</button></div></details>`;
-  }).join(''):`<div class='grid-row'><div></div><div>No orders found.</div><div>-</div><div>-</div><div></div></div>`;
+  }).join(''):`<div class='grid-row'><div></div><div>${orderPayload.message||'No Stripe orders found yet.'}</div><div>-</div><div>-</div><div></div></div>`;
 }
 function renderPages(){const products=read(productsKey,[]);const productSlugs=products.map(p=>slugifyProductPage(p.name||p.id||'product'));const base=['index.html','vintage.html',...COLLECTION_SLUGS,...SITE_PAGES,...productSlugs];const custom=syncProductPages(products,read(pagesKey,[]));save(pagesKey,custom);const pages=[...new Set([...base,...custom.map(p=>p.slug)])];pageManager.innerHTML=pages.map((slug,i)=>{const presetType=slug==='index.html'?'Blank Page':(slug==='vintage.html'?'Redirect Page':(COLLECTION_SLUGS.includes(slug)?'Collection Page':(productSlugs.includes(slug)?'Product Page':'Blank Page')));const c=custom.find(x=>x.slug===slug)||{slug,label:slug,type:presetType,visible:true,content:'',redirectUrl:'',assignments:[]};if(productSlugs.includes(slug))c.type='Product Page';if(COLLECTION_SLUGS.includes(slug))c.type='Collection Page';if(slug==='index.html')c.type='Blank Page';if(slug==='vintage.html')c.type='Redirect Page';return `<div class='page-card'><strong>${c.label||c.slug}</strong><div>${c.type} • ${c.visible===false?'hidden':'visible'}</div><div><button onclick='togglePageEdit(${i})'>Edit</button> <button onclick='togglePageVis("${c.slug}")'>👁</button> <button onclick='deletePage("${c.slug}")'>Delete</button></div><div id='page-edit-${i}' class='edit-panel' hidden><div class='row'><input data-page='slug' value='${c.slug}'><select data-page='type'>${PAGE_TYPES.map(t=>`<option ${c.type===t?'selected':''}>${t}</option>`).join('')}</select><input data-page='label' value='${c.label||''}'><label><input data-page='visible' type='checkbox' ${c.visible===false?'':'checked'}> Visible</label><textarea data-page='content'>${c.content||''}</textarea><input data-page='redirectUrl' value='${c.redirectUrl||''}' placeholder='Redirect URL'><input data-page='assignments' value='${(c.assignments||[]).join(', ')}' placeholder='Collection/product assignments'></div><button onclick='savePage("${c.slug}",${i})'>Save</button></div></div>`}).join('')}
 window.togglePageEdit=i=>{document.getElementById(`page-edit-${i}`).hidden=!document.getElementById(`page-edit-${i}`).hidden};
@@ -224,7 +243,7 @@ window.deletePage=async slug=>{const core=['index.html','shop.html'];const msg=c
 window.savePage=async (slug,i)=>{const products=read(productsKey,[]);const isProductPage=products.map(p=>slugifyProductPage(p.name||p.id||'product')).includes(slug);if(isProductPage){alert('Product pages are edited through Product Manager.');return;}if(!confirm('Confirm changes before saving?'))return;const pages=read(pagesKey,[]);let p=pages.find(x=>x.slug===slug);if(!p){p={slug};pages.push(p)};document.querySelectorAll(`#page-edit-${i} [data-page]`).forEach(el=>{const k=el.dataset.page;p[k]=el.type==='checkbox'?el.checked:(k==='assignments'?el.value.split(',').map(s=>s.trim()).filter(Boolean):el.value)});persistAdmin('/api/admin/update-page',{page:p}).then(()=>{save(pagesKey,pages);dirty=false;renderAll()}).catch(err=>alert(err.message));};
 if(pageForm)pageForm.addEventListener('submit',async e=>{e.preventDefault();if(!confirm('Confirm changes before saving?'))return;const pages=read(pagesKey,[]),slug=pageName.value.trim();const data={slug,label:pageLabel.value.trim(),type:pageType.value,redirectUrl:redirectUrl.value.trim(),visible:true};const ex=pages.find(p=>p.slug===slug);if(ex)Object.assign(ex,data);else pages.push(data);try{await persistAdmin('/api/admin/create-page',{page:data});}catch(err){alert(err.message);return;}save(pagesKey,pages);renderAll()});
 function guardedRender(fn){return ()=>{if(dirty&&!confirm('Please confirm changes before changing pages if not done so already.'))return;fn();}}
-function initPageSelect(){seedDefaultData();const products=read(productsKey,[]);const pages=[...new Set(['index.html',...SITE_PAGES,...COLLECTION_SLUGS,...products.map(p=>slugifyProductPage(p.name||p.id||'product')),...read(pagesKey,[]).map(p=>p.slug)])];analyticsPage.innerHTML=pages.map(p=>`<option ${p==='index.html'?'selected':''}>${p}</option>`).join('')}
+function initPageSelect(){seedDefaultData();const products=read(productsKey,[]);const pages=[...new Set(['index.html',...STATIC_PAGE_SLUGS,...SITE_PAGES,...COLLECTION_SLUGS,...DEFAULT_PAGES.map(p=>p.slug),...products.map(p=>slugifyProductPage(p.name||p.id||'product')),...read(pagesKey,[]).map(p=>p.slug)])];analyticsPage.innerHTML=pages.map(p=>`<option ${p==='index.html'?'selected':''}>${p}</option>`).join('')}
 async function renderAll(){seedDefaultData();const productsFix=read(productsKey,[]);const sb=productsFix.find(p=>String(p.name||'').toLowerCase().includes('skateboard 2'));if(sb&&Array.isArray(sb.images)&&sb.images[0]!=='skateboard4.png'){sb.images[0]='skateboard4.png';save(productsKey,productsFix);}save(pagesKey,syncProductPages(productsFix,read(pagesKey,[])));const scope=filterRange.value,page=analyticsPage.value,allEvents=await fetchAnalyticsSummary();const events=filterEvents(allEvents,scope,page),pv=events.filter(e=>e.type==='page_visit');siteMetrics.innerHTML=`<div>Visits: ${pv.length}</div><div>Unique sessions: ${new Set(events.map(e=>e.sessionId||e.timestamp)).size}</div>`;pageAnalytics.innerHTML=Object.entries(pv.reduce((m,e)=>(m[e.pagePath||e.page]=(m[e.pagePath||e.page]||0)+1,m),{})).map(([p,c])=>`<li>${p}: ${c}</li>`).join('')||'<li>No tracked visits</li>';drawGraph(events,scope);await renderOrders();renderPlacementPills();renderCategoryOptions(newCategory.value);renderProducts();renderPages()}
 window.initPageSelect=initPageSelect;window.renderAll=renderAll;window.armInactivity=armInactivity;seedDefaultData();if(filterRange)filterRange.addEventListener('change',guardedRender(renderAll));if(analyticsPage)analyticsPage.addEventListener('change',guardedRender(renderAll));if(refreshOrdersBtn)refreshOrdersBtn.addEventListener('click',renderOrders);
 });

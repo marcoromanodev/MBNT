@@ -380,6 +380,39 @@ async function handleCreatePaymentIntent(req, res) {
 }
 
 
+
+async function handleAdminOrders(req, res) {
+  const requestOrigin = req.headers.origin || '';
+  if (!stripeSecretKey) {
+    return jsonResponse(res, 200, { configured: false, orders: [], message: 'Stripe order sync is not configured yet.' }, requestOrigin);
+  }
+  try {
+    const sessions = await stripeApiRequest('/v1/checkout/sessions?limit=100&expand[]=data.line_items');
+    const orders = (sessions.data || []).map((session) => ({
+      id: session.id,
+      orderNumber: session.client_reference_id || session.id,
+      createdAt: session.created ? new Date(session.created * 1000).toISOString() : null,
+      created: session.created,
+      customer: {
+        name: session.customer_details?.name || '',
+        email: session.customer_details?.email || session.customer_email || ''
+      },
+      total: Number(session.amount_total || 0),
+      currency: session.currency || 'usd',
+      payment_status: session.payment_status || session.status || 'unknown',
+      status: session.payment_status === 'paid' ? 'confirmed' : 'unconfirmed',
+      stripe_session_id: session.id,
+      items: (session.line_items?.data || []).map((item) => ({
+        name: item.description || item.price?.nickname || 'Item',
+        quantity: item.quantity || 1,
+        amount_total: item.amount_total || 0
+      }))
+    }));
+    return jsonResponse(res, 200, { configured: true, orders }, requestOrigin);
+  } catch (error) {
+    return jsonResponse(res, 200, { configured: false, orders: [], message: 'Stripe order sync is not configured yet.' }, requestOrigin);
+  }
+}
 async function handleCreateProduct(req, res) {
   const requestOrigin = req.headers.origin || '';
   if (!stripeSecretKey) return jsonResponse(res, 500, { error: 'Missing STRIPE_SECRET_KEY.' }, requestOrigin);
@@ -517,6 +550,10 @@ const server = createServer(async (req, res) => {
     }
     if (req.method === 'POST' && pathname === '/api/admin/upload-image') {
       return jsonResponse(res,501,{error:'Upload endpoint expects multipart parser setup.'},requestOrigin);
+    }
+
+    if (req.method === 'GET' && pathname === '/api/admin/orders') {
+      return await handleAdminOrders(req, res);
     }
 
     if (req.method === 'POST' && pathname === '/api/admin/create-page') {
