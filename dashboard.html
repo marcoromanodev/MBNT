@@ -1,10 +1,10 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>Team Private Admin</title><style>
 *{box-sizing:border-box}
 html,body{min-height:100%;width:100%;overflow-x:hidden}
-body{margin:0;font-family:Arial,sans-serif;background:#fff;color:#000}
-.dashboard-shell{min-height:100vh;display:flex;flex-direction:column;width:100%}
+body{margin:0;font-family:Arial,sans-serif;background:#fff;color:#000;min-height:100dvh;display:flex;flex-direction:column}
+.dashboard-shell{min-height:100dvh;display:flex;flex-direction:column;width:100%}
 .header-container{width:100%;padding:0 10px 10px;background-color:#f7f7f7;display:flex;flex-direction:column;align-items:center}
-.logo-container{position:relative;width:100%;max-width:260px;height:120px;margin-top:0}
+.logo-container{position:relative;width:20vw;max-width:260px;min-width:170px;height:15vh;max-height:120px;margin-top:0}
 .logo-container iframe{width:100%;height:100%;border:0;display:block}
 .time{font-size:.7rem;text-align:center;margin-top:-15px;font-weight:600}
 .site-shell{width:100%;max-width:1280px;margin:0 auto;padding:14px 16px;flex:1;display:flex;flex-direction:column;align-items:center}
@@ -54,31 +54,14 @@ label{text-align:left;display:block}
 .product-img{width:72px;height:72px}
 .product-manager-list,#pageManager{width:100%;max-width:100%;display:flex;flex-direction:column;max-height:60vh;min-height:280px;overflow-y:auto;overflow-x:hidden;padding-right:0;-webkit-overflow-scrolling:touch}
 .product-manager-list>div,.product-row-card,.page-card{display:flex;flex-direction:column;width:100%;max-width:100%;box-sizing:border-box}
-footer .footer-links{justify-content:center;padding-bottom:25px;margin-top:40px}
+footer .footer-links{justify-content:center;padding-bottom:12px;margin-top:0}
 }
-footer{position:static;width:100%;text-align:center;background-color:#f7f7f7;padding:8px 0;margin-top:20px}
+footer{position:static;width:100%;text-align:center;background-color:#f7f7f7;padding:8px 0;margin-top:auto}
 footer .footer-links{display:flex;justify-content:center;padding-bottom:10px}
 .footer-line{justify-content:center;flex-wrap:wrap;width:min(90%,820px);font-size:.65rem;letter-spacing:.02rem}
 .footer-links{padding-bottom:10px}
 
-#dashboard-site-header {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  width: 100%;
-  text-align: center;
-}
-
-#chicago-time {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  text-align: center;
-  font-size: 11px;
-  margin-top: 2px;
-  margin-bottom: 12px;
-}
-</style></head><body><header id="dashboard-site-header"><div class="logo-container"><iframe id="8b9281ad-097b-4408-88e2-ef824efa63eb" src="https://www.vectary.com/viewer/v1/?model=8b9281ad-097b-4408-88e2-ef824efa63eb&env=studio3&turntable=1" frameborder="0"></iframe><div class="logo-overlay"></div></div><div id="chicago-time" class="chicago-time"></div></header><div class="dashboard-shell"><div class="site-shell">
+</style></head><body><header id="dashboard-site-header" class="header-container"><div class="logo-container"><iframe id="8b9281ad-097b-4408-88e2-ef824efa63eb" src="https://www.vectary.com/viewer/v1/?model=8b9281ad-097b-4408-88e2-ef824efa63eb&env=studio3&turntable=1" frameborder="0"></iframe><div class="logo-overlay"></div></div><div id="chicago-time" class="chicago-time"></div></header><div class="dashboard-shell"><div class="site-shell">
 <section id="dashboard-login-screen" class="panel"><form id="dashboard-login-form"><h1>Team Private Admin</h1><input id="dashboard-username" name="username" autocomplete="username" placeholder="Username" required/><input id="dashboard-password" name="password" type="password" autocomplete="current-password" placeholder="Password" required/><button type="submit">Sign In</button><p id="dashboard-login-error" style="display:none;"></p></form></section>
 <main id="dashboard-app" hidden style="display:none;">
 <div class="panel"><button id="logoutBtn">Logout</button> <select id="filterRange"><option value="hour">Hour</option><option value="day" selected>Day</option><option value="week">Week</option><option value="month">Month</option><option value="year">Year</option><option value="all">All Time</option></select> <select id="analyticsPage"></select></div>
