@@ -402,6 +402,7 @@ async function handleAdminOrders(req, res) {
       payment_status: session.payment_status || session.status || 'unknown',
       status: session.payment_status === 'paid' ? 'confirmed' : 'unconfirmed',
       stripe_session_id: session.id,
+      stripe_payment_intent_id: typeof session.payment_intent === 'string' ? session.payment_intent : (session.payment_intent?.id || ''),
       items: (session.line_items?.data || []).map((item) => ({
         name: item.description || item.price?.nickname || 'Item',
         quantity: item.quantity || 1,
