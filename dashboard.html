@@ -1,13 +1,14 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>Team Private Admin</title><style>
 *{box-sizing:border-box}
 html,body{min-height:100%;width:100%;overflow-x:hidden}
-body{margin:0;font-family:Arial,sans-serif;background:#fff;color:#000}
+body{margin:0;font-family:Arial,sans-serif;background:#fff;color:#000;min-height:100vh;display:flex;flex-direction:column}
 .dashboard-shell{min-height:100vh;display:flex;flex-direction:column;width:100%}
-.site-mobile-header{width:100%;padding:0 10px 10px;background-color:#f7f7f7;display:flex;flex-direction:column;align-items:center}
-.logo-frame-wrap{position:relative;width:20vw;height:15vh;margin-top:0}
-.logo-frame-wrap iframe{width:100%;height:100%;border:0;display:block}
-.chicago-time{font-size:.7rem;text-align:center;margin-top:-15px;font-weight:600;display:block;min-height:1.2em;color:#000}
+.site-mobile-header,.header-container{width:100%;padding:0 10px 10px;background-color:#f7f7f7;display:flex;flex-direction:column;align-items:center}
+.logo-frame-wrap,.logo-container{position:relative;width:20vw;height:15vh;margin-top:0}
+.logo-frame-wrap iframe,.logo-container iframe{width:100%;height:100%;border:0;display:block}
+.chicago-time,.time{font-size:.7rem;text-align:center;margin-top:-15px;font-weight:600;display:block;min-height:1.2em;color:#000}
 .site-shell{width:100%;max-width:1280px;margin:0 auto;padding:14px 16px;flex:1;display:flex;flex-direction:column;align-items:center}
+#dashboard-root{flex:1;display:flex;width:100%}
 main{flex:1;width:100%;max-width:100%}
 .panel{border:1px solid #000;padding:12px;margin:10px auto;max-width:100%;overflow:visible;width:100%;text-align:center}
 .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;max-width:100%;width:100%;margin:0 auto}
@@ -29,7 +30,7 @@ label{text-align:left;display:block}
 .pill input{display:none}
 .pill.active{background:#000;color:#fff}
 .page-card{border:1px solid #ddd;padding:10px;margin-bottom:8px;width:100%;max-width:100%;box-sizing:border-box;text-align:center}
-.product-manager-list,#pageManager{width:100%;max-width:100%;max-height:55vh;overflow-y:auto;overflow-x:hidden;padding-right:2px;-webkit-overflow-scrolling:touch}
+.product-manager-list,#pageManager{width:100%;max-width:100%;overflow-y:visible;overflow-x:hidden;padding-right:2px;-webkit-overflow-scrolling:touch}
 .view-full-site-wrap{text-align:center;padding:8px 0}
 .view-full-site{color:#c00;text-decoration:none;font-size:.75rem}
 .view-full-site:hover{color:#900}
@@ -52,7 +53,7 @@ label{text-align:left;display:block}
 .grid-row>div{padding:2px 0;display:block;max-width:100%}
 .grid-row div:last-child{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
 .product-img{width:72px;height:72px}
-.product-manager-list,#pageManager{width:100%;max-width:100%;display:flex;flex-direction:column;max-height:60vh;min-height:280px;overflow-y:auto;overflow-x:hidden;padding-right:0;-webkit-overflow-scrolling:touch}
+.product-manager-list,#pageManager{width:100%;max-width:100%;display:flex;flex-direction:column;overflow-y:visible;overflow-x:hidden;padding-right:0;-webkit-overflow-scrolling:touch}
 .product-manager-list>div,.product-row-card,.page-card{display:flex;flex-direction:column;width:100%;max-width:100%;box-sizing:border-box}
 footer .footer-links{justify-content:center;padding-bottom:25px;margin-top:40px}
 }
@@ -75,11 +76,12 @@ footer .footer-links{display:flex;justify-content:center;padding-bottom:10px}
   opacity: 1 !important;
   color: inherit;
   text-align: center;
-  font-size: 11px;
-  margin-top: 2px;
-  margin-bottom: 12px;
 }
-</style></head><body data-page="dashboard"><header id="dashboard-site-header" class="site-mobile-header dashboard-site-header"><div class="logo-frame-wrap"><iframe src="https://www.vectary.com/viewer/v1/?model=8b9281ad-097b-4408-88e2-ef824efa63eb&env=studio3&turntable=1"></iframe></div><div id="chicago-time" class="chicago-time"></div></header><main id="dashboard-root"><div class="dashboard-shell"><div class="site-shell">
+
+@media (max-width:768px){
+.logo-frame-wrap,.logo-container{width:220px;height:120px}
+}
+</style></head><body data-page="dashboard"><header id="dashboard-site-header" class="site-mobile-header dashboard-site-header header-container"><div class="logo-frame-wrap logo-container"><iframe src="https://www.vectary.com/viewer/v1/?model=8b9281ad-097b-4408-88e2-ef824efa63eb&env=studio3&turntable=1"></iframe></div><div id="chicago-time" class="chicago-time time"></div></header><main id="dashboard-root"><div class="dashboard-shell"><div class="site-shell">
 <section id="dashboard-login-screen" class="panel"><form id="dashboard-login-form"><h1>Team Private Admin</h1><input id="dashboard-username" name="username" autocomplete="username" placeholder="Username" required/><input id="dashboard-password" name="password" type="password" autocomplete="current-password" placeholder="Password" required/><button type="submit">Sign In</button><p id="dashboard-login-error" style="color:#c00;display:none"></p></form></section>
 <main id="dashboard-app" hidden style="display:none;">
 <div class="panel"><button id="logoutBtn">Logout</button> <select id="filterRange"><option value="hour">Hour</option><option value="day" selected>Day</option><option value="week">Week</option><option value="month">Month</option><option value="year">Year</option><option value="all">All Time</option></select> <select id="analyticsPage"></select></div>
@@ -98,6 +100,8 @@ const DEFAULT_PAGE_TYPE_MAP={
   'index.html':'Blank Page','vintage.html':'Redirect Page',...Object.fromEntries(COLLECTION_SLUGS.map(s=>[s,'Collection Page']))
 };
 const adminAuth=()=>sessionStorage.getItem('mbnt_admin_auth')||'';
+if(document.body && document.body.dataset.page==='dashboard'){window.__MBNT_SKIP_PUBLIC_HYDRATION__=true;}
+
 const read=(k,d)=>JSON.parse(localStorage.getItem(k)||JSON.stringify(d)),save=(k,v)=>localStorage.setItem(k,JSON.stringify(v)); let dirty=false;
 function slugifyProductPage(name){return String(name||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')+'.html'}
 function syncProductPages(products,pages){const nonProduct=(pages||[]).filter(pg=>pg.type!=='Product Page');const productPages=products.map(prod=>{const slug=slugifyProductPage(prod.name||prod.id||'product');const existing=(pages||[]).find(pg=>pg.slug===slug)||{};return {...existing,slug,label:prod.name||slug,type:'Product Page',visible:prod.status!=='inactive',productId:prod.id||null};});return [...nonProduct,...productPages]}
@@ -138,22 +142,9 @@ window.deletePage=slug=>{const core=['index.html','shop.html'];const msg=core.in
 window.savePage=async (slug,i)=>{if(!confirm('Confirm changes before saving?'))return;const pages=read(pagesKey,[]);let p=pages.find(x=>x.slug===slug);if(!p){p={slug};pages.push(p)};document.querySelectorAll(`#page-edit-${i} [data-page]`).forEach(el=>{const k=el.dataset.page;p[k]=el.type==='checkbox'?el.checked:(k==='assignments'?el.value.split(',').map(s=>s.trim()).filter(Boolean):el.value)});persistAdmin('/api/admin/update-page',{page:p}).then(()=>{save(pagesKey,pages);dirty=false;renderAll()}).catch(err=>alert(err.message));};
 pageForm.addEventListener('submit',async e=>{e.preventDefault();if(!confirm('Confirm changes before saving?'))return;const pages=read(pagesKey,[]),slug=pageName.value.trim();const data={slug,label:pageLabel.value.trim(),type:pageType.value,redirectUrl:redirectUrl.value.trim(),visible:true};const ex=pages.find(p=>p.slug===slug);if(ex)Object.assign(ex,data);else pages.push(data);try{await persistAdmin('/api/admin/create-page',{page:data});}catch(err){alert(err.message);return;}save(pagesKey,pages);renderAll()});
 
-async function hydrateProducts(){
-  const local=read(productsKey,[]);
-  if(local.length) return local;
-  try{
-    const res=await fetch('/api/products');
-    if(!res.ok) throw new Error('products');
-    const remote=await res.json();
-    const normalized=(Array.isArray(remote)?remote:(remote.products||[])).filter(Boolean);
-    if(normalized.length){save(productsKey,normalized);return normalized;}
-  }catch(_){ }
-  return local;
-}
-
 function guardedRender(fn){return ()=>{if(dirty&&!confirm('Please confirm changes before changing pages if not done so already.'))return;fn();}}
 function initPageSelect(){const products=read(productsKey,[]);const pages=[...new Set(['index.html',...SITE_PAGES,...COLLECTION_SLUGS,...products.map(p=>slugifyProductPage(p.name||p.id||'product')),...read(pagesKey,[]).map(p=>p.slug)])];analyticsPage.innerHTML=pages.map(p=>`<option ${p==='index.html'?'selected':''}>${p}</option>`).join('')}
-async function renderAll(){const hydrated=await hydrateProducts();const productsFix=hydrated.length?hydrated:read(productsKey,[]);const sb=productsFix.find(p=>String(p.name||'').toLowerCase().includes('skateboard 2'));if(sb&&Array.isArray(sb.images)&&sb.images[0]!=='skateboard4.png'){sb.images[0]='skateboard4.png';save(productsKey,productsFix);}save(pagesKey,syncProductPages(productsFix,read(pagesKey,[])));const scope=filterRange.value,page=analyticsPage.value,allEvents=await fetchAnalyticsSummary();const events=filterEvents(allEvents,scope,page),pv=events.filter(e=>e.type==='page_visit');siteMetrics.innerHTML=`<div>Visits: ${pv.length}</div><div>Unique sessions: ${new Set(events.map(e=>e.sessionId||e.timestamp)).size}</div>`;pageAnalytics.innerHTML=Object.entries(pv.reduce((m,e)=>(m[e.pagePath||e.page]=(m[e.pagePath||e.page]||0)+1,m),{})).map(([p,c])=>`<li>${p}: ${c}</li>`).join('')||'<li>No tracked visits</li>';drawGraph(events,scope);renderPlacementPills();renderCategoryOptions(newCategory.value);renderProducts();renderPages()}
+async function renderAll(){const productsFix=read(productsKey,[]);const sb=productsFix.find(p=>String(p.name||'').toLowerCase().includes('skateboard 2'));if(sb&&Array.isArray(sb.images)&&sb.images[0]!=='skateboard4.png'){sb.images[0]='skateboard4.png';save(productsKey,productsFix);}save(pagesKey,syncProductPages(productsFix,read(pagesKey,[])));const scope=filterRange.value,page=analyticsPage.value,allEvents=await fetchAnalyticsSummary();const events=filterEvents(allEvents,scope,page),pv=events.filter(e=>e.type==='page_visit');siteMetrics.innerHTML=`<div>Visits: ${pv.length}</div><div>Unique sessions: ${new Set(events.map(e=>e.sessionId||e.timestamp)).size}</div>`;pageAnalytics.innerHTML=Object.entries(pv.reduce((m,e)=>(m[e.pagePath||e.page]=(m[e.pagePath||e.page]||0)+1,m),{})).map(([p,c])=>`<li>${p}: ${c}</li>`).join('')||'<li>No tracked visits</li>';drawGraph(events,scope);renderPlacementPills();renderCategoryOptions(newCategory.value);renderProducts();renderPages()}
 
 
 
