@@ -189,12 +189,11 @@ if(createProductForm)createProductForm.addEventListener('submit',async e=>{e.pre
 async function fetchOrders(){
   try{
     const res=await fetch('/api/admin/orders',{headers:{'x-admin-auth':adminAuth()}});
-    if(!res.ok)throw new Error('orders');
     const data=await res.json();
-    if(data.configured===false) return {orders:[],message:'Stripe order sync is not configured yet.'};
-    return {orders:Array.isArray(data.orders)?data.orders:[],message:''};
-  }catch(_){
-    return {orders:[],message:'Stripe orders could not load. Check /api/admin/orders and Stripe server config.'};
+    if(!res.ok)return {orders:[],message:data.error||'Stripe orders could not load.'};
+    return {orders:Array.isArray(data.orders)?data.orders:[],message:data.error||''};
+  }catch(err){
+    return {orders:[],message:err.message||'Stripe orders could not load. Check /api/admin/orders and Stripe server config.'};
   }
 }
 async function persistOrderUpdate(path,payload){
@@ -214,8 +213,7 @@ async function autoRefundExpiredOrders(orders){
   }
 }
 function orderDetailsMarkup(order){
-  const c=order.customer||{};const addr=order.address||{};
-  return `<div style='margin-top:8px;font-size:13px'><div><strong>Date:</strong> ${order.createdAt?new Date(order.createdAt).toLocaleString():'N/A'}</div><div><strong>Customer:</strong> ${c.name||''} (${c.email||''})</div><div><strong>Address:</strong> ${[addr.line1,addr.city,addr.state,addr.postal_code,addr.country].filter(Boolean).join(', ')}</div><div><strong>Items:</strong> ${(order.items||[]).map(i=>`${i.name||'Item'} x${i.quantity||1}`).join('; ')||'N/A'}</div><div><strong>Total:</strong> $${((order.total||0)/100).toFixed(2)} ${(order.currency||'usd').toUpperCase()}</div><div><strong>Payment status:</strong> ${order.payment_status||order.status||'unknown'}</div><div><strong>Stripe Session ID:</strong> ${order.stripe_session_id||order.id||'N/A'}</div><div><strong>Stripe Payment ID:</strong> ${order.stripe_payment_intent_id||'N/A'}</div></div>`
+  return `<div style='margin-top:8px;font-size:13px'><div><strong>Date:</strong> ${order.created_iso?new Date(order.created_iso).toLocaleString():'N/A'}</div><div><strong>Customer:</strong> ${order.customer_name||''} (${order.customer_email||''})</div><div><strong>Items:</strong> ${(order.items||[]).map(i=>`${i.description||'Item'} x${i.quantity||1}`).join('; ')||'N/A'}</div><div><strong>Total:</strong> $${((order.amount_total||0)/100).toFixed(2)} ${(order.currency||'usd').toUpperCase()}</div><div><strong>Payment status:</strong> ${order.payment_status||order.status||'unknown'}</div><div><strong>Stripe Session ID:</strong> ${order.id||'N/A'}</div><div><strong>Stripe Payment ID:</strong> ${order.payment_intent||'N/A'}</div></div>`
 }
 async function confirmDelivered(i){
   const orders=read('mbnt_admin_orders',[]);const order=orders[i];
@@ -227,7 +225,7 @@ async function confirmDelivered(i){
   if(!ok)alert('Saved locally as confirmed. Backend email endpoint unavailable right now.');
 }
 window.confirmDelivered=confirmDelivered;
-async function renderOrders(){const orderStatusEl=document.getElementById('orderStatus');try{const orders=await loadOrders();await autoRefundExpiredOrders(orders);save('mbnt_admin_orders',orders);orderManager.innerHTML=orders.length?orders.map((o,i)=>{const status=o.status==='confirmed'?'confirmed':(o.status==='refunded'?'refunded':'unconfirmed');return `<details class='order-card'><summary class='order-summary'><span>#${o.orderNumber||o.id||('ORD-'+(i+1))}</span><span class='order-badge ${status==='confirmed'?'confirmed':'unconfirmed'}'>${status}</span></summary>${orderDetailsMarkup(o)}<div style='margin-top:8px'><button type='button' ${status!=='unconfirmed'?'disabled':''} onclick='confirmDelivered(${i})'>Confirm Delivered</button></div></details>`;}).join(''):`<div class='order-card'>No Stripe orders found yet.</div>`;setStatus(orderStatusEl,`Loaded ${orders.length} orders`,false);}catch(_){orderManager.innerHTML=`<div class='order-card' style='color:#c00;border-color:#c00'>Stripe orders could not load. Check /api/admin/orders and Stripe server config.</div>`;setStatus(orderStatusEl,'Stripe orders could not load. Check /api/admin/orders and Stripe server config.',true);}}
+async function renderOrders(){const orderStatusEl=document.getElementById('orderStatus');try{const orders=await loadOrders();await autoRefundExpiredOrders(orders);save('mbnt_admin_orders',orders);orderManager.innerHTML=orders.length?orders.map((o,i)=>{const status=o.payment_status==='paid'?'confirmed':'unconfirmed';return `<details class='order-card'><summary class='order-summary'><span>#${o.id||('ORD-'+(i+1))}</span><span class='order-badge ${status==='confirmed'?'confirmed':'unconfirmed'}'>${status}</span></summary>${orderDetailsMarkup(o)}</details>`;}).join(''):`<div class='order-card'>No Stripe orders found yet.</div>`;setStatus(orderStatusEl,`Loaded ${orders.length} orders`,false);}catch(err){const message=err.message||'Stripe orders could not load. Check /api/admin/orders and Stripe server config.';orderManager.innerHTML=`<div class='order-card' style='color:#c00;border-color:#c00'>${message}</div>`;setStatus(orderStatusEl,message,true);}}
 function renderPages(pages=[]){const safePages=Array.isArray(pages)&&pages.length?pages:syncProductPages(DEFAULT_PRODUCTS,[...DEFAULT_PAGES]);pageManager.innerHTML=`<p><strong>Loaded ${safePages.length} pages</strong></p>`+safePages.map((c,i)=>`<div class='page-card'><strong>${c.label||c.slug}</strong><div>${c.type} • ${c.visible===false?'hidden':'visible'}</div><div><button onclick='togglePageEdit(${i})'>Edit</button> <button onclick='togglePageVis("${c.slug}")'>👁</button> <button onclick='deletePage("${c.slug}")'>Delete</button></div><div id='page-edit-${i}' class='edit-panel' hidden><div class='row'><input data-page='slug' value='${c.slug}'><select data-page='type'>${PAGE_TYPES.map(t=>`<option ${c.type===t?'selected':''}>${t}</option>`).join('')}</select><input data-page='label' value='${c.label||''}'><label><input data-page='visible' type='checkbox' ${c.visible===false?'':'checked'}> Visible</label><textarea data-page='content'>${c.content||''}</textarea><input data-page='redirectUrl' value='${c.redirectUrl||''}' placeholder='Redirect URL'><input data-page='assignments' value='${(c.assignments||[]).join(', ')}' placeholder='Collection/product assignments'></div><button onclick='savePage("${c.slug}",${i})'>Save</button></div></div>`).join('');}
 window.togglePageEdit=i=>{document.getElementById(`page-edit-${i}`).hidden=!document.getElementById(`page-edit-${i}`).hidden};
 window.togglePageVis=slug=>{const pages=read(pagesKey,[]);const p=pages.find(x=>x.slug===slug);if(p){p.visible=p.visible===false;save(pagesKey,pages);}renderAll()};

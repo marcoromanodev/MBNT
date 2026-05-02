@@ -10,6 +10,7 @@ const execFileAsync=promisify(execFile);
 const port = Number(process.env.PORT || 4242);
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY || '';
 const webhookSigningSecret = process.env.STRIPE_WEBHOOK_SECRET || '';
+const baseUrl = process.env.BASE_URL || 'https://maybenot.com';
 const renderGitCommit = process.env.RENDER_GIT_COMMIT || '';
 const renderGitBranch = process.env.RENDER_GIT_BRANCH || '';
 const renderServiceName = process.env.RENDER_SERVICE_NAME || '';
@@ -165,7 +166,7 @@ async function handleCreateCheckoutSession(req, res) {
   const requestOrigin = req.headers.origin || '';
 
   if (!stripeSecretKey) {
-    return jsonResponse(res, 500, { error: 'Missing STRIPE_SECRET_KEY.' }, requestOrigin);
+    return jsonResponse(res, 500, { error: 'Stripe secret key is not configured.' }, requestOrigin);
   }
 
   const rawBody = await readBody(req);
@@ -176,19 +177,24 @@ async function handleCreateCheckoutSession(req, res) {
     return jsonResponse(res, 400, { error: 'Invalid JSON body.' }, requestOrigin);
   }
 
-  const lineItems = sanitizeLineItems(body);
+  const items = Array.isArray(body?.items) ? body.items : [];
+  const lineItems = items
+    .map((item) => ({
+      price: typeof item?.priceId === 'string' ? item.priceId.trim() : '',
+      quantity: Number.isFinite(Number(item?.quantity)) ? Math.max(1, Number(item.quantity)) : 1
+    }))
+    .filter((item) => item.price.startsWith('price_'));
   if (!lineItems.length) {
     return jsonResponse(
       res,
       400,
-      { error: 'Request must include lineItems or cart with valid Stripe price IDs.' },
+      { error: 'Request must include items with valid Stripe Price IDs.' },
       requestOrigin
     );
   }
 
-  const successUrl = typeof body.successUrl === 'string' && body.successUrl ? body.successUrl : defaultSuccessUrl;
-  const cancelUrl = typeof body.cancelUrl === 'string' && body.cancelUrl ? body.cancelUrl : defaultCancelUrl;
-  const customerEmail = typeof body.customerEmail === 'string' ? body.customerEmail.trim().toLowerCase() : '';
+  const successUrl = `${baseUrl}/success.html?session_id={CHECKOUT_SESSION_ID}`;
+  const cancelUrl = `${baseUrl}/cart.html`;
 
   const payload = {
     line_items: lineItems,
@@ -197,8 +203,7 @@ async function handleCreateCheckoutSession(req, res) {
       ? `${successUrl}&session_id={CHECKOUT_SESSION_ID}`
       : `${successUrl}?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: cancelUrl,
-    customer_creation: 'always',
-    customer_email: customerEmail
+    customer_creation: 'always'
   };
 
   try {
@@ -221,7 +226,6 @@ async function handleCreateCheckoutSession(req, res) {
       res,
       200,
       {
-        id: stripePayload.id,
         url: stripePayload.url
       },
       requestOrigin
@@ -234,7 +238,7 @@ async function handleCreateCheckoutSession(req, res) {
 async function handleVerifyReturn(req, res, requestUrl) {
   const requestOrigin = req.headers.origin || '';
   if (!stripeSecretKey) {
-    return jsonResponse(res, 500, { error: 'Missing STRIPE_SECRET_KEY.' }, requestOrigin);
+    return jsonResponse(res, 500, { error: 'Stripe secret key is not configured.' }, requestOrigin);
   }
 
   const sessionId = (requestUrl.searchParams.get('session_id') || '').trim();
@@ -383,40 +387,53 @@ async function handleCreatePaymentIntent(req, res) {
 
 async function handleAdminOrders(req, res) {
   const requestOrigin = req.headers.origin || '';
+  if (!isAdmin(req)) {
+    return jsonResponse(res, 401, { error: 'Unauthorized admin request.' }, requestOrigin);
+  }
   if (!stripeSecretKey) {
-    return jsonResponse(res, 200, { configured: false, orders: [], message: 'Stripe order sync is not configured yet.' }, requestOrigin);
+    return jsonResponse(res, 500, { error: 'Stripe secret key is not configured.' }, requestOrigin);
   }
   try {
-    const sessions = await stripeApiRequest('/v1/checkout/sessions?limit=100&expand[]=data.line_items');
-    const orders = (sessions.data || []).map((session) => ({
-      id: session.id,
-      orderNumber: session.client_reference_id || session.id,
-      createdAt: session.created ? new Date(session.created * 1000).toISOString() : null,
-      created: session.created,
-      customer: {
-        name: session.customer_details?.name || '',
-        email: session.customer_details?.email || session.customer_email || ''
-      },
-      total: Number(session.amount_total || 0),
-      currency: session.currency || 'usd',
-      payment_status: session.payment_status || session.status || 'unknown',
-      status: session.payment_status === 'paid' ? 'confirmed' : 'unconfirmed',
-      stripe_session_id: session.id,
-      stripe_payment_intent_id: typeof session.payment_intent === 'string' ? session.payment_intent : (session.payment_intent?.id || ''),
-      items: (session.line_items?.data || []).map((item) => ({
-        name: item.description || item.price?.nickname || 'Item',
-        quantity: item.quantity || 1,
-        amount_total: item.amount_total || 0
-      }))
-    }));
-    return jsonResponse(res, 200, { configured: true, orders }, requestOrigin);
+    const sessions = await stripeApiRequest('/v1/checkout/sessions?limit=100&expand[]=data.line_items&expand[]=data.customer_details&expand[]=data.payment_intent');
+    const orders = [];
+    for (const session of sessions.data || []) {
+      let lineItemsData = session.line_items?.data;
+      if (!Array.isArray(lineItemsData)) {
+        try {
+          const lineItemsResp = await stripeApiRequest(`/v1/checkout/sessions/${encodeURIComponent(session.id)}/line_items?limit=100`);
+          lineItemsData = lineItemsResp.data || [];
+        } catch {
+          lineItemsData = [];
+        }
+      }
+      orders.push({
+        id: session.id,
+        payment_intent: typeof session.payment_intent === 'string' ? session.payment_intent : session.payment_intent?.id,
+        created: session.created,
+        created_iso: new Date(session.created * 1000).toISOString(),
+        customer_name: session.customer_details?.name || '',
+        customer_email: session.customer_details?.email || '',
+        amount_total: session.amount_total,
+        currency: session.currency,
+        payment_status: session.payment_status,
+        status: session.status,
+        items: lineItemsData.map((item) => ({
+          description: item.description,
+          quantity: item.quantity,
+          amount_total: item.amount_total,
+          price_id: item.price?.id,
+          product_id: item.price?.product
+        }))
+      });
+    }
+    return jsonResponse(res, 200, { orders }, requestOrigin);
   } catch (error) {
-    return jsonResponse(res, 200, { configured: false, orders: [], message: 'Stripe order sync is not configured yet.' }, requestOrigin);
+    return jsonResponse(res, 500, { error: error.message || 'Unable to load Stripe orders.' }, requestOrigin);
   }
 }
 async function handleCreateProduct(req, res) {
   const requestOrigin = req.headers.origin || '';
-  if (!stripeSecretKey) return jsonResponse(res, 500, { error: 'Missing STRIPE_SECRET_KEY.' }, requestOrigin);
+  if (!stripeSecretKey) return jsonResponse(res, 500, { error: 'Stripe secret key is not configured.' }, requestOrigin);
   const rawBody = await readBody(req);
   let body;
   try { body = rawBody ? JSON.parse(rawBody) : {}; } catch { return jsonResponse(res, 400, { error: 'Invalid JSON body.' }, requestOrigin); }
@@ -539,7 +556,7 @@ const server = createServer(async (req, res) => {
       return;
     }
 
-    if (req.method === 'POST' && pathname === '/api/stripe/create-checkout-session') {
+    if (req.method === 'POST' && (pathname === '/api/stripe/create-checkout-session' || pathname === '/api/create-checkout-session')) {
       return await handleCreateCheckoutSession(req, res);
     }
 
@@ -590,7 +607,7 @@ const server = createServer(async (req, res) => {
     }
 
 
-    if (pathname.startsWith('/api/admin/') && !isAdmin(req)) {
+    if (pathname.startsWith('/api/admin/') && pathname !== '/api/admin/orders' && !isAdmin(req)) {
       return jsonResponse(res, 401, { error: 'Admin session required.' }, requestOrigin);
     }
 
