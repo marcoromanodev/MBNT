@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MaybeNot Private Dashboard</title>
+  <style>
+    :root {
+      --bg: #f5f5f5;
+      --card: #fff;
+      --text: #0a0a0a;
+      --muted: #666;
+      --line: #d9d9d9;
+      --accent: #d70000;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Courier New", Courier, monospace;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .hidden { display: none !important; }
+    .auth-shell {
+      min-height: 100dvh;
+      display: grid;
+      place-items: center;
+      padding: 16px;
+    }
+    .auth-card, .card {
+      background: var(--card);
+      border: 1px solid #000;
+      box-shadow: 4px 4px 0 #000;
+    }
+    .auth-card { width: min(420px, 100%); padding: 18px; }
+    h1,h2,h3 { margin: 0 0 8px; }
+    .sub { color: var(--muted); font-size: .9rem; margin: 0 0 16px; }
+    label { display:block; margin: 10px 0 4px; font-size: .9rem; }
+    input,select,textarea,button {
+      width: 100%; border: 1px solid #000; padding: 10px; font: inherit; background:#fff;
+    }
+    button { cursor: pointer; font-weight:700; }
+    .btn-red { background: var(--accent); color: #fff; }
+    .err { color: var(--accent); min-height: 1.2em; margin-top:8px; }
+
+    .dashboard { padding: 14px; }
+    .topbar {
+      display:flex; justify-content: space-between; align-items:center; gap: 10px; margin-bottom: 14px;
+      border-bottom: 2px solid #000; padding-bottom: 10px;
+    }
+    .grid {
+      display:grid; gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    }
+    .card { padding: 12px; }
+    .metrics { display:grid; grid-template-columns: repeat(2, 1fr); gap:8px; }
+    .metric { border:1px solid var(--line); padding:8px; }
+    .metric strong { font-size: 1.2rem; display:block; }
+    .list { margin: 0; padding-left: 18px; }
+    .split { display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+    .products { display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:8px; }
+    .product {
+      position:relative; border:1px solid #000; padding:8px; background:#fff;
+    }
+    .sold-out {
+      position:absolute; top:8px; right:8px; background: var(--accent); color:#fff;
+      font-size:.72rem; padding:3px 7px; font-weight:700;
+    }
+    .mini { font-size: .84rem; color: var(--muted); }
+    .plus-btn {
+      width: 38px; height: 38px; border-radius: 50%; font-size: 1.3rem; line-height: 1;
+    }
+    @media (max-width: 700px) { .split { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <section id="auth" class="auth-shell">
+    <form id="loginForm" class="auth-card" autocomplete="off">
+      <h1>MaybeNot Private Admin</h1>
+      <p class="sub">Internal team access only. No public registration.</p>
+      <label for="username">Username</label>
+      <input id="username" name="username" type="text" required />
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" required />
+      <button class="btn-red" type="submit">Login</button>
+      <p id="authError" class="err"></p>
+    </form>
+  </section>
+
+  <main id="dashboard" class="dashboard hidden" aria-live="polite">
+    <div class="topbar">
+      <div>
+        <h2>MaybeNot Admin Dashboard</h2>
+        <p class="sub">Clean internal control panel for web, shop, and analytics operations.</p>
+      </div>
+      <button id="logoutBtn">Logout</button>
+    </div>
+
+    <section class="grid">
+      <article class="card"><h3>1. Site Analytics</h3><div id="siteMetrics" class="metrics"></div></article>
+      <article class="card"><h3>2. Page Analytics</h3><ul id="pageAnalytics" class="list"></ul></article>
+      <article class="card"><h3>3. Shop Manager</h3><p class="mini">Shop sync placeholder: Stripe catalog, pricing, publishing, collections.</p></article>
+
+      <article class="card">
+        <h3>4. Product Manager</h3>
+        <form id="productForm" class="split">
+          <div>
+            <label>Product Name</label><input id="pName" required />
+            <label>Description</label><textarea id="pDesc" required></textarea>
+            <label>Price (USD)</label><input id="pPrice" type="number" step="0.01" min="0" required />
+            <label>Type / Category</label><input id="pType" required />
+            <label>Color Variants (comma separated)</label><input id="pColors" placeholder="Black, White" />
+          </div>
+          <div>
+            <label>Inventory Quantity</label><input id="pQty" type="number" min="0" required />
+            <label>Product Image Upload</label><input id="pImage" type="file" accept="image/*" />
+            <label>Variant Image Uploads</label><input id="pVariantImages" type="file" accept="image/*" multiple />
+            <label>Status</label>
+            <select id="pActive"><option value="active">Active</option><option value="inactive">Inactive</option></select>
+            <label>Manual Sold Out</label>
+            <select id="pManualSold"><option value="false">No</option><option value="true">Yes</option></select>
+            <button type="submit" class="btn-red">Add / Update Product</button>
+          </div>
+        </form>
+      </article>
+
+      <article class="card">
+        <h3>5. Page Builder <button id="newPageBtn" class="plus-btn" type="button">+</button></h3>
+        <form id="pageForm" class="hidden">
+          <label>Page Name</label><input id="pageName" required />
+          <label>Page Type</label>
+          <select id="pageType">
+            <option>Product Page</option><option>Blank Content Page</option><option>About Us Style Page</option>
+            <option>Collection Page</option><option>Shop Category Page</option>
+          </select>
+          <button class="btn-red" type="submit">Save Page Draft</button>
+        </form>
+        <ul id="pageList" class="list"></ul>
+      </article>
+
+      <article class="card"><h3>6. Inventory / Sold Out Controls</h3><div id="productGrid" class="products"></div></article>
+      <article class="card"><h3>7. Cart Tracking</h3><ul id="cartStats" class="list"></ul></article>
+      <article class="card"><h3>8. Cookie / Customer Behavior Data</h3><ul id="behaviorStats" class="list"></ul></article>
+    </section>
+  </main>
+
+  <script>
+    const DASH_SESSION_KEY = "mbnt_dashboard_auth";
+    const productsKey = "mbnt_admin_products";
+
+    // Avoid plain-text password exposure in markup; still replace with secure backend auth in production.
+    const ACCESS = {
+      username: "maybenot",
+      passwordHash: "6476b62975f389b0589619380d4a34bfefec31a5f4e4263bd8f377f19384ce9c"
+    };
+
+    async function hashText(value) {
+      const buff = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
+      return [...new Uint8Array(buff)].map(b => b.toString(16).padStart(2, "0")).join("");
+    }
+
+    const auth = document.getElementById("auth");
+    const dashboard = document.getElementById("dashboard");
+    const loginForm = document.getElementById("loginForm");
+    const authError = document.getElementById("authError");
+
+    function showDashboard() { auth.classList.add("hidden"); dashboard.classList.remove("hidden"); renderAll(); }
+    function showAuth() { dashboard.classList.add("hidden"); auth.classList.remove("hidden"); }
+
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value;
+      const hashed = await hashText(password);
+
+      if (username === ACCESS.username && hashed === ACCESS.passwordHash) {
+        sessionStorage.setItem(DASH_SESSION_KEY, "1");
+        showDashboard();
+      } else {
+        authError.textContent = "Invalid credentials.";
+      }
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      sessionStorage.removeItem(DASH_SESSION_KEY); showAuth();
+    });
+
+    // Placeholder analytics/connectors for future backend integrations.
+    const placeholderAnalytics = {
+      usersPerHour: 18, usersPerDay: 421, usersPerWeek: 2430, usersPerMonth: 9720, usersPerYear: 103221,
+      totalVisitors: 223004, activeUsers: 13, cartVisits: 86, checkoutClicks: 31, addToCart: 54
+    };
+
+    function metric(label, value) {
+      return `<div class="metric"><span>${label}</span><strong>${value}</strong></div>`;
+    }
+
+    function getProducts() { return JSON.parse(localStorage.getItem(productsKey) || "[]"); }
+    function setProducts(products) { localStorage.setItem(productsKey, JSON.stringify(products)); }
+
+    function renderAll() {
+      document.getElementById("siteMetrics").innerHTML = [
+        metric("Users / Hour", placeholderAnalytics.usersPerHour), metric("Users / Day", placeholderAnalytics.usersPerDay),
+        metric("Users / Week", placeholderAnalytics.usersPerWeek), metric("Users / Month", placeholderAnalytics.usersPerMonth),
+        metric("Users / Year", placeholderAnalytics.usersPerYear), metric("Total Visitors", placeholderAnalytics.totalVisitors),
+        metric("Active Users", placeholderAnalytics.activeUsers), metric("Cart Visits", placeholderAnalytics.cartVisits),
+        metric("Add-to-Cart Events", placeholderAnalytics.addToCart), metric("Checkout Clicks", placeholderAnalytics.checkoutClicks)
+      ].join("");
+
+      document.getElementById("pageAnalytics").innerHTML = [
+        "Home — 8,220", "Shop — 4,210", "Product pages — 5,910", "Cart — 740", "Most visited product: MBNT Superior Shirt"
+      ].map(i => `<li>${i}</li>`).join("");
+
+      document.getElementById("cartStats").innerHTML = [
+        "Current carts with products: 19", "Most added: Black Hoodie", "Viewed then carted: 38%"
+      ].map(i => `<li>${i}</li>`).join("");
+
+      document.getElementById("behaviorStats").innerHTML = [
+        "Cookie consent rate: 91%", "Avg session duration: 2m 18s", "Top referrer: Instagram"
+      ].map(i => `<li>${i}</li>`).join("");
+
+      const productGrid = document.getElementById("productGrid");
+      const products = getProducts();
+      productGrid.innerHTML = products.map((p, idx) => {
+        const soldOut = p.manualSold || p.qty <= 0;
+        return `<div class="product">${soldOut ? '<div class="sold-out">SOLD OUT</div>' : ""}
+          <strong>${p.name}</strong><div>$${Number(p.price).toFixed(2)}</div>
+          <div class="mini">${p.type} • ${p.status}</div>
+          <div class="mini">Qty: ${p.qty}</div>
+          <button type="button" onclick="toggleActive(${idx})">Toggle Active</button>
+          <button type="button" onclick="markSoldOut(${idx})">Mark Sold Out</button>
+        </div>`;
+      }).join("") || "<p class='mini'>No products yet.</p>";
+    }
+
+    window.toggleActive = function(i) {
+      const products = getProducts();
+      products[i].status = products[i].status === "active" ? "inactive" : "active";
+      setProducts(products); renderAll();
+    };
+    window.markSoldOut = function(i) {
+      const products = getProducts(); products[i].manualSold = true; setProducts(products); renderAll();
+    };
+
+    document.getElementById("productForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const qty = Number(document.getElementById("pQty").value);
+      const product = {
+        name: document.getElementById("pName").value.trim(),
+        desc: document.getElementById("pDesc").value.trim(),
+        price: Number(document.getElementById("pPrice").value),
+        type: document.getElementById("pType").value.trim(),
+        colors: document.getElementById("pColors").value.split(",").map(c => c.trim()).filter(Boolean),
+        qty,
+        status: document.getElementById("pActive").value,
+        manualSold: document.getElementById("pManualSold").value === "true",
+        soldOut: qty <= 0,
+        imageName: document.getElementById("pImage").files[0]?.name || null,
+        variantImageNames: [...document.getElementById("pVariantImages").files].map(f => f.name)
+      };
+      const products = getProducts();
+      products.push(product);
+      setProducts(products);
+      e.target.reset();
+      renderAll();
+    });
+
+    const pageForm = document.getElementById("pageForm");
+    const pageList = document.getElementById("pageList");
+    const pageDrafts = [];
+    document.getElementById("newPageBtn").addEventListener("click", () => pageForm.classList.toggle("hidden"));
+    pageForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const page = { name: document.getElementById("pageName").value, type: document.getElementById("pageType").value };
+      pageDrafts.push(page);
+      pageList.innerHTML = pageDrafts.map(p => `<li>${p.name} — ${p.type} (theme: Maybenot auto-match)</li>`).join("");
+      e.target.reset(); pageForm.classList.add("hidden");
+    });
+
+    if (sessionStorage.getItem(DASH_SESSION_KEY) === "1") showDashboard();
+  </script>
+</body>
+</html>
