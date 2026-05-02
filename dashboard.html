@@ -154,7 +154,8 @@ const syncedPages=syncProductPages(mergedProducts,mergedPages);
 save(pagesKey,syncedPages);
 }
 
-const adminAuth=()=>sessionStorage.getItem('mbnt_admin_auth')||'';
+const ADMIN_AUTH_KEY='mbnt_admin_auth';
+const adminAuth=()=>sessionStorage.getItem(ADMIN_AUTH_KEY)||sessionStorage.getItem(DASH_SESSION_KEY)||'';
 const read=(k,d)=>{try{const raw=localStorage.getItem(k);if(raw===null||raw===undefined||raw==='')return structuredClone(d);const parsed=JSON.parse(raw);return parsed===null||parsed===undefined?structuredClone(d):parsed;}catch(_){return structuredClone(d);}},save=(k,v)=>localStorage.setItem(k,JSON.stringify(v)); let dirty=false;
 function slugifyProductPage(name){return String(name||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')+'.html'}
 function syncProductPages(products,pages){const nonProduct=(pages||[]).filter(pg=>pg.type!=='Product Page');const productPages=products.map(prod=>{const slug=slugifyProductPage(prod.name||prod.id||'product');const existing=(pages||[]).find(pg=>pg.slug===slug)||{};return {...existing,slug,label:prod.name||slug,type:'Product Page',visible:prod.status!=='inactive',productId:prod.id||null};});return [...nonProduct,...productPages]}
@@ -350,10 +351,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (username === "maybenot" && password === "Sacred6767") {
       sessionStorage.setItem(DASH_SESSION_KEY, "1");
+      sessionStorage.setItem("mbnt_admin_auth", "maybenot:Sacred6767");
       authError.textContent = "";
       showDashboard();
     } else {
       sessionStorage.removeItem(DASH_SESSION_KEY);
+      sessionStorage.removeItem("mbnt_admin_auth");
       authError.textContent = "Invalid credentials.";
       showLogin();
     }
@@ -363,6 +366,7 @@ document.addEventListener("DOMContentLoaded", function () {
   if (logoutBtn) {
     logoutBtn.onclick = function () {
       sessionStorage.removeItem(DASH_SESSION_KEY);
+      sessionStorage.removeItem("mbnt_admin_auth");
       if (window.analyticsTimer) clearInterval(window.analyticsTimer);
       if (window.ordersTimer) clearInterval(window.ordersTimer);
       showLogin();
@@ -370,6 +374,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   if (sessionStorage.getItem(DASH_SESSION_KEY) === "1") {
+    if (!sessionStorage.getItem("mbnt_admin_auth")) sessionStorage.setItem("mbnt_admin_auth", "maybenot:Sacred6767");
     showDashboard();
   } else {
     showLogin();
