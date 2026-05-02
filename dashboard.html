@@ -66,7 +66,7 @@ footer .footer-links{display:flex;justify-content:center;padding-bottom:10px}
 .footer-links{padding-bottom:10px}
 
 </style></head><body><header id="dashboard-site-header" class="header-container"><div class="logo-container"><iframe id="8b9281ad-097b-4408-88e2-ef824efa63eb" src="https://www.vectary.com/viewer/v1/?model=8b9281ad-097b-4408-88e2-ef824efa63eb&env=studio3&turntable=1" frameborder="0"></iframe><div class="logo-overlay"></div></div><div id="chicago-time" class="chicago-time"></div></header><div class="dashboard-shell"><div class="site-shell">
-<section id="dashboard-login-screen" class="panel"><form id="dashboard-login-form"><h1>Team Private Admin</h1><input id="dashboard-username" name="username" autocomplete="username" placeholder="Username" required/><input id="dashboard-password" name="password" type="password" autocomplete="current-password" placeholder="Password" required/><button type="submit">Sign In</button><p id="dashboard-login-error" style="display:none;"></p></form></section>
+<section id="dashboard-login-screen" class="panel"><form id="dashboard-login-form"><h1>Team Private Admin</h1><input id="dashboard-username" name="username" autocomplete="username" placeholder="Username" required/><input id="dashboard-password" name="password" type="password" autocomplete="current-password" placeholder="Password" required/><button type="submit">Login</button><p id="dashboard-login-error" style="display:none;"></p></form></section>
 <main id="dashboard-app" hidden style="display:none;">
 <div class="panel"><button id="logoutBtn">Logout</button> <select id="filterRange"><option value="hour">Hour</option><option value="day" selected>Day</option><option value="week">Week</option><option value="month">Month</option><option value="year">Year</option><option value="all">All Time</option></select> <select id="analyticsPage"></select></div>
 <div class="panel"><h2>Real Analytics</h2><canvas id="analyticsGraph" width="1000" height="120"></canvas><div id="siteMetrics" class="row"></div><h3>Traffic Per Page</h3><ul id="pageAnalytics"></ul><h3>Visitors by Location</h3><div class="panel">Location analytics will appear here once backend tracking is connected.</div></div>
@@ -90,9 +90,9 @@ function buildEvent(type,payload={}){return{type,timestamp:new Date().toISOStrin
 async function trackEvent(type,payload={}){const event=buildEvent(type,payload);const events=read(analyticsKey,[]);events.push({...event,timestampMs:Date.now()});save(analyticsKey,events);try{await fetch('/api/analytics/track',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(event)});}catch(_){}}
 trackEvent('page_visit',{page:'dashboard.html'});
 let inactivityTimeout,logoutTimeout,warningShown=false,liveTimer;
-function doLogout(){const loginScreen=document.getElementById('dashboard-login-screen');const app=document.getElementById('dashboard-app');sessionStorage.removeItem(DASH_SESSION_KEY);sessionStorage.removeItem('maybenotDashboardAuth');if(loginScreen){loginScreen.hidden=false;loginScreen.style.display='flex';}if(app){app.hidden=true;app.style.display='none';}clearTimeout(inactivityTimeout);clearTimeout(logoutTimeout);warningShown=false;alert('Signed out due to inactivity.');}
+function doLogout(){const loginScreen=document.getElementById('dashboard-login-screen');const app=document.getElementById('dashboard-app');sessionStorage.removeItem(DASH_SESSION_KEY);if(loginScreen){loginScreen.hidden=false;loginScreen.style.display='flex';}if(app){app.hidden=true;app.style.display='none';}clearTimeout(inactivityTimeout);clearTimeout(logoutTimeout);warningShown=false;alert('Signed out due to inactivity.');}
 function armInactivity(){clearTimeout(inactivityTimeout);clearTimeout(logoutTimeout);if(warningShown){warningShown=false;}inactivityTimeout=setTimeout(()=>{warningShown=true;alert('You have been inactive. You will be signed out in 1 minute.');logoutTimeout=setTimeout(doLogout,60000);},300000);}
-['mousemove','click','keydown','scroll','touchstart'].forEach(evt=>document.addEventListener(evt,()=>{if(!dashboardApp.hidden)armInactivity()},{passive:true}));
+['mousemove','click','keydown','scroll','touchstart'].forEach(evt=>document.addEventListener(evt,()=>{const app=document.getElementById('dashboard-app');if(app && !app.hidden)armInactivity()},{passive:true}));
 async function fetchAnalyticsSummary(){try{const res=await fetch('/api/analytics/summary');if(!res.ok)throw new Error('summary');const summary=await res.json();return summary.events||[]}catch(_){return read(analyticsKey,[])}}
 
 function filterEvents(events,scope,page){const spans={hour:36e5,day:864e5,week:6048e5,month:26298e5,year:315576e5,all:1e16};const now=Date.now();return events.filter(e=>now-(e.timestampMs||Date.parse(e.timestamp)||0)<=spans[scope]).filter(e=>!page||e.pagePath===page||e.page===page)}
@@ -153,7 +153,6 @@ filterRange.addEventListener('change',guardedRender(renderAll));analyticsPage.ad
     }
 
     function showDashboard() {
-      sessionStorage.setItem("maybenotDashboardAuth", "true");
       sessionStorage.setItem(DASH_SESSION_KEY, "1");
       loginScreen.hidden = true;
       loginScreen.style.display = "none";
@@ -163,13 +162,12 @@ filterRange.addEventListener('change',guardedRender(renderAll));analyticsPage.ad
       loginError.style.display = "none";
       initPageSelect();
       renderAll();
-      armInactivity();
-      clearInterval(liveTimer);
-      liveTimer = setInterval(renderAll, 5000);
+      if (typeof armInactivity === "function") armInactivity();
+      if (typeof clearInterval === "function") clearInterval(liveTimer);
+      if (typeof renderAll === "function") liveTimer = setInterval(renderAll, 5000);
     }
 
     function showLogin() {
-      sessionStorage.removeItem("maybenotDashboardAuth");
       sessionStorage.removeItem(DASH_SESSION_KEY);
       clearInterval(liveTimer);
       loginScreen.hidden = false;
@@ -178,7 +176,7 @@ filterRange.addEventListener('change',guardedRender(renderAll));analyticsPage.ad
       dashboardApp.style.display = "none";
     }
 
-    if (sessionStorage.getItem("maybenotDashboardAuth") === "true" || sessionStorage.getItem(DASH_SESSION_KEY) === "1") {
+    if (sessionStorage.getItem(DASH_SESSION_KEY) === "1") {
       showDashboard();
     } else {
       showLogin();
