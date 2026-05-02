@@ -199,9 +199,7 @@ async function handleCreateCheckoutSession(req, res) {
   const payload = {
     line_items: lineItems,
     mode: 'payment',
-    success_url: successUrl.includes('?')
-      ? `${successUrl}&session_id={CHECKOUT_SESSION_ID}`
-      : `${successUrl}?session_id={CHECKOUT_SESSION_ID}`,
+    success_url: successUrl,
     cancel_url: cancelUrl,
     customer_creation: 'always'
   };
@@ -532,7 +530,14 @@ const analyticsEvents = [];
 
 const repoRoot=process.cwd();
 const githubCfg=['GITHUB_TOKEN','GITHUB_OWNER','GITHUB_REPO','GITHUB_BRANCH'].reduce((m,k)=>(m[k]=process.env[k]||'',m),{});
-function isAdmin(req){return Boolean((req.headers['x-admin-auth']||'').toString());}
+function isAdmin(req){
+  const headerAuth = (req.headers['x-admin-auth'] || '').toString().trim();
+  if (headerAuth) return true;
+  const bearer = (req.headers.authorization || '').toString().trim();
+  if (bearer.toLowerCase().startsWith('bearer ') && bearer.slice(7).trim()) return true;
+  const cookie = (req.headers.cookie || '').toString();
+  return /(?:^|;\s*)(mbnt_admin_auth|mbnt_dash_session)=([^;]+)/.test(cookie);
+}
 async function gitCommit(filePath,message){await execFileAsync('git',['add',filePath],{cwd:repoRoot});await execFileAsync('git',['commit','-m',message],{cwd:repoRoot});}
 function ensureGitHubConfigured(){return githubCfg.GITHUB_TOKEN&&githubCfg.GITHUB_OWNER&&githubCfg.GITHUB_REPO&&githubCfg.GITHUB_BRANCH;}
 async function upsertJsonArray(fileName,key,val){const fp=path.join(repoRoot,fileName);let arr=[];try{arr=JSON.parse(await fs.readFile(fp,'utf8'));}catch{}if(!Array.isArray(arr))arr=[];const idx=arr.findIndex(x=>x[key]===val[key]);if(idx>=0)arr[idx]=val;else arr.push(val);await fs.writeFile(fp,JSON.stringify(arr,null,2));return fp;}
