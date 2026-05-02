@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>MaybeNot Private Dashboard</title>
+  <title>Team Private Admin</title>
   <style>
     :root {
       --bg: #f5f5f5;
@@ -21,6 +21,10 @@
       color: var(--text);
     }
     .hidden { display: none !important; }
+    .site-shell { min-height: 100dvh; display:flex; flex-direction:column; }
+    .logo-container { position: relative; width:100%; height: 130px; border-bottom:1px solid #000; background:#fff; }
+    .logo-container iframe { width:100%; height:100%; border:0; display:block; pointer-events:none; }
+    .time { text-align:center; padding:8px 12px; border-bottom:1px solid #000; background:#fff; font-size:.85rem; }
     .auth-shell {
       min-height: 100dvh;
       display: grid;
@@ -43,7 +47,7 @@
     .btn-red { background: var(--accent); color: #fff; }
     .err { color: var(--accent); min-height: 1.2em; margin-top:8px; }
 
-    .dashboard { padding: 14px; }
+    .dashboard { padding: 14px; flex:1; }
     .topbar {
       display:flex; justify-content: space-between; align-items:center; gap: 10px; margin-bottom: 14px;
       border-bottom: 2px solid #000; padding-bottom: 10px;
@@ -70,13 +74,23 @@
     .plus-btn {
       width: 38px; height: 38px; border-radius: 50%; font-size: 1.3rem; line-height: 1;
     }
-    @media (max-width: 700px) { .split { grid-template-columns:1fr; } }
+    footer { margin-top:auto; border-top:1px solid #000; background:#fff; }
+    .footer-links { text-align:center; padding: 16px 10px; font-size:.82rem; }
+    .footer-links a { color:#000; text-decoration:none; }
+    .footer-links a:hover { text-decoration:underline; }
+    @media (max-width: 700px) { .split { grid-template-columns:1fr; } .logo-container { height:100px; } }
   </style>
 </head>
 <body>
+  <div class="site-shell">
+  <div class="logo-container">
+    <iframe id="logo-frame" src="https://www.vectary.com/viewer/v1/?model=8b9281ad-097b-4408-88e2-ef824efa63eb&env=studio3&turntable=1" title="Maybe Not Logo"></iframe>
+  </div>
+  <div class="time" id="current-time"></div>
+
   <section id="auth" class="auth-shell">
     <form id="loginForm" class="auth-card" autocomplete="off">
-      <h1>MaybeNot Private Admin</h1>
+      <h1>Team Private Admin</h1>
       <p class="sub">Internal team access only. No public registration.</p>
       <label for="username">Username</label>
       <input id="username" name="username" type="text" required />
@@ -90,7 +104,7 @@
   <main id="dashboard" class="dashboard hidden" aria-live="polite">
     <div class="topbar">
       <div>
-        <h2>MaybeNot Admin Dashboard</h2>
+        <h2>Team Private Admin Dashboard</h2>
         <p class="sub">Clean internal control panel for web, shop, and analytics operations.</p>
       </div>
       <button id="logoutBtn">Logout</button>
@@ -143,6 +157,12 @@
       <article class="card"><h3>8. Cookie / Customer Behavior Data</h3><ul id="behaviorStats" class="list"></ul></article>
     </section>
   </main>
+  <footer>
+    <div class="footer-links">
+      <a href="/">Home</a> | <a href="/shop.html">Shop</a> | <a href="/privacy.html">Privacy</a> | <a href="/terms.html">Terms</a>
+    </div>
+  </footer>
+  </div>
 
   <script>
     const DASH_SESSION_KEY = "mbnt_dashboard_auth";
@@ -151,7 +171,7 @@
     // Avoid plain-text password exposure in markup; still replace with secure backend auth in production.
     const ACCESS = {
       username: "maybenot",
-      passwordHash: "6476b62975f389b0589619380d4a34bfefec31a5f4e4263bd8f377f19384ce9c"
+      passwordHash: "461a77919bf434e323be3c1d06796673a925a273dd02f5cb06b7f3a2c19c059f"
     };
 
     async function hashText(value) {
@@ -278,6 +298,20 @@
     });
 
     if (sessionStorage.getItem(DASH_SESSION_KEY) === "1") showDashboard();
+
+    function updateTime() {
+      const now = new Date();
+      const currentTime = now.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        timeZone: "America/Chicago",
+        hour12: true
+      });
+      document.getElementById("current-time").textContent = `${currentTime} CHICAGO`;
+    }
+    updateTime();
+    setInterval(updateTime, 1000);
   </script>
 </body>
 </html>
