@@ -1,6 +1,11 @@
 #!/usr/bin/env node
 import { createServer } from 'node:http';
 import { createHmac, timingSafeEqual } from 'node:crypto';
+import { promises as fs } from 'node:fs';
+import path from 'node:path';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+const execFileAsync=promisify(execFile);
 
 const port = Number(process.env.PORT || 4242);
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY || '';
@@ -408,6 +413,14 @@ async function handleCreateProduct(req, res) {
 }
 const analyticsEvents = [];
 
+const repoRoot=process.cwd();
+const githubCfg=['GITHUB_TOKEN','GITHUB_OWNER','GITHUB_REPO','GITHUB_BRANCH'].reduce((m,k)=>(m[k]=process.env[k]||'',m),{});
+function isAdmin(req){return Boolean((req.headers['x-admin-auth']||'').toString());}
+async function gitCommit(filePath,message){await execFileAsync('git',['add',filePath],{cwd:repoRoot});await execFileAsync('git',['commit','-m',message],{cwd:repoRoot});}
+function ensureGitHubConfigured(){return githubCfg.GITHUB_TOKEN&&githubCfg.GITHUB_OWNER&&githubCfg.GITHUB_REPO&&githubCfg.GITHUB_BRANCH;}
+async function upsertJsonArray(fileName,key,val){const fp=path.join(repoRoot,fileName);let arr=[];try{arr=JSON.parse(await fs.readFile(fp,'utf8'));}catch{}if(!Array.isArray(arr))arr=[];const idx=arr.findIndex(x=>x[key]===val[key]);if(idx>=0)arr[idx]=val;else arr.push(val);await fs.writeFile(fp,JSON.stringify(arr,null,2));return fp;}
+
+
 function normalizeAnalyticsEvent(event={}){return {type:String(event.type||'page_event'),timestamp:event.timestamp||new Date().toISOString(),timestampMs:Date.parse(event.timestamp||'')||Date.now(),pagePath:String(event.pagePath||event.page||'index.html'),productId:event.productId||null,productName:event.productName||null,sessionId:event.sessionId||null,cartCount:Number.isFinite(Number(event.cartCount))?Number(event.cartCount):null,userAgent:String(event.userAgent||''),timezone:String(event.timezone||''),referrer:String(event.referrer||'')};}
 
 const server = createServer(async (req, res) => {
@@ -449,7 +462,7 @@ const server = createServer(async (req, res) => {
     }
 
     if (req.method === 'GET' && pathname === '/api/analytics/summary') {
-      return jsonResponse(res, 200, { events: analyticsEvents }, requestOrigin);
+      return jsonResponse(res, 200, { events: analyticsEvents, storage:'memory', note:'Analytics resets when server restarts. Add database persistence for durability.' }, requestOrigin);
     }
 
     if (req.method === 'POST' && pathname === '/api/stripe/webhook') {
@@ -474,6 +487,44 @@ const server = createServer(async (req, res) => {
         },
         requestOrigin
       );
+    }
+
+
+    if (pathname.startsWith('/api/admin/') && !isAdmin(req)) {
+      return jsonResponse(res, 401, { error: 'Admin session required.' }, requestOrigin);
+    }
+
+    if (req.method === 'POST' && pathname === '/api/admin/update-product') {
+      const body=JSON.parse((await readBody(req))||'{}');
+      const fp=await upsertJsonArray('admin-products.json','id',body.product||{});
+      if(!ensureGitHubConfigured()) return jsonResponse(res,503,{error:'GitHub save is not configured yet. Changes were not published permanently.'},requestOrigin);
+      await gitCommit(path.relative(repoRoot,fp),'admin: update product');
+      return jsonResponse(res,200,{ok:true},requestOrigin);
+    }
+    if (req.method === 'POST' && pathname === '/api/admin/create-product') {
+      const body=JSON.parse((await readBody(req))||'{}');
+      const fp=await upsertJsonArray('admin-products.json','id',body.product||{});
+      if(!ensureGitHubConfigured()) return jsonResponse(res,503,{error:'GitHub save is not configured yet. Changes were not published permanently.'},requestOrigin);
+      await gitCommit(path.relative(repoRoot,fp),'admin: create product');
+      return jsonResponse(res,200,{ok:true},requestOrigin);
+    }
+    if (req.method === 'POST' && pathname === '/api/admin/update-page') {
+      const body=JSON.parse((await readBody(req))||'{}');
+      const fp=await upsertJsonArray('admin-pages.json','slug',body.page||{});
+      if(!ensureGitHubConfigured()) return jsonResponse(res,503,{error:'GitHub save is not configured yet. Changes were not published permanently.'},requestOrigin);
+      await gitCommit(path.relative(repoRoot,fp),'admin: update page');
+      return jsonResponse(res,200,{ok:true},requestOrigin);
+    }
+    if (req.method === 'POST' && pathname === '/api/admin/upload-image') {
+      return jsonResponse(res,501,{error:'Upload endpoint expects multipart parser setup.'},requestOrigin);
+    }
+
+    if (req.method === 'POST' && pathname === '/api/admin/create-page') {
+      const body=JSON.parse((await readBody(req))||'{}');
+      const fp=await upsertJsonArray('admin-pages.json','slug',body.page||{});
+      if(!ensureGitHubConfigured()) return jsonResponse(res,503,{error:'GitHub save is not configured yet. Changes were not published permanently.'},requestOrigin);
+      await gitCommit(path.relative(repoRoot,fp),'admin: create page');
+      return jsonResponse(res,200,{ok:true},requestOrigin);
     }
 
     return jsonResponse(res, 404, { error: 'Not found.' }, requestOrigin);
