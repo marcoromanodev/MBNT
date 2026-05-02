@@ -430,6 +430,10 @@ const server = createServer(async (req, res) => {
       return await handleCreatePaymentIntent(req, res);
     }
 
+    if (req.method === 'POST' && pathname === '/api/products/create') {
+      return await handleCreateProduct(req, res);
+    }
+
     if (req.method === 'POST' && pathname === '/api/stripe/webhook') {
       return await handleStripeWebhook(req, res);
     }
