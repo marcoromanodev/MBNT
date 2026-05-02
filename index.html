@@ -334,11 +334,7 @@
 <script>
     (function () {
         const params = new URLSearchParams(window.location.search);
-        const isFullSiteRequest = params.has("fullsite") || localStorage.getItem("fullSiteMode") === "true";
-
-        if (params.has("fullsite")) {
-            localStorage.setItem("fullSiteMode", "true");
-        }
+        const isFullSiteRequest = params.has("fullsite");
 
         if (!isFullSiteRequest) {
             window.location.replace("shop.html");
