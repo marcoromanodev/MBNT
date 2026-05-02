@@ -60,14 +60,14 @@ footer{position:static;width:100%;text-align:center;background-color:#f7f7f7;pad
 footer .footer-links{display:flex;justify-content:center;padding-bottom:10px}
 .footer-line{justify-content:center;flex-wrap:wrap;width:min(90%,820px);font-size:.65rem;letter-spacing:.02rem}
 .footer-links{padding-bottom:10px}
-</style></head><body><div class="dashboard-shell"><header class="site-mobile-header dashboard-site-header"><div class="logo-frame-wrap"><iframe src="https://www.vectary.com/viewer/v1/?model=8b9281ad-097b-4408-88e2-ef824efa63eb&env=studio3&turntable=1"></iframe></div><div id="chicago-time" class="chicago-time"></div></header><div class="site-shell">
-<section id="loginScreen" class="panel"><form id="loginForm"><h1>Team Private Admin</h1><input id="usernameInput" placeholder="Username" required/><input id="passwordInput" type="password" placeholder="Password" required/><button type="submit">Login</button><small id="loginError" style="color:#c00;display:none"></small></form></section>
-<main id="dashboardApp" hidden>
+</style></head><body data-page="dashboard"><header id="dashboard-site-header" class="site-mobile-header dashboard-site-header"><div class="logo-frame-wrap"><iframe src="https://www.vectary.com/viewer/v1/?model=8b9281ad-097b-4408-88e2-ef824efa63eb&env=studio3&turntable=1"></iframe></div><div id="chicago-time" class="chicago-time"></div></header><main id="dashboard-root"><div class="dashboard-shell"><div class="site-shell">
+<section id="dashboard-login-screen" class="panel"><form id="dashboard-login-form"><h1>Team Private Admin</h1><input id="dashboard-username" placeholder="Username" required/><input id="dashboard-password" type="password" placeholder="Password" required/><button type="submit">Sign In</button><p id="dashboard-login-error" style="color:#c00;display:none"></p></form></section>
+<div id="dashboard-app" hidden>
 <div class="panel"><button id="logoutBtn">Logout</button> <select id="filterRange"><option value="hour">Hour</option><option value="day" selected>Day</option><option value="week">Week</option><option value="month">Month</option><option value="year">Year</option><option value="all">All Time</option></select> <select id="analyticsPage"></select></div>
 <div class="panel"><h2>Real Analytics</h2><canvas id="analyticsGraph" width="1000" height="120"></canvas><div id="siteMetrics" class="row"></div><h3>Traffic Per Page</h3><ul id="pageAnalytics"></ul><h3>Visitors by Location</h3><div class="panel">Location analytics will appear here once backend tracking is connected.</div></div>
 <div class="panel"><h2>Product Manager</h2><h3>Create New Product</h3><form id="createProductForm" class="row"><input id="newName" placeholder="Product name" required><textarea id="newDescription" placeholder="Description"></textarea><input id="newPrice" type="number" step="0.01" placeholder="Price" required><select id="newCategory"></select><input id="newMainImage" placeholder="Main image path"><input id="newMainImageUpload" type="file" accept="image/*"><input id="newImages" placeholder="Additional images (comma separated)"><input id="newImagesUpload" type="file" accept="image/*" multiple><input id="newQty" type="number" placeholder="Quantity" value="0"><input id="newVariants" placeholder="Variants (comma separated)"><label><input type="checkbox" id="newManualSold"> Sold out manually</label><label><input type="checkbox" id="newActive" checked> Active/visible</label><div><strong>Placement</strong><div id="placementPills" class="pill-wrap"></div></div><button id="createProductBtn" type="submit">Create Product</button><small id="createProductError" style="color:#c00"></small></form><div id="productGrid" class="product-manager-list"></div></div>
 <div class="panel"><h2>Page Manager</h2><h3>Create New Page</h3><form id="pageForm" class="row"><input id="pageName" placeholder="Page filename (example: vintage.html)" required><input id="pageLabel" placeholder="Nav label" required><select id="pageType"><option>Collection Page</option><option>Redirect Page</option><option>Product Page</option><option>Blank Page</option></select><input id="redirectUrl" placeholder="Redirect URL (for Redirect Page)"><button>Create/Update Page</button></form><div id="pageManager"></div></div>
-</main></div><div class="view-full-site-wrap"><a class="view-full-site" href="index.html">View Full Site</a></div><footer class="footer"><div class="footer-links"><div class="footer-line extra-padding"><a href="shop.html">shop</a><a href="all.html">view all</a><a href="soon.html">preview</a><a href="soon.html">lookbook</a><a href="news.html">news</a></div><div class="footer-line"><a href="random.html">random</a><a href="about.html">about</a><a href="stores.html">stores</a><a href="soon.html">sizing</a><a href="faq.html">f.a.q.</a><a href="contact.html">contact</a></div><div class="footer-line less-padding"><a href="terms.html">terms</a><a href="privacy.html">privacy</a><a href="accessibility.html">accessibility</a><a href="mailinglist.html">mailing list</a></div></div></footer></div>
+</div></div><div class="view-full-site-wrap"><a class="view-full-site" href="index.html">View Full Site</a></div><footer class="footer"><div class="footer-links"><div class="footer-line extra-padding"><a href="shop.html">shop</a><a href="all.html">view all</a><a href="soon.html">preview</a><a href="soon.html">lookbook</a><a href="news.html">news</a></div><div class="footer-line"><a href="random.html">random</a><a href="about.html">about</a><a href="stores.html">stores</a><a href="soon.html">sizing</a><a href="faq.html">f.a.q.</a><a href="contact.html">contact</a></div><div class="footer-line less-padding"><a href="terms.html">terms</a><a href="privacy.html">privacy</a><a href="accessibility.html">accessibility</a><a href="mailinglist.html">mailing list</a></div></div></footer></div></main>
 <script>
 const DASH_SESSION_KEY='maybenotDashboardAuth',productsKey='mbnt_admin_products',pagesKey='mbnt_admin_pages',analyticsKey='mbnt_analytics_events';
 const VALID_USERNAME="maybenot";
@@ -87,15 +87,12 @@ function buildEvent(type,payload={}){return{type,timestamp:new Date().toISOStrin
 async function trackEvent(type,payload={}){const event=buildEvent(type,payload);const events=read(analyticsKey,[]);events.push({...event,timestampMs:Date.now()});save(analyticsKey,events);try{await fetch('/api/analytics/track',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(event)});}catch(_){}}
 trackEvent('page_visit',{page:'dashboard.html'});
 
-const loginScreen=document.getElementById('loginScreen'),dashboardApp=document.getElementById('dashboardApp'),loginForm=document.getElementById('loginForm'),usernameInput=document.getElementById('usernameInput'),passwordInput=document.getElementById('passwordInput'),loginError=document.getElementById('loginError');
 function startDashboardSystems(){initPageSelect();renderAll();armInactivity();clearInterval(liveTimer);liveTimer=setInterval(renderAll,5000)}
-function startDashboard(){loginScreen.style.display='none';dashboardApp.style.display='block';dashboardApp.hidden=false;startDashboardSystems();}
-function showLogin(){loginScreen.style.display='block';dashboardApp.style.display='none';dashboardApp.hidden=true;clearInterval(liveTimer);clearTimeout(inactivityTimeout);clearTimeout(logoutTimeout);warningShown=false}
 
 let inactivityTimeout,logoutTimeout,warningShown=false,liveTimer;
-function doLogout(isInactivity=true){sessionStorage.removeItem(DASH_SESSION_KEY);sessionStorage.removeItem('mbnt_admin_auth');showLogin();if(isInactivity)alert('Signed out due to inactivity.');}
+function doLogout(isInactivity=true){sessionStorage.removeItem(DASH_SESSION_KEY);sessionStorage.removeItem('mbnt_admin_auth');if(typeof window.showLogin==='function'){window.showLogin();}if(isInactivity)alert('Signed out due to inactivity.');}
 function armInactivity(){clearTimeout(inactivityTimeout);clearTimeout(logoutTimeout);if(warningShown){warningShown=false;}inactivityTimeout=setTimeout(()=>{warningShown=true;alert('You have been inactive. You will be signed out in 1 minute.');logoutTimeout=setTimeout(doLogout,60000);},300000);}
-['mousemove','click','keydown','scroll','touchstart'].forEach(evt=>document.addEventListener(evt,()=>{if(!dashboardApp.hidden)armInactivity()},{passive:true}));
+['mousemove','click','keydown','scroll','touchstart'].forEach(evt=>document.addEventListener(evt,()=>{const app=document.getElementById('dashboard-app');if(app && !app.hidden)armInactivity()},{passive:true}));
 async function fetchAnalyticsSummary(){try{const res=await fetch('/api/analytics/summary');if(!res.ok)throw new Error('summary');const summary=await res.json();return summary.events||[]}catch(_){return read(analyticsKey,[])}}
 
 function filterEvents(events,scope,page){const spans={hour:36e5,day:864e5,week:6048e5,month:26298e5,year:315576e5,all:1e16};const now=Date.now();return events.filter(e=>now-(e.timestampMs||Date.parse(e.timestamp)||0)<=spans[scope]).filter(e=>!page||e.pagePath===page||e.page===page)}
@@ -138,12 +135,72 @@ async function hydrateProducts(){
 function guardedRender(fn){return ()=>{if(dirty&&!confirm('Please confirm changes before changing pages if not done so already.'))return;fn();}}
 function initPageSelect(){const products=read(productsKey,[]);const pages=[...new Set(['index.html',...SITE_PAGES,...COLLECTION_SLUGS,...products.map(p=>slugifyProductPage(p.name||p.id||'product')),...read(pagesKey,[]).map(p=>p.slug)])];analyticsPage.innerHTML=pages.map(p=>`<option ${p==='index.html'?'selected':''}>${p}</option>`).join('')}
 async function renderAll(){const hydrated=await hydrateProducts();const productsFix=hydrated.length?hydrated:read(productsKey,[]);const sb=productsFix.find(p=>String(p.name||'').toLowerCase().includes('skateboard 2'));if(sb&&Array.isArray(sb.images)&&sb.images[0]!=='skateboard4.png'){sb.images[0]='skateboard4.png';save(productsKey,productsFix);}save(pagesKey,syncProductPages(productsFix,read(pagesKey,[])));const scope=filterRange.value,page=analyticsPage.value,allEvents=await fetchAnalyticsSummary();const events=filterEvents(allEvents,scope,page),pv=events.filter(e=>e.type==='page_visit');siteMetrics.innerHTML=`<div>Visits: ${pv.length}</div><div>Unique sessions: ${new Set(events.map(e=>e.sessionId||e.timestamp)).size}</div>`;pageAnalytics.innerHTML=Object.entries(pv.reduce((m,e)=>(m[e.pagePath||e.page]=(m[e.pagePath||e.page]||0)+1,m),{})).map(([p,c])=>`<li>${p}: ${c}</li>`).join('')||'<li>No tracked visits</li>';drawGraph(events,scope);renderPlacementPills();renderCategoryOptions(newCategory.value);renderProducts();renderPages()}
-filterRange.addEventListener('change',guardedRender(renderAll));analyticsPage.addEventListener('change',guardedRender(renderAll));
-loginForm.addEventListener('submit',function(event){event.preventDefault();const username=usernameInput.value.trim();const password=passwordInput.value.trim();loginError.textContent='';loginError.style.display='none';if(username===VALID_USERNAME&&password===VALID_PASSWORD){sessionStorage.setItem("maybenotDashboardAuth","true");sessionStorage.setItem('mbnt_admin_auth',VALID_PASSWORD);loginScreen.style.display='none';dashboardApp.style.display='block';dashboardApp.hidden=false;startDashboardSystems();}else{loginError.textContent='Invalid credentials.';loginError.style.display='block';sessionStorage.removeItem("maybenotDashboardAuth");sessionStorage.removeItem('mbnt_admin_auth');}});
-logoutBtn.onclick=()=>{doLogout(false)};
-window.addEventListener('resize',()=>{fitAnalyticsCanvas();if(!dashboardApp.hidden)renderAll();});
-fitAnalyticsCanvas();
-if(sessionStorage.getItem("maybenotDashboardAuth")==='true'){startDashboard();}else{showLogin();}
-function updateChicagoTime(){const timeEl=document.getElementById("chicago-time");if(!timeEl)return;const now=new Date();const formatted=new Intl.DateTimeFormat("en-US",{timeZone:"America/Chicago",weekday:"short",month:"short",day:"numeric",hour:"numeric",minute:"2-digit",second:"2-digit",hour12:true}).format(now);timeEl.textContent=formatted;}
-updateChicagoTime();setInterval(updateChicagoTime,1000);
+
+
+const isDashboard=document.body?.dataset?.page==='dashboard' || window.location.pathname.includes('dashboard.html');
+
+function initDashboardHeader(){
+  const timeEl=document.getElementById('chicago-time');
+  if(!timeEl){console.error('Missing chicago-time element');return;}
+  timeEl.style.display='block';timeEl.style.visibility='visible';timeEl.style.opacity='1';
+  function updateChicagoTime(){
+    const now=new Date();
+    timeEl.textContent=new Intl.DateTimeFormat('en-US',{timeZone:'America/Chicago',weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit',second:'2-digit',hour12:true}).format(now);
+  }
+  updateChicagoTime();
+  setInterval(updateChicagoTime,1000);
+}
+
+function initDashboardLogin(){
+  const form=document.getElementById('dashboard-login-form');
+  const usernameInput=document.getElementById('dashboard-username');
+  const passwordInput=document.getElementById('dashboard-password');
+  const error=document.getElementById('dashboard-login-error');
+  const loginScreen=document.getElementById('dashboard-login-screen');
+  const dashboardApp=document.getElementById('dashboard-app');
+
+  if(!form||!usernameInput||!passwordInput||!error||!loginScreen||!dashboardApp){console.error('Dashboard login elements missing');return;}
+
+  function showDashboard(){
+    sessionStorage.setItem('maybenotDashboardAuth','true');
+    sessionStorage.setItem('mbnt_admin_auth',VALID_PASSWORD);
+    loginScreen.hidden=true;loginScreen.style.display='none';
+    dashboardApp.hidden=false;dashboardApp.style.display='block';
+    if(typeof startDashboardSystems==='function'){startDashboardSystems();}
+  }
+
+  function showLogin(){
+    loginScreen.hidden=false;loginScreen.style.display='block';
+    dashboardApp.hidden=true;dashboardApp.style.display='none';
+    clearInterval(liveTimer);clearTimeout(inactivityTimeout);clearTimeout(logoutTimeout);warningShown=false;
+  }
+
+  window.showLogin=showLogin;
+
+  if(sessionStorage.getItem('maybenotDashboardAuth')==='true'){showDashboard();}else{showLogin();}
+
+  form.addEventListener('submit',(event)=>{
+    event.preventDefault();event.stopPropagation();
+    const username=usernameInput.value.trim();
+    const password=passwordInput.value.trim();
+    if(username===VALID_USERNAME && password===VALID_PASSWORD){
+      error.textContent='';error.style.display='none';showDashboard();
+    }else{
+      error.textContent='Invalid credentials.';error.style.display='block';
+      sessionStorage.removeItem('maybenotDashboardAuth');sessionStorage.removeItem('mbnt_admin_auth');
+    }
+  });
+}
+
+if(isDashboard){
+  document.addEventListener('DOMContentLoaded',()=>{
+    initDashboardHeader();
+    initDashboardLogin();
+    fitAnalyticsCanvas();
+    filterRange.addEventListener('change',guardedRender(renderAll));
+    analyticsPage.addEventListener('change',guardedRender(renderAll));
+    logoutBtn.onclick=()=>{doLogout(false)};
+    window.addEventListener('resize',()=>{fitAnalyticsCanvas();if(!document.getElementById('dashboard-app').hidden)renderAll();});
+  });
+}
 </script></body></html>
