@@ -1,4 +1,23 @@
 document.addEventListener('DOMContentLoaded', () => {
+  const ANALYTICS_KEY = 'mbnt_analytics_events';
+  const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+  const isProductPage = !!document.querySelector('.product-item');
+  const isCartPage = currentPath === 'cart.html' || !!document.querySelector('#cart-items, .cart-items');
+  const analyticsSessionId = sessionStorage.getItem('mbnt_session_id') || (sessionStorage.setItem('mbnt_session_id', crypto.randomUUID()), sessionStorage.getItem('mbnt_session_id'));
+  const trackPublicEvent = (type, payload = {}) => {
+    const event = { type, timestamp: new Date().toISOString(), timestampMs: Date.now(), pagePath: currentPath, sessionId: analyticsSessionId, userAgent: navigator.userAgent, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone, ...payload };
+    try {
+      const events = JSON.parse(localStorage.getItem(ANALYTICS_KEY) || '[]');
+      events.push(event);
+      localStorage.setItem(ANALYTICS_KEY, JSON.stringify(events));
+    } catch (_) {}
+    fetch('/api/analytics/track', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(event) }).catch(() => {});
+  };
+  trackPublicEvent('page_visit', { page: currentPath });
+  trackPublicEvent('page_event', { action: 'view' });
+  if (isProductPage) trackPublicEvent('product_page_visit', { productPage: currentPath });
+  if (isCartPage) trackPublicEvent('cart_visit', { cartPage: currentPath });
+
   const current = window.location.pathname.split('/').pop() || 'index.html';
   const isShopPage =
     current === 'shop.html' ||

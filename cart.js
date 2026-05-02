@@ -2378,7 +2378,12 @@ function ensureCartCounter() {
 document.addEventListener('DOMContentLoaded', () => {
     const page = window.location.pathname.split('/').pop() || 'index.html';
     trackAnalyticsEvent('page_visit', { page });
-    if (document.querySelector('.product-item')) trackAnalyticsEvent('product_page_visit', { product: document.querySelector('.product-item')?.dataset?.product || '' });
+    trackAnalyticsEvent('page_event', { page, action: 'view' });
+    if (document.querySelector('.product-item')) {
+        const productName = document.querySelector('.product-item')?.dataset?.product || '';
+        trackAnalyticsEvent('product_page_visit', { product: productName });
+        trackAnalyticsEvent('product_event', { product: productName, action: 'view' });
+    }
     preloadStripe().catch(() => {});
     initCart();
     ensureCartTriggerBound();
