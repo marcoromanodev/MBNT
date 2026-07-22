@@ -1188,7 +1188,7 @@ function createCartModal() {
         <div class="cart-content">
             <button id="cart-close" class="close-btn">&times;</button>
             <div class="logo-container">
-                <iframe id="cart-logo" src="https://www.vectary.com/viewer/v1/?model=8b9281ad-097b-4408-88e2-ef824efa63eb&env=studio3&turntable=1" frameborder="0"></iframe>
+                <iframe allowfullscreen width="640" height="480" loading="lazy" frameborder="0" src="https://p3d.in/e/307lu+clean+spin+load"></iframe>
             </div>
             <div class="cart-time" id="cart-current-time"></div>
             <h2>Cart</h2>
